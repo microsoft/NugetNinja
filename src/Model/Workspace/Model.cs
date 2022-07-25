@@ -79,7 +79,7 @@ public class Model
         var projectReferences = doc.DocumentNode
             .Descendants("ProjectReference")
             .Select(p => p.Attributes["Include"].Value)
-            .Select(p => Path.GetFullPath(Path.Combine(csprojFolder, p)))
+            .Select(p => StringExtensions.GetAbsolutePath(csprojFolder, p))
             .ToArray();
 
         return projectReferences;

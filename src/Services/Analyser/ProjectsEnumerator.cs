@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.Services.Analyser;
 
 public class ProjectsEnumerator
 {

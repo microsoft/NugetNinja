@@ -1,33 +1,42 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.NugetNinja;
+using System.CommandLine;
 using System.Reflection;
+using Microsoft.NugetNinja;
 
-var services = new ServiceCollection();
-services.AddLogging(logging =>
+var rootCommand = new RootCommand(@"Nuget Ninja, a tool for detecting dependencies of .NET projects.");
+
+var pathOption = new Option<string>(
+    aliases: new[] { "--path", "-p" },
+    description: "Path of the projects to be changed.")
 {
-    logging.AddConsole();
-    logging.SetMinimumLevel(LogLevel.Trace);
-});
+    IsRequired = true
+};
 
-services.AddSingleton<Entry>();
-services.AddTransient<Extractor>();
+var dryRunOption = new Option<bool>(
+    aliases: new[] { "--dry-run", "-d" },
+    description: "Preview changes without actually making them");
 
-var generators = Assembly.GetExecutingAssembly()
+var verboseOption = new Option<bool>(
+    aliases: new[] { "--verbose", "-v" },
+    description: "Show detailed log");
+
+rootCommand.AddGlobalOption(dryRunOption);
+rootCommand.AddGlobalOption(verboseOption);
+rootCommand.AddGlobalOption(pathOption);
+
+var subCommands = Assembly.GetExecutingAssembly()
     .GetTypes()
     .Where(t => t.IsClass)
-    .Where(t => t.GetInterfaces().Contains(typeof(IActionGenerator)));
+    .Where(t => !t.IsAbstract)
+    .Where(t => t.IsSubclassOf(typeof(CommandHandler)));
 
-foreach (var generator in generators)
+foreach(var subCommandType in subCommands)
 {
-    services.AddTransient(typeof(IActionGenerator), generator);
+    var instance = Activator.CreateInstance(subCommandType) as CommandHandler 
+        ?? throw new TypeLoadException($"Failed when creating new instance from type: {subCommandType}");
+    rootCommand.Add(instance.BuildAsCommand(pathOption, dryRunOption, verboseOption));
 }
 
-services.AddTransient<ProjectsEnumerator>();
-
-var serviceProvider = services.BuildServiceProvider();
-var entry = serviceProvider.GetRequiredService<Entry>();
-return await entry.RunAsync(args);
+return await rootCommand.InvokeAsync(args);

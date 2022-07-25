@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.NugetNinja.Services.Analyser;
+
 namespace Microsoft.NugetNinja;
 
-public class UselessProjectReferenceDetector : IActionGenerator
+public class UselessProjectReferenceDetector : IActionDetector
 {
     private readonly ProjectsEnumerator enumerator;
-
-    public string[] CommandAliases => new[] { "check-project-reference", "cpj" };
-    public string CommandDescription => "Check for useless project references and try to remove them.";
 
     public UselessProjectReferenceDetector(ProjectsEnumerator enumerator)
     {

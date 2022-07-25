@@ -1,0 +1,12 @@
+{
+    "profiles": {
+        "Root": {
+            "commandName": "Project",
+            "commandLineArgs": ""
+        },
+        "Dryrun Current Pkg": {
+            "commandName": "Project",
+            "commandLineArgs": "clean-pkg -p \"..\\..\\..\\..\\..\" -v -d"
+        }
+    }
+}

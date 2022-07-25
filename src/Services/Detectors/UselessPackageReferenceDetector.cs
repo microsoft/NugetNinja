@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.NugetNinja.Services.Analyser;
+
 namespace Microsoft.NugetNinja;
 
-public class UselessPackageReferenceDetector : IActionGenerator
+public class UselessPackageReferenceDetector : IActionDetector
 {
     private readonly ProjectsEnumerator enumerator;
-
-    public string[] CommandAliases => new[] { "check-package-reference", "cpa" };
-    public string CommandDescription => "Check for useless package references and try to remove them.";
 
     public UselessPackageReferenceDetector(ProjectsEnumerator enumerator)
     {

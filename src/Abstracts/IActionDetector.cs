@@ -3,12 +3,7 @@
 
 namespace Microsoft.NugetNinja;
 
-public interface IActionGenerator
+public interface IActionDetector
 {
-    public string[] CommandAliases { get; }
-
-    public string CommandDescription { get; }
-
     public IEnumerable<IAction> Analyze(Model context);
-
 }
