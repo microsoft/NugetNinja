@@ -5,9 +5,10 @@ namespace Microsoft.NugetNinja;
 
 public interface IActionGenerator
 {
-    public string GetHelp();
+    public string[] CommandAliases { get; }
 
-    public string GetCommandAlias();
+    public string CommandDescription { get; }
 
     public IEnumerable<IAction> Analyze(Model context);
+
 }

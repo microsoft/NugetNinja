@@ -30,4 +30,4 @@ services.AddTransient<ProjectsEnumerator>();
 
 var serviceProvider = services.BuildServiceProvider();
 var entry = serviceProvider.GetRequiredService<Entry>();
-await entry.RunAsync(args);
+return await entry.RunAsync(args);
