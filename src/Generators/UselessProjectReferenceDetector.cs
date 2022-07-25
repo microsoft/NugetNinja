@@ -7,6 +7,9 @@ public class UselessProjectReferenceDetector : IActionGenerator
 {
     private readonly ProjectsEnumerator enumerator;
 
+    public string[] CommandAliases => new[] { "check-project-reference", "cpj" };
+    public string CommandDescription => "Check for useless project references and try to remove them.";
+
     public UselessProjectReferenceDetector(ProjectsEnumerator enumerator)
     {
         this.enumerator = enumerator;

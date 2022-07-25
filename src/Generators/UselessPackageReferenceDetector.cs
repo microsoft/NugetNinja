@@ -7,6 +7,9 @@ public class UselessPackageReferenceDetector : IActionGenerator
 {
     private readonly ProjectsEnumerator enumerator;
 
+    public string[] CommandAliases => new[] { "check-package-reference", "cpa" };
+    public string CommandDescription => "Check for useless package references and try to remove them.";
+
     public UselessPackageReferenceDetector(ProjectsEnumerator enumerator)
     {
         this.enumerator = enumerator;
@@ -22,18 +25,6 @@ public class UselessPackageReferenceDetector : IActionGenerator
                 yield return reference;
             }
         }
-    }
-
-    public string GetCommandAlias()
-    {
-        // To do:
-        throw new NotImplementedException();
-    }
-
-    public string GetHelp()
-    {
-        // To do
-        throw new NotImplementedException();
     }
 
     private IEnumerable<UselessPackageReference> AnalyzeProject(Project context)
