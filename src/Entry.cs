@@ -32,7 +32,7 @@ public class Entry
 
         var pathOption = new Option<string>(
             aliases: new[] { "--path", "-p" },
-            description: "Path of the project to be scanned.")
+            description: "Path of the project to be scanned")
         {
             IsRequired = true
         };
