@@ -1,14 +1,21 @@
-# Project
+# Nuget Ninja
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+Nuget Ninjia is a tool for detecting dependencies of .NET projects. It analyzes the dependency structure of .NET projects in a directory and builds a directed acyclic graph. And will give some modification suggestions for Nuget packages, so that the dependencies of the project are as concise and up-to-date as possible.
 
-As the maintainer of this project, please make a few updates:
+## How to build and run locally
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+Requirements about how to develop.
+
+* [.NET SDK 6.0](https://github.com/dotnet/core/tree/master/release-notes)
+
+1. Execute `dotnet restore` to restore all .NET dependencies.
+2. Execute `dotnet publish -c Release` to build the app.
+3. Execute `dotnet run` to run the app
+
+## Run in Microsoft Visual Studio
+
+1. Open the `.sln` file in the project path.
+2. Press `F5`.
 
 ## Contributing
 
