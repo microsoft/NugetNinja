@@ -8,15 +8,15 @@ public class UselessPackageReference : IAction
     public UselessPackageReference(Project source, Package target)
     {
         SourceProjectName = source;
-        TargetPackageName = target;
+        TargetPackage = target;
     }
 
     public Project SourceProjectName { get; set; }
-    public Package TargetPackageName { get; set; }
+    public Package TargetPackage { get; set; }
 
     public string BuildMessage()
     {
-        return $"The project: '{SourceProjectName}' don't have to reference package '{TargetPackageName}' because it already has its access via another path!";
+        return $"The project: '{SourceProjectName}' don't have to reference package '{TargetPackage}' because it already has its access via another path!";
     }
 
     public void TakeAction()

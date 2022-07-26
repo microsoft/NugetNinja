@@ -5,15 +5,17 @@ namespace Microsoft.NugetNinja;
 
 public class Package
 {
-    public Package(string name, Version version)
+    public Package(string name, string versionText)
     {
         Name = name;
-        Version = version; 
+        VersionText = versionText;
+        Version = StringExtensions.ConvertToVersion(versionText); 
     }
 
     public string Name { get; set; }
 
     public Version Version { get; set; }
+    public string VersionText { get; set; }
 
     public override string ToString()
     {

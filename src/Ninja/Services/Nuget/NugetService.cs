@@ -56,7 +56,8 @@ public class NugetService
             var responseModel = JsonSerializer.Deserialize<GetAllPublishedVersionsResponseModel>(responseJson);
             return responseModel
                 ?.Versions
-                ?.Select(v => new Version(v))
+                ?.Where(v => !v.Contains("-")) // Exclude preview versions.
+                ?.Select(v => StringExtensions.ConvertToVersion(v))
                 .ToList()
                 .AsReadOnly()
                 ?? throw new WebException($"Couldn't find a valid version from Nuget.org with package: '{packageName}'!");

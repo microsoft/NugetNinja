@@ -5,8 +5,8 @@ using System.Text.Json.Serialization;
 
 namespace Microsoft.NugetNinja;
 
-internal class GetAllPublishedVersionsResponseModel
+public class GetAllPublishedVersionsResponseModel
 {
     [JsonPropertyName("versions")]
-    internal List<string>? Versions { get; set; }
+    public List<string>? Versions { get; set; }
 }

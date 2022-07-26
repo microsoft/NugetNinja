@@ -60,7 +60,7 @@ public class Model
             .Descendants("PackageReference")
             .Select(p => new Package(
                 name: p.Attributes["Include"].Value,
-                version: new Version(p.Attributes["Version"].Value)))
+                versionText: p.Attributes["Version"].Value))
             .ToArray();
 
         foreach (var package in packageReferences)

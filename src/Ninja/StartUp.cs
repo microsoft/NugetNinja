@@ -19,6 +19,7 @@ public class StartUp : IStartUp
         services.AddMemoryCache();
         services.AddHttpClient();
         services.AddSingleton<CacheService>();
+        services.AddTransient<NugetService>();
         services.AddTransient<Extractor>();
         services.AddTransient<ProjectsEnumerator>();
 

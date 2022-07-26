@@ -20,12 +20,15 @@ public class PackageReferenceUpgradeDetector : IActionDetector
 
     public async IAsyncEnumerable<IAction> AnalyzeAsync(Model context)
     {
-        foreach (var package in context.AllPackages)
+        foreach (var project in context.AllProjects)
         {
-            var latest = await this._nugetService.GetLatestVersion(package.Name);
-            if (package.Version != latest)
+            foreach (var package in project.PackageReferences)
             {
-                yield return null;
+                var latest = await this._nugetService.GetLatestVersion(package.Name);
+                if (package.Version < latest)
+                {
+                    yield return new PossiblePackageUpgrade(project, package, latest);
+                }
             }
         }
     }
