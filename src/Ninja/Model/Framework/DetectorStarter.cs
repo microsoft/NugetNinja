@@ -2,17 +2,18 @@
 // Licensed under the MIT License.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja;
 
-public class DetectorStarterService<D> : IEntryService where D : IActionDetector
+public class DetectorStarter<D> : IEntryService where D : IActionDetector
 {
-    private readonly ILogger<DetectorStarterService<D>> _logger;
+    private readonly ILogger<DetectorStarter<D>> _logger;
     private readonly Extractor _extractor;
     private readonly D _detector;
 
-    public DetectorStarterService(
-        ILogger<DetectorStarterService<D>> logger,
+    public DetectorStarter(
+        ILogger<DetectorStarter<D>> logger,
         Extractor extractor,
         D detector)
     {

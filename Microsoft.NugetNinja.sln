@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NugetNinja", "src\NugetNinja.csproj", "{DE4AF355-DB13-4E57-AD31-962A42E8A608}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NugetNinja", "src\Ninja\NugetNinja.csproj", "{BC06830F-155B-4CB1-9854-9C59B58D832E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ninja.Framework", "src\Ninja.Framework\Ninja.Framework.csproj", "{D58B3A29-F029-44E5-86E0-662ADE6F79D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DE4AF355-DB13-4E57-AD31-962A42E8A608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE4AF355-DB13-4E57-AD31-962A42E8A608}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE4AF355-DB13-4E57-AD31-962A42E8A608}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE4AF355-DB13-4E57-AD31-962A42E8A608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC06830F-155B-4CB1-9854-9C59B58D832E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC06830F-155B-4CB1-9854-9C59B58D832E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC06830F-155B-4CB1-9854-9C59B58D832E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC06830F-155B-4CB1-9854-9C59B58D832E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D58B3A29-F029-44E5-86E0-662ADE6F79D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D58B3A29-F029-44E5-86E0-662ADE6F79D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D58B3A29-F029-44E5-86E0-662ADE6F79D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D58B3A29-F029-44E5-86E0-662ADE6F79D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,7 +3,7 @@
 
 using System.CommandLine;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.Framework;
 
 public abstract class CommandHandler
 {

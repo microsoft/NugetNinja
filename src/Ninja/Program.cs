@@ -4,6 +4,7 @@
 using System.CommandLine;
 using System.Reflection;
 using Microsoft.NugetNinja;
+using Microsoft.NugetNinja.Framework;
 
 var rootCommand = new RootCommand(@"Nuget Ninja, a tool for detecting dependencies of .NET projects.");
 
