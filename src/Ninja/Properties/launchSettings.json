@@ -4,9 +4,13 @@
             "commandName": "Project",
             "commandLineArgs": ""
         },
-        "Dryrun Current Pkg": {
+        "Dryrun Clean Pkg": {
             "commandName": "Project",
             "commandLineArgs": "clean-pkg -p \"..\\..\\..\\..\\..\" -v -d"
+        },
+        "Dryrun Upgrade Pkg": {
+            "commandName": "Project",
+            "commandLineArgs": "upgrade-pkg -p \"..\\..\\..\\..\\..\" -v -d"
         }
     }
 }

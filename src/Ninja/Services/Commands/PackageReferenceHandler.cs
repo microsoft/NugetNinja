@@ -5,7 +5,7 @@ namespace Microsoft.NugetNinja;
 
 public class PackageReferenceHandler : DetectorBasedCommandHandler<UselessPackageReferenceDetector>
 {
-    public override string Name => "package-reference-cleaner";
+    public override string Name => "package-reference-clean";
 
     public override string Description => "The command to clean up useless package references.";
 

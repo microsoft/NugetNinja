@@ -46,33 +46,37 @@ public class Model
         }
         var project = new Project(csprojPath)
         {
-            PackageReferences = packageReferences.Select(p => new Package(p)).ToList(),
+            PackageReferences = packageReferences.ToList(),
             ProjectReferences = subProjectReferenceObjects
         };
         return project;
     }
 
-    public string[] GetPackageReferences(string csprojContent)
+    private Package[] GetPackageReferences(string csprojContent)
     {
         var doc = new HtmlDocument();
         doc.LoadHtml(csprojContent);
         var packageReferences = doc.DocumentNode
             .Descendants("PackageReference")
-            .Select(p => p.Attributes["Include"].Value)
+            .Select(p => new Package(
+                name: p.Attributes["Include"].Value,
+                versionText: p.Attributes["Version"].Value))
             .ToArray();
 
         foreach (var package in packageReferences)
         {
-            if (!AllPackages.Any(p => p.Name == package))
+            if (!AllPackages.Any(p => 
+                p.Name == package.Name && 
+                p.Version == package.Version ))
             {
-                AllPackages.Add(new Package(package));
+                AllPackages.Add(package);
             }
         }
 
         return packageReferences;
     }
 
-    public string[] GetProjectReferences(string csprojContent, string csprojFolder)
+    private string[] GetProjectReferences(string csprojContent, string csprojFolder)
     {
         var doc = new HtmlDocument();
         doc.LoadHtml(csprojContent);
