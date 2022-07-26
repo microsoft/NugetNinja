@@ -25,8 +25,8 @@ public class DetectorStarter<T> : IEntryService where T : IActionDetector
     public async Task OnServiceStartedAsync(string path, bool shouldTakeAction)
     {
         var model = await _extractor.Parse(path);
-        var actions = _detector.Analyze(model);
-        foreach (var action in actions)
+        var actions = _detector.AnalyzeAsync(model);
+        await foreach (var action in actions)
         {
             _logger.LogWarning(action.BuildMessage());
             if (shouldTakeAction)

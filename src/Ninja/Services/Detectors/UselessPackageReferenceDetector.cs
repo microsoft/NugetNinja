@@ -12,7 +12,7 @@ public class UselessPackageReferenceDetector : IActionDetector
         this.enumerator = enumerator;
     }
 
-    public IEnumerable<IAction> Analyze(Model context)
+    public async IAsyncEnumerable<IAction> AnalyzeAsync(Model context)
     {
         foreach (var rootProject in context.AllProjects)
         {

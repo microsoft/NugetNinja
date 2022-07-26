@@ -5,5 +5,5 @@ namespace Microsoft.NugetNinja;
 
 public interface IActionDetector
 {
-    public IEnumerable<IAction> Analyze(Model context);
+    public IAsyncEnumerable<IAction> AnalyzeAsync(Model context);
 }

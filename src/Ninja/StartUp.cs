@@ -16,6 +16,9 @@ public class StartUp : IStartUp
             .Where(t => t.IsClass)
             .Where(t => t.GetInterfaces().Contains(typeof(IActionDetector)));
 
+        services.AddMemoryCache();
+        services.AddHttpClient();
+        services.AddSingleton<CacheService>();
         services.AddTransient<Extractor>();
         services.AddTransient<ProjectsEnumerator>();
 
