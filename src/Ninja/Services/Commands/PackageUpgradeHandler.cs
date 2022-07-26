@@ -10,5 +10,4 @@ public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenc
     public override string Description => "The command to upgrade all package references to possible latest and avoid conflicts.";
 
     public override string[] Alias => new string[] { "upgrade-pkg" };
-
 }
