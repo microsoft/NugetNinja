@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.NugetNinja.Model.Actions;
+namespace Microsoft.NugetNinja;
 
 public class UselessProjectReference : IAction
 {

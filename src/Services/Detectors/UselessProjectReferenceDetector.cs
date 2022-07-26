@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.NugetNinja.Services.Analyser;
-
 namespace Microsoft.NugetNinja;
 
 public class UselessProjectReferenceDetector : IActionDetector
