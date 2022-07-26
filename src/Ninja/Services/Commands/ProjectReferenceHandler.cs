@@ -10,5 +10,4 @@ public class ProjectReferenceHandler : DetectorBasedCommandHandler<UselessPackag
     public override string Description => "The command to clean up useless project references.";
 
     public override string[] Alias => new string[] { "clean-prj" };
-
 }

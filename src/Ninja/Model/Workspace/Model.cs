@@ -52,7 +52,7 @@ public class Model
         return project;
     }
 
-    public string[] GetPackageReferences(string csprojContent)
+    private string[] GetPackageReferences(string csprojContent)
     {
         var doc = new HtmlDocument();
         doc.LoadHtml(csprojContent);
@@ -72,7 +72,7 @@ public class Model
         return packageReferences;
     }
 
-    public string[] GetProjectReferences(string csprojContent, string csprojFolder)
+    private string[] GetProjectReferences(string csprojContent, string csprojFolder)
     {
         var doc = new HtmlDocument();
         doc.LoadHtml(csprojContent);
