@@ -6,16 +6,16 @@ using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja;
 
-public class DetectorStarter<D> : IEntryService where D : IActionDetector
+public class DetectorStarter<T> : IEntryService where T : IActionDetector
 {
-    private readonly ILogger<DetectorStarter<D>> _logger;
+    private readonly ILogger<DetectorStarter<T>> _logger;
     private readonly Extractor _extractor;
-    private readonly D _detector;
+    private readonly T _detector;
 
     public DetectorStarter(
-        ILogger<DetectorStarter<D>> logger,
+        ILogger<DetectorStarter<T>> logger,
         Extractor extractor,
-        D detector)
+        T detector)
     {
         _logger = logger;
         _extractor = extractor;

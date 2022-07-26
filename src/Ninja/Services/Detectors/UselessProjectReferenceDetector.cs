@@ -17,7 +17,7 @@ public class UselessProjectReferenceDetector : IActionDetector
         foreach (var rootProject in context.AllProjects)
         {
             var uselessReferences = this.AnalyzeProject(rootProject);
-            foreach(var reference in uselessReferences)
+            foreach (var reference in uselessReferences)
             {
                 yield return reference;
             }

@@ -21,7 +21,7 @@ public class UselessProjectReference : IAction
 
     public void TakeAction()
     {
-        // To DO; Remove this reference.
+        // To DO: Remove this reference.
         throw new NotImplementedException();
     }
 }
