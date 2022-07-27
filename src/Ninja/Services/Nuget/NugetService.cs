@@ -25,19 +25,19 @@ public class NugetService
         _logger = logger;
     }
 
-    public async Task<Version> GetLatestVersion(string packageName)
+    public async Task<NugetVersion> GetLatestVersion(string packageName, bool allowPreview = false)
     {
-        var all = await this.GetAllPublishedVersions(packageName);
+        var all = await this.GetAllPublishedVersions(packageName, allowPreview);
         return all.OrderByDescending(t => t).First();
     }
 
-    public async Task<IReadOnlyCollection<Version>> GetAllPublishedVersions(string packageName)
+    public async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, bool allowPreview)
     {
-        return await _cacheService.RunWithCache($"all-nuget-published-versions-package-{packageName}-cache", 
-            () => this.GetAllPublishedVersionsFromNuget(packageName));
+        return await _cacheService.RunWithCache($"all-nuget-published-versions-package-{packageName}-preview-{allowPreview}-cache", 
+            () => this.GetAllPublishedVersionsFromNuget(packageName, allowPreview));
     }
 
-    private async Task<IReadOnlyCollection<Version>> GetAllPublishedVersionsFromNuget(string packageName)
+    private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, bool allowPreview)
     {
         var requestUrl = string.Format(NugetJsonFetchFormat, packageName.ToLower().Trim());
         var request = new HttpRequestMessage(HttpMethod.Get, requestUrl)
@@ -45,7 +45,7 @@ public class NugetService
             Content = new FormUrlEncodedContent(new Dictionary<string, string>())
         };
 
-        this._logger.LogTrace($"Calling Nuget to fetch all published versions with package name: '{packageName}'...");
+        _logger.LogTrace($"Calling Nuget to fetch all published versions with package name: '{packageName}'...");
         using var response = await _httpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
@@ -53,8 +53,8 @@ public class NugetService
             var responseModel = JsonSerializer.Deserialize<GetAllPublishedVersionsResponseModel>(responseJson);
             return responseModel
                 ?.Versions
-                ?.Where(v => !v.Contains("-")) // Exclude preview versions.
-                ?.Select(v => StringExtensions.ConvertToVersion(v))
+                ?.Select(v => new NugetVersion(v))
+                ?.Where(v => allowPreview || !v.IsPreviewVersion()) // Exclude preview versions.
                 .ToList()
                 .AsReadOnly()
                 ?? throw new WebException($"Couldn't find a valid version from Nuget.org with package: '{packageName}'!");

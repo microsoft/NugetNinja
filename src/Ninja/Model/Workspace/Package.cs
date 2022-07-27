@@ -9,12 +9,12 @@ public class Package
     {
         Name = name;
         VersionText = versionText;
-        Version = StringExtensions.ConvertToVersion(versionText); 
+        Version = new NugetVersion(versionText); 
     }
 
     public string Name { get; set; }
 
-    public Version Version { get; set; }
+    public NugetVersion Version { get; set; }
     public string VersionText { get; set; }
 
     public override string ToString()

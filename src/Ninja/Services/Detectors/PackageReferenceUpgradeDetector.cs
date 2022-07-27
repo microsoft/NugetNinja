@@ -26,13 +26,13 @@ public class PackageReferenceUpgradeDetector : IActionDetector
         if (_options.UsePreview)
         {
             this._logger.LogInformation($"AllowPreview flag set as : '{_options.UsePreview}'. Will use preview versions.");
-            // To Do: Use preview versions.
         }
+
         foreach (var project in context.AllProjects)
         {
             foreach (var package in project.PackageReferences)
             {
-                var latest = await this._nugetService.GetLatestVersion(package.Name);
+                var latest = await this._nugetService.GetLatestVersion(package.Name, _options.UsePreview);
                 if (package.Version < latest)
                 {
                     yield return new PossiblePackageUpgrade(project, package, latest);
