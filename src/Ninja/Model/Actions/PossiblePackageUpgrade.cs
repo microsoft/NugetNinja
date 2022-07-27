@@ -5,7 +5,7 @@ namespace Microsoft.NugetNinja;
 
 internal class PossiblePackageUpgrade : IAction
 {
-    public PossiblePackageUpgrade(Project source, Package target, Version newVersion)
+    public PossiblePackageUpgrade(Project source, Package target, NugetVersion newVersion)
     {
         SourceProjectName = source;
         Package = target;
@@ -14,7 +14,7 @@ internal class PossiblePackageUpgrade : IAction
 
     public Project SourceProjectName { get; }
     public Package Package { get; }
-    public Version NewVersion { get; }
+    public NugetVersion NewVersion { get; }
 
     public string BuildMessage()
     {
