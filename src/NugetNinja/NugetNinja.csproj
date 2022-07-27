@@ -12,8 +12,7 @@
     <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
-
   <ItemGroup>
-	  <ProjectReference Include="..\Ninja.UselessPackageReference\Ninja.UselessPackageReferencePlugin.csproj" />
+	  <ProjectReference Include="..\NugetNinja.UselessPackageReference\NugetNinja.UselessPackageReferencePlugin.csproj" />
   </ItemGroup>
 </Project>

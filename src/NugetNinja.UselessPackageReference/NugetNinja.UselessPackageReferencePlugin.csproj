@@ -9,6 +9,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Ninja.Core\Ninja.Core.csproj" />
+	  <ProjectReference Include="..\NugetNinja.Core\NugetNinja.Core.csproj" />
 	</ItemGroup>
 </Project>

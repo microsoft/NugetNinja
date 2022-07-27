@@ -16,9 +16,9 @@ var handlers = new CommandHandler[]
     new PackageUpgradeHandler<StartUp>()
 };
 
-foreach (var subCommandInstance in handlers)
+foreach (var commandHandlers in handlers)
 {
-    rootCommand.Add(subCommandInstance.BuildAsCommand());
+    rootCommand.Add(commandHandlers.BuildAsCommand());
 }
 
 return await rootCommand.InvokeAsync(args);
