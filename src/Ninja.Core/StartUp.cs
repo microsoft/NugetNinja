@@ -5,16 +5,14 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.NugetNinja.Framework;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.Core;
 
 public class StartUp : IStartUp
 {
     public static CommandHandler[] GetCommandHandlers()
     {
-        var subCommands = Assembly.GetExecutingAssembly()
-            .GetTypes()
-            .Where(t => t.IsClass)
-            .Where(t => !t.IsAbstract)
+        var subCommands = ClassScanner
+            .AllAccessibleClass()
             .Where(t => t.IsSubclassOf(typeof(CommandHandler)))
             .Select(t => Activator.CreateInstance(t) as CommandHandler
                 ?? throw new TypeLoadException($"Failed when creating new instance from type: {t}"))

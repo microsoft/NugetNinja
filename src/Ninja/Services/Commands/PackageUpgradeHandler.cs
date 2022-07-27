@@ -3,6 +3,7 @@
 
 using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.NugetNinja.Core;
 using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja;

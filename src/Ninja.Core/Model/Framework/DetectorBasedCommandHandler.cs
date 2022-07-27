@@ -3,7 +3,7 @@
 
 using Microsoft.NugetNinja.Framework;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.Core;
 
 public abstract class DetectorBasedCommandHandler<T> : ServiceCommandHandler<DetectorStarter<T>, StartUp> 
     where T : IActionDetector

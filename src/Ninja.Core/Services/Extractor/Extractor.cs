@@ -3,7 +3,7 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.Core;
 
 public class Extractor
 {

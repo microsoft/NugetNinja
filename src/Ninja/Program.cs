@@ -3,6 +3,7 @@
 
 using System.CommandLine;
 using Microsoft.NugetNinja;
+using Microsoft.NugetNinja.Core;
 using Microsoft.NugetNinja.Framework;
 
 var rootCommand = new RootCommand(@"Nuget Ninja, a tool for detecting dependencies of .NET projects.")

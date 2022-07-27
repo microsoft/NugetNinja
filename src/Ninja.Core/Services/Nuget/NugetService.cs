@@ -5,7 +5,7 @@ using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.Core;
 
 public class NugetService
 {

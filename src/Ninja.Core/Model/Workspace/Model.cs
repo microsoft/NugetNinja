@@ -3,7 +3,7 @@
 
 using HtmlAgilityPack;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.Core;
 
 public class Model
 {

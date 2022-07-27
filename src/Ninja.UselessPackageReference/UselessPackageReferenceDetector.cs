@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.NugetNinja;
+using Microsoft.NugetNinja.Core;
+
+namespace Microsoft.NugetNinja.UselessPackageReferencePlugin;
 
 public class UselessPackageReferenceDetector : IActionDetector
 {

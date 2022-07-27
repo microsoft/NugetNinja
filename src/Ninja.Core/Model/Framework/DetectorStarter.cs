@@ -4,7 +4,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.NugetNinja.Framework;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.Core;
 
 public class DetectorStarter<T> : IEntryService where T : IActionDetector
 {
