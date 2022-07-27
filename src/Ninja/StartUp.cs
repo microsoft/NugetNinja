@@ -9,19 +9,32 @@ namespace Microsoft.NugetNinja;
 
 public class StartUp : IStartUp
 {
-    public void ConfigureServices(IServiceCollection services)
+    public static CommandHandler[] GetCommandHandlers()
     {
-        var detectors = Assembly.GetExecutingAssembly()
+        var subCommands = Assembly.GetExecutingAssembly()
             .GetTypes()
             .Where(t => t.IsClass)
-            .Where(t => t.GetInterfaces().Contains(typeof(IActionDetector)));
+            .Where(t => !t.IsAbstract)
+            .Where(t => t.IsSubclassOf(typeof(CommandHandler)))
+            .Select(t => Activator.CreateInstance(t) as CommandHandler
+                ?? throw new TypeLoadException($"Failed when creating new instance from type: {t}"))
+            .ToArray();
+        return subCommands;
+    }
 
+    public void ConfigureServices(IServiceCollection services)
+    {
         services.AddMemoryCache();
         services.AddHttpClient();
         services.AddSingleton<CacheService>();
         services.AddTransient<NugetService>();
         services.AddTransient<Extractor>();
         services.AddTransient<ProjectsEnumerator>();
+
+        var detectors = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => t.IsClass)
+            .Where(t => t.GetInterfaces().Contains(typeof(IActionDetector)));
 
         foreach (var detector in detectors)
         {

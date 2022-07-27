@@ -30,21 +30,17 @@ public class CacheService
     /// <typeparam name="T">Response type</typeparam>
     /// <param name="cacheKey">Key</param>
     /// <param name="fallback">Fallback method</param>
-    /// <param name="cachedMinutes">Cached times</param>
+    /// <param name="cachedMinutes">Cached minutes. By default, it's 20 minutes. If passed a number less or equal than 0, the cache will not take effect.</param>
     /// <returns>Response</returns>
-    public async Task<T?> RunWithCache<T>(
+    public async Task<T> RunWithCache<T>(
         string cacheKey,
         Func<Task<T>> fallback,
         int cachedMinutes = 20)
     {
-        if (!this.cache.TryGetValue(cacheKey, out T resultValue) || resultValue == null || cachedMinutes <= 0)
+        if (!this.cache.TryGetValue(cacheKey, out T resultValue) || cachedMinutes <= 0)
         {
             resultValue = await fallback();
-            if (resultValue == null)
-            {
-                return default;
-            }
-            else if (cachedMinutes > 0)
+            if (cachedMinutes > 0)
             {
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(cachedMinutes));
