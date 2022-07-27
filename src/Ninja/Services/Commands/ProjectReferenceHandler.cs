@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using Microsoft.NugetNinja.Core;
+using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja;
 
-public class ProjectReferenceHandler : DetectorBasedCommandHandler<UselessProjectReferenceDetector>
+public class ProjectReferenceHandler<S> : DetectorBasedCommandHandler<UselessProjectReferenceDetector, S>
+    where S : class, IStartUp, new()
 {
     public override string Name => "project-reference-clean";
 

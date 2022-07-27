@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using Microsoft.NugetNinja.Core;
+using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja.UselessPackageReferencePlugin;
 
-public class PackageReferenceHandler : DetectorBasedCommandHandler<UselessPackageReferenceDetector>
+public class PackageReferenceHandler<S> : DetectorBasedCommandHandler<UselessPackageReferenceDetector, S>
+    where S : class, IStartUp, new()
 {
     public override string Name => "package-reference-clean";
 

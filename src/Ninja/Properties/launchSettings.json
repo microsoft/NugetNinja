@@ -1,16 +1,20 @@
 {
-    "profiles": {
-        "Root": {
-            "commandName": "Project",
-            "commandLineArgs": ""
-        },
-        "Dryrun Clean Pkg": {
-            "commandName": "Project",
-            "commandLineArgs": "clean-pkg -p \"..\\..\\..\\..\\..\" -v -d"
-        },
-        "Dryrun Upgrade Pkg": {
-            "commandName": "Project",
-            "commandLineArgs": "upgrade-pkg -p \"..\\..\\..\\..\\..\" -v -d --allow-preview"
-        }
+  "profiles": {
+    "Root": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    },
+    "Dryrun Clean Pkg": {
+      "commandName": "Project",
+      "commandLineArgs": "clean-pkg -p \"..\\..\\..\\..\\..\" -v -d"
+    },
+    "Dryrun Clean Prj": {
+      "commandName": "Project",
+      "commandLineArgs": "clean-prj -p \"..\\..\\..\\..\\..\" -v -d"
+    },
+    "Dryrun Upgrade Pkg": {
+      "commandName": "Project",
+      "commandLineArgs": "upgrade-pkg -p \"..\\..\\..\\..\\..\" -v -d --allow-preview"
     }
+  }
 }

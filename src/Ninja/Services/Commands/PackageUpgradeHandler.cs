@@ -8,7 +8,8 @@ using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja;
 
-public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenceUpgradeDetector>
+public class PackageUpgradeHandler<S> : DetectorBasedCommandHandler<PackageReferenceUpgradeDetector, S>
+    where S : class, IStartUp, new()
 {
     public override string Name => "package-reference-upgrade";
 

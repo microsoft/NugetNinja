@@ -5,7 +5,8 @@ using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja.Core;
 
-public abstract class DetectorBasedCommandHandler<T> : ServiceCommandHandler<DetectorStarter<T>, StartUp> 
+public abstract class DetectorBasedCommandHandler<T, S> : ServiceCommandHandler<DetectorStarter<T>, S> 
     where T : IActionDetector
+    where S : class, IStartUp, new()
 {
 }
