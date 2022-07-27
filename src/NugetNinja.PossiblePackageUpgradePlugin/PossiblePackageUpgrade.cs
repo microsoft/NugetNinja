@@ -5,7 +5,7 @@ using Microsoft.NugetNinja.Core;
 
 namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
-internal class PossiblePackageUpgrade : IAction
+public class PossiblePackageUpgrade : IAction
 {
     public PossiblePackageUpgrade(Project source, Package target, NugetVersion newVersion)
     {

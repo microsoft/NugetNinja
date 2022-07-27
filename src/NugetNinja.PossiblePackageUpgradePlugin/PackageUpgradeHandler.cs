@@ -48,13 +48,3 @@ public class PackageUpgradeHandler<S> : DetectorBasedCommandHandler<PackageRefer
         return base.RunFromServices(services, path, dryRun);
     }
 }
-
-public class PackageUpgradeHandlerOptions
-{
-    public PackageUpgradeHandlerOptions(bool usePreview)
-    {
-        UsePreview = usePreview;
-    }
-
-    public bool UsePreview { get; }
-}

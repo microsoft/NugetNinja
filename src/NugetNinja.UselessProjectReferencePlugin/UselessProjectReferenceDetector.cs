@@ -31,16 +31,6 @@ public class UselessProjectReferenceDetector : IActionDetector
         }
     }
 
-    public string GetCommandAlias()
-    {
-        throw new NotImplementedException();
-    }
-
-    public string GetHelp()
-    {
-        throw new NotImplementedException();
-    }
-
     private IEnumerable<UselessProjectReference> AnalyzeProject(Project context)
     {
         var directReferences = context.ProjectReferences;

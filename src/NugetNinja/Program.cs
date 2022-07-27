@@ -8,7 +8,7 @@ using Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 using Microsoft.NugetNinja.UselessPackageReferencePlugin;
 using Microsoft.NugetNinja.UselessProjectReferencePlugin;
 
-var description = @"Nuget Ninja, a tool for detecting dependencies of .NET projects.";
+var description = "Nuget Ninja, a tool for detecting dependencies of .NET projects.";
 
 var rootCommand = new RootCommand(description)
     .AddGlobalOptions();
