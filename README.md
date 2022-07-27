@@ -1,7 +1,9 @@
-# Nuget Ninja
+# Nuget Ninja (A Hackthon project)
 
 ![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Build Status](https://github.com/microsoft/NugetNinja/actions/workflows/build.yml/badge.svg)
+
+(Nuget Ninjia was not built or released as a production product yet. Instead it was our hackthon project while we prefer opensource. It was not officialy release by Microsoft yet.)
 
 Nuget Ninjia is a tool for detecting dependencies of .NET projects. It analyzes the dependency structure of .NET projects in a directory and builds a directed acyclic graph. And will give some modification suggestions for Nuget packages, so that the dependencies of the project are as concise and up-to-date as possible.
 
