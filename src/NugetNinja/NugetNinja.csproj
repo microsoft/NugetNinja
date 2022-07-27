@@ -13,6 +13,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\NugetNinja.UselessPackageReference\NugetNinja.UselessPackageReferencePlugin.csproj" />
+    <ProjectReference Include="..\NugetNinja.PossiblePackageUpgradePlugin\NugetNinja.PossiblePackageUpgradePlugin.csproj" />
+    <ProjectReference Include="..\NugetNinja.UselessPackageReferencePlugin\NugetNinja.UselessPackageReferencePlugin.csproj" />
+    <ProjectReference Include="..\NugetNinja.UselessProjectReferencePlugin\NugetNinja.UselessProjectReferencePlugin.csproj" />
   </ItemGroup>
 </Project>

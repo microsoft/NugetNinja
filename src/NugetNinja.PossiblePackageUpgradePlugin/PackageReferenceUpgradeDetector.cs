@@ -4,7 +4,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.NugetNinja.Core;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
 public class PackageReferenceUpgradeDetector : IActionDetector
 {

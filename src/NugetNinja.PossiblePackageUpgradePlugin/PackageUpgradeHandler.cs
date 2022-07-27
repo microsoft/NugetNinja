@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.NugetNinja.Core;
 using Microsoft.NugetNinja.Framework;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
 public class PackageUpgradeHandler<S> : DetectorBasedCommandHandler<PackageReferenceUpgradeDetector, S>
     where S : class, IStartUp, new()

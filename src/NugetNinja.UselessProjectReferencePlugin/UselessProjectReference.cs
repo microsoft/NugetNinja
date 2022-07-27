@@ -3,7 +3,7 @@
 
 using Microsoft.NugetNinja.Core;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.UselessProjectReferencePlugin;
 
 public class UselessProjectReference : IAction
 {

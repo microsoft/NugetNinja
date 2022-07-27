@@ -4,7 +4,7 @@
 using Microsoft.NugetNinja.Core;
 using Microsoft.NugetNinja.Framework;
 
-namespace Microsoft.NugetNinja;
+namespace Microsoft.NugetNinja.UselessProjectReferencePlugin;
 
 public class ProjectReferenceHandler<S> : DetectorBasedCommandHandler<UselessProjectReferenceDetector, S>
     where S : class, IStartUp, new()

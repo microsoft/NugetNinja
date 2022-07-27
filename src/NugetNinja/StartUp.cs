@@ -5,7 +5,9 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.NugetNinja.Core;
 using Microsoft.NugetNinja.Framework;
+using Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 using Microsoft.NugetNinja.UselessPackageReferencePlugin;
+using Microsoft.NugetNinja.UselessProjectReferencePlugin;
 
 namespace Microsoft.NugetNinja;
 
