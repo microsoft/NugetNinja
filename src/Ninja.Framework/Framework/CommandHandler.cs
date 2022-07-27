@@ -10,7 +10,7 @@ public abstract class CommandHandler
     public abstract string Name { get; }
     public abstract string Description { get; }
     public abstract string[] Alias { get; }
-    public abstract Task Execute(string path, bool dryRun, bool verbose);
+    public abstract void OnCommandBuilt(Command command);
 
     public virtual CommandHandler[] GetSubCommandHandlers()
     {
@@ -22,7 +22,7 @@ public abstract class CommandHandler
         return Array.Empty<Option>();
     }
 
-    public virtual Command BuildAsCommand(Option<string> path, Option<bool> dryRun, Option<bool> verbose)
+    public virtual Command BuildAsCommand()
     {
         var command = new Command(Name, Description);
         foreach (var alias in Alias)
@@ -35,7 +35,8 @@ public abstract class CommandHandler
             command.AddOption(option);
         }
 
-        command.SetHandler(Execute, path, dryRun, verbose);
+        OnCommandBuilt(command);
+
         return command;
     }
 }

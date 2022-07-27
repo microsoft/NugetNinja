@@ -2,10 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Net;
-using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.NugetNinja;
@@ -37,7 +34,7 @@ public class NugetService
     public async Task<IReadOnlyCollection<Version>> GetAllPublishedVersions(string packageName)
     {
         return await _cacheService.RunWithCache($"all-nuget-published-versions-package-{packageName}-cache", 
-            () => this.GetAllPublishedVersionsFromNuget(packageName)) ?? throw new InvalidOperationException();
+            () => this.GetAllPublishedVersionsFromNuget(packageName));
     }
 
     private async Task<IReadOnlyCollection<Version>> GetAllPublishedVersionsFromNuget(string packageName)

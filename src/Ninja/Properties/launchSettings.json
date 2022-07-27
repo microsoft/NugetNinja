@@ -10,7 +10,7 @@
         },
         "Dryrun Upgrade Pkg": {
             "commandName": "Project",
-            "commandLineArgs": "upgrade-pkg -p \"..\\..\\..\\..\\..\" -v -d"
+            "commandLineArgs": "upgrade-pkg -p \"..\\..\\..\\..\\..\" -v -d --allow-preview"
         }
     }
 }
