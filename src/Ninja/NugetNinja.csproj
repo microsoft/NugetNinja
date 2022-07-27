@@ -8,7 +8,6 @@
     <Nullable>enable</Nullable>
     <AssemblyName>Microsoft.NugetNinja</AssemblyName>
     <RootNamespace>Microsoft.NugetNinja</RootNamespace>
-    <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
