@@ -9,8 +9,9 @@ public abstract class CommandHandler
 {
     public abstract string Name { get; }
     public abstract string Description { get; }
-    public abstract string[] Alias { get; }
     public abstract void OnCommandBuilt(Command command);
+
+    public virtual string[] Alias => Array.Empty<string>();
 
     public virtual CommandHandler[] GetSubCommandHandlers()
     {
