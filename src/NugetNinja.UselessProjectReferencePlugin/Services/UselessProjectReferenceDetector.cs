@@ -16,14 +16,14 @@ public class UselessProjectReferenceDetector : IActionDetector
 
     public IAsyncEnumerable<IAction> AnalyzeAsync(Model context)
     {
-        return this.Analyze(context).ToAsyncEnumerable();
+        return Analyze(context).ToAsyncEnumerable();
     }
 
     private IEnumerable<IAction> Analyze(Model context)
     {
         foreach (var rootProject in context.AllProjects)
         {
-            var uselessReferences = this.AnalyzeProject(rootProject);
+            var uselessReferences = AnalyzeProject(rootProject);
             foreach (var reference in uselessReferences)
             {
                 yield return reference;

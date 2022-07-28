@@ -41,4 +41,13 @@ public static class OptionsProvider
         }
         return command;
     }
+
+    public static RootCommand AddPlugins(this RootCommand command, params INinjaPlugin[] pluginInstallers)
+    {
+        foreach (var plugin in pluginInstallers)
+        {
+            command.Add(plugin.Install().BuildAsCommand());
+        }
+        return command;
+    }
 }

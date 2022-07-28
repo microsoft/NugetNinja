@@ -4,8 +4,9 @@
 using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.NugetNinja.Core;
 
-namespace Microsoft.NugetNinja.Core;
+namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
 public class NugetService
 {
