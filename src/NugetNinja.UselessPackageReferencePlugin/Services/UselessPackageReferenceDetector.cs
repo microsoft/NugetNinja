@@ -16,7 +16,7 @@ public class UselessPackageReferenceDetector : IActionDetector
 
     public IAsyncEnumerable<IAction> AnalyzeAsync(Model context)
     {
-        return this.Analyze(context).ToAsyncEnumerable();
+        return Analyze(context).ToAsyncEnumerable();
     }
 
     private IEnumerable<IAction> Analyze(Model context)

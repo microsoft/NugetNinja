@@ -11,11 +11,9 @@ namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 public class PackageUpgradeHandler<S> : DetectorBasedCommandHandler<PackageReferenceUpgradeDetector, S>
     where S : class, IStartUp, new()
 {
-    public override string Name => "package-reference-upgrade";
+    public override string Name => "upgrade-pkg";
 
     public override string Description => "The command to upgrade all package references to possible latest and avoid conflicts.";
-
-    public override string[] Alias => new string[] { "upgrade-pkg" };
 
     public readonly Option<bool> AllowPreviewOption =
         new Option<bool>(

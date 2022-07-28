@@ -9,9 +9,7 @@ namespace Microsoft.NugetNinja.UselessProjectReferencePlugin;
 public class ProjectReferenceHandler<S> : DetectorBasedCommandHandler<UselessProjectReferenceDetector, S>
     where S : class, IStartUp, new()
 {
-    public override string Name => "project-reference-clean";
+    public override string Name => "clean-prj";
 
-    public override string Description => "The command to clean up useless project references.";
-
-    public override string[] Alias => new string[] { "clean-prj" };
+    public override string Description => "The command to clean up possible useless project references.";
 }

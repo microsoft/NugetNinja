@@ -23,13 +23,13 @@ public sealed class NugetVersion : ICloneable, IComparable<NugetVersion?>, IEqua
     public Version PrimaryVersion { get; set; }
     public string AdditionalText { get; set; } = string.Empty;
 
-    public static bool operator ==(NugetVersion lvs, NugetVersion rvs) => lvs.Equals(rvs);
+    public static bool operator ==(NugetVersion? lvs, NugetVersion? rvs) => lvs?.Equals(rvs) ?? ReferenceEquals(lvs, rvs);
 
-    public static bool operator !=(NugetVersion lvs, NugetVersion rvs) => !lvs.Equals(rvs);
+    public static bool operator !=(NugetVersion? lvs, NugetVersion? rvs) => !(lvs == rvs);
 
-    public static bool operator <(NugetVersion lvs, NugetVersion rvs) => lvs.CompareTo(rvs) < 0;
+    public static bool operator <(NugetVersion? lvs, NugetVersion? rvs) => lvs?.CompareTo(rvs) < 0;
 
-    public static bool operator >(NugetVersion lvs, NugetVersion rvs) => lvs.CompareTo(rvs) > 0;
+    public static bool operator >(NugetVersion? lvs, NugetVersion? rvs) => lvs?.CompareTo(rvs) > 0;
 
     public object Clone() => new NugetVersion(this.SourceString);
 
@@ -54,7 +54,7 @@ public sealed class NugetVersion : ICloneable, IComparable<NugetVersion?>, IEqua
     {
         if (ReferenceEquals(otherNugetVersion, null))
         {
-            throw new ArgumentNullException(paramName: nameof(otherNugetVersion));
+            return false;
         }
         return
             this.PrimaryVersion.Equals(otherNugetVersion.PrimaryVersion) &&
@@ -63,7 +63,7 @@ public sealed class NugetVersion : ICloneable, IComparable<NugetVersion?>, IEqua
 
     public override string ToString()
     {
-        return $"{PrimaryVersion}-{AdditionalText}";
+        return $"{PrimaryVersion}-{AdditionalText}".TrimEnd('-');
     }
 
     public override bool Equals(object? obj)
@@ -74,7 +74,9 @@ public sealed class NugetVersion : ICloneable, IComparable<NugetVersion?>, IEqua
             return false;
         if (ReferenceEquals(obj, null))
             return false;
-        return this.Equals(obj);
+        if (obj is NugetVersion nuVersion)
+            return this.Equals(nuVersion);
+        return false;
     }
 
     public override int GetHashCode()
