@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <Version>0.0.1</Version>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Microsoft.NugetNinja</AssemblyName>
+    <RootNamespace>Microsoft.NugetNinja</RootNamespace>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NugetNinja.PossiblePackageUpgradePlugin\NugetNinja.PossiblePackageUpgradePlugin.csproj" />
+    <ProjectReference Include="..\NugetNinja.UselessPackageReferencePlugin\NugetNinja.UselessPackageReferencePlugin.csproj" />
+    <ProjectReference Include="..\NugetNinja.UselessProjectReferencePlugin\NugetNinja.UselessProjectReferencePlugin.csproj" />
+  </ItemGroup>
+</Project>
