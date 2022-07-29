@@ -49,6 +49,10 @@ public class NugetService
         {
             serverRoot = serverRoot.TrimEnd('/');
         }
+        if (!serverRoot.EndsWith("index.json"))
+        {
+            serverRoot = serverRoot + "/index.json";
+        }
         if (!serverRoot.EndsWith("v3/index.json"))
         {
             serverRoot = serverRoot + "/v3/index.json";
