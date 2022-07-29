@@ -5,6 +5,7 @@ using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.NugetNinja.Core;
+using Microsoft.NugetNinja.PossiblePackageUpgradePlugin.Services.Nuget.Models;
 
 namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
@@ -13,8 +14,7 @@ public class NugetService
     private readonly CacheService _cacheService;
     private readonly HttpClient _httpClient;
     private readonly ILogger<NugetService> _logger;
-    private static readonly string NugetRootServer = "https://api.nuget.org";
-    private static readonly string NugetJsonFetchFormat = $"{NugetRootServer}/v3-flatcontainer/{{0}}/index.json";
+    private static readonly string DefaulttNugetServer = "https://api.nuget.org";
 
     public NugetService(
         CacheService cacheService,
@@ -32,15 +32,51 @@ public class NugetService
         return all.OrderByDescending(t => t).First();
     }
 
-    public async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, bool allowPreview)
+    public Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, bool allowPreview)
     {
-        return await _cacheService.RunWithCache($"all-nuget-published-versions-package-{packageName}-preview-{allowPreview}-cache", 
+        return _cacheService.RunWithCache($"all-nuget-published-versions-package-{packageName}-preview-{allowPreview}-cache",
             () => this.GetAllPublishedVersionsFromNuget(packageName, allowPreview));
+    }
+
+    public Task<string> GetApiEndpoint(string serverRoot)
+    {
+        return _cacheService.RunWithCache($"nuget-server-endpoint-{serverRoot}-cache",
+            () => this.GetApiEndpointFromNuget(serverRoot));
+    }
+
+    private async Task<string> GetApiEndpointFromNuget(string serverRoot)
+    {
+        if (serverRoot.EndsWith("/"))
+        {
+            serverRoot = serverRoot.TrimEnd('/');
+        }
+        if (!serverRoot.EndsWith("v3/index.json"))
+        {
+            serverRoot = serverRoot + "/v3/index.json";
+        }
+
+        var request = new HttpRequestMessage(HttpMethod.Get, serverRoot);
+        using var response = await _httpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var responseModel = JsonSerializer.Deserialize<NugetServerIndex>(responseJson);
+            return responseModel
+                ?.Resources
+                ?.FirstOrDefault(r => r.Type == "PackageBaseAddress/3.0.0")
+                ?.Id
+                ?? throw new WebException($"Couldn't find a valid package base address from nuget server with path: '{serverRoot}'!");
+        }
+        else
+        {
+            throw new WebException($"The remote server returned unexpected status code: {response.StatusCode} - {response.ReasonPhrase}. Url: {serverRoot}.");
+        }
     }
 
     private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, bool allowPreview)
     {
-        var requestUrl = string.Format(NugetJsonFetchFormat, packageName.ToLower().Trim());
+        var apiEndpoint = await this.GetApiEndpoint(serverRoot: DefaulttNugetServer);
+        var requestUrl = $"{apiEndpoint.TrimEnd('/')}/{packageName.ToLower()}/index.json";
         var request = new HttpRequestMessage(HttpMethod.Get, requestUrl)
         {
             Content = new FormUrlEncodedContent(new Dictionary<string, string>())
@@ -55,10 +91,10 @@ public class NugetService
             return responseModel
                 ?.Versions
                 ?.Select(v => new NugetVersion(v))
-                ?.Where(v => allowPreview || !v.IsPreviewVersion()) // Exclude preview versions.
+                ?.Where(v => allowPreview || !v.IsPreviewVersion())
                 .ToList()
                 .AsReadOnly()
-                ?? throw new WebException($"Couldn't find a valid version from Nuget.org with package: '{packageName}'!");
+                ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
         }
         else
         {

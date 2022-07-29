@@ -6,8 +6,7 @@ using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja.UselessPackageReferencePlugin;
 
-public class PackageReferenceHandler<S> : DetectorBasedCommandHandler<UselessPackageReferenceDetector, S>
-    where S : class, IStartUp, new()
+public class PackageReferenceHandler : DetectorBasedCommandHandler<UselessPackageReferenceDetector, StartUp>
 {
     public override string Name => "clean-pkg";
 

@@ -8,8 +8,7 @@ using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
-public class PackageUpgradeHandler<S> : DetectorBasedCommandHandler<PackageReferenceUpgradeDetector, S>
-    where S : class, IStartUp, new()
+public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenceUpgradeDetector, StartUp>
 {
     public override string Name => "upgrade-pkg";
 

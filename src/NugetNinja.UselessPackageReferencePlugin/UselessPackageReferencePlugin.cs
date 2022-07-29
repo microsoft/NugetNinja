@@ -9,6 +9,6 @@ public class UselessPackageReferencePlugin : INinjaPlugin
 {
     public CommandHandler Install()
     {
-        return new PackageReferenceHandler<StartUp>();
+        return new PackageReferenceHandler();
     }
 }
