@@ -19,11 +19,17 @@ public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenc
             aliases: new[] { "--allow-preview" },
             description: "Allow using preview versions of packages from Nuget.");
 
+    public readonly Option<string> CustomNugetServer =
+        new Option<string>(
+            aliases: new[] { "--use-server" },
+            description: "If you want to use a customized nuget server instead of the official nuget.org, you can set it with a value like: https://nuget.myserver/v3/index.json");
+
     public override Option[] GetOptions()
     {
         return new Option[]
         {
-            AllowPreviewOption
+            AllowPreviewOption,
+            CustomNugetServer
         };
     }
 
@@ -35,13 +41,14 @@ public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenc
             OptionsProvider.PathOptions,
             OptionsProvider.DryRunOption,
             OptionsProvider.VerboseOption,
-            AllowPreviewOption);
+            AllowPreviewOption,
+            CustomNugetServer);
     }
 
-    public Task ExecutePackageUpgradeHandler(string path, bool dryRun, bool verbose, bool allowPreviewOption)
+    public Task ExecutePackageUpgradeHandler(string path, bool dryRun, bool verbose, bool allowPreviewOption, string customNugetServer)
     {
         var services = base.BuildServices(verbose);
-        services.AddSingleton(new PackageUpgradeHandlerOptions(allowPreviewOption));
+        services.AddSingleton(new PackageUpgradeHandlerOptions(allowPreviewOption, customNugetServer));
         return base.RunFromServices(services, path, dryRun);
     }
 }

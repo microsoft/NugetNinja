@@ -14,7 +14,6 @@ public class NugetService
     private readonly CacheService _cacheService;
     private readonly HttpClient _httpClient;
     private readonly ILogger<NugetService> _logger;
-    private static readonly string DefaulttNugetServer = "https://api.nuget.org";
 
     public NugetService(
         CacheService cacheService,
@@ -26,16 +25,16 @@ public class NugetService
         _logger = logger;
     }
 
-    public async Task<NugetVersion> GetLatestVersion(string packageName, bool allowPreview = false)
+    public async Task<NugetVersion> GetLatestVersion(string packageName, string nugetServer, bool allowPreview = false)
     {
-        var all = await this.GetAllPublishedVersions(packageName, allowPreview);
+        var all = await this.GetAllPublishedVersions(packageName, nugetServer, allowPreview);
         return all.OrderByDescending(t => t).First();
     }
 
-    public Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, bool allowPreview)
+    public Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, string nugetServer, bool allowPreview)
     {
-        return _cacheService.RunWithCache($"all-nuget-published-versions-package-{packageName}-preview-{allowPreview}-cache",
-            () => this.GetAllPublishedVersionsFromNuget(packageName, allowPreview));
+        return _cacheService.RunWithCache($"all-nuget-{nugetServer}-published-versions-package-{packageName}-preview-{allowPreview}-cache",
+            () => this.GetAllPublishedVersionsFromNuget(packageName, nugetServer, allowPreview));
     }
 
     public Task<string> GetApiEndpoint(string serverRoot)
@@ -73,9 +72,9 @@ public class NugetService
         }
     }
 
-    private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, bool allowPreview)
+    private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, string nugetServer, bool allowPreview)
     {
-        var apiEndpoint = await this.GetApiEndpoint(serverRoot: DefaulttNugetServer);
+        var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer);
         var requestUrl = $"{apiEndpoint.TrimEnd('/')}/{packageName.ToLower()}/index.json";
         var request = new HttpRequestMessage(HttpMethod.Get, requestUrl)
         {

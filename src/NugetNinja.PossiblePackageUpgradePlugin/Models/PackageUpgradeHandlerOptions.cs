@@ -5,10 +5,12 @@ namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
 public class PackageUpgradeHandlerOptions
 {
-    public PackageUpgradeHandlerOptions(bool usePreview)
+    public PackageUpgradeHandlerOptions(bool usePreview, string customNugetServer)
     {
         UsePreview = usePreview;
+        CustomNugetServer = customNugetServer;
     }
 
     public bool UsePreview { get; }
+    public string CustomNugetServer { get; set; }
 }

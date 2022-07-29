@@ -29,11 +29,19 @@ public class PackageReferenceUpgradeDetector : IActionDetector
             _logger.LogInformation($"AllowPreview flag set as : '{_options.UsePreview}'. Will use preview versions.");
         }
 
+        if (string.IsNullOrWhiteSpace(_options.CustomNugetServer))
+        {
+            _options.CustomNugetServer = "https://api.nuget.org/v3/index.json";
+        }
+
         foreach (var project in context.AllProjects)
         {
             foreach (var package in project.PackageReferences)
             {
-                var latest = await _nugetService.GetLatestVersion(package.Name, _options.UsePreview);
+                var latest = await _nugetService.GetLatestVersion(
+                    package.Name,
+                    _options.CustomNugetServer,
+                    _options.UsePreview);
                 if (package.Version < latest)
                 {
                     yield return new PossiblePackageUpgrade(project, package, latest);
