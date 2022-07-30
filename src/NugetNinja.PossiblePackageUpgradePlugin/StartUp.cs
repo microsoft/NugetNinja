@@ -3,21 +3,13 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.NugetNinja.Core;
-using Microsoft.NugetNinja.Framework;
 
-namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin
+namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
+
+public class StartUp : IStartUp
 {
-    public class StartUp : IStartUp
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMemoryCache();
-            services.AddHttpClient();
-            services.AddSingleton<CacheService>();
-            services.AddTransient<NugetService>();
-            services.AddTransient<Extractor>();
-            services.AddTransient<ProjectsEnumerator>();
-            services.AddTransient<PackageReferenceUpgradeDetector>();
-        }
+        services.AddTransient<PackageReferenceUpgradeDetector>();
     }
 }

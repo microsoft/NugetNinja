@@ -3,7 +3,7 @@
 
 using System.CommandLine;
 
-namespace Microsoft.NugetNinja.Framework;
+namespace Microsoft.NugetNinja.Core;
 
 public static class OptionsProvider
 {

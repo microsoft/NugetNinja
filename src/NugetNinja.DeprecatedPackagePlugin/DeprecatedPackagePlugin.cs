@@ -3,12 +3,12 @@
 
 using Microsoft.NugetNinja.Core;
 
-namespace Microsoft.NugetNinja.UselessPackageReferencePlugin;
+namespace Microsoft.NugetNinja.DeprecatedPackagePlugin;
 
-public class UselessPackageReferencePlugin : INinjaPlugin
+public class DeprecatedPackagePlugin : INinjaPlugin
 {
     public CommandHandler Install()
     {
-        return new PackageReferenceHandler();
+        return new DeprecatedPackageHandler();
     }
 }

@@ -3,7 +3,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.NugetNinja.Framework;
+namespace Microsoft.NugetNinja.Core;
 
 public interface IStartUp
 {

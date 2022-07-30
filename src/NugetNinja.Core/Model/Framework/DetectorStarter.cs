@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Microsoft.Extensions.Logging;
-using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja.Core;
 

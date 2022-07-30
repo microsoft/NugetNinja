@@ -5,18 +5,13 @@ using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.NugetNinja.Core;
 
-namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
+namespace Microsoft.NugetNinja.DeprecatedPackagePlugin;
 
-public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenceUpgradeDetector, StartUp>
+public class DeprecatedPackageHandler : DetectorBasedCommandHandler<DeprecatedPackageDetector, StartUp>
 {
-    public override string Name => "upgrade-pkg";
+    public override string Name => "remove-deprecated";
 
-    public override string Description => "The command to upgrade all package references to possible latest and avoid conflicts.";
-
-    public readonly Option<bool> AllowPreviewOption =
-        new Option<bool>(
-            aliases: new[] { "--allow-preview" },
-            description: "Allow using preview versions of packages from Nuget.");
+    public override string Description => "The command to replace all deprecated packages to new packages.";
 
     public readonly Option<string> CustomNugetServer =
         new Option<string>(
@@ -32,7 +27,6 @@ public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenc
     {
         return new Option[]
         {
-            AllowPreviewOption,
             CustomNugetServer,
             PatToken
         };
@@ -46,15 +40,14 @@ public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenc
             OptionsProvider.PathOptions,
             OptionsProvider.DryRunOption,
             OptionsProvider.VerboseOption,
-            AllowPreviewOption,
             CustomNugetServer,
             PatToken);
     }
 
-    public Task ExecutePackageUpgradeHandler(string path, bool dryRun, bool verbose, bool allowPreviewOption, string customNugetServer, string patToken)
+    public Task ExecutePackageUpgradeHandler(string path, bool dryRun, bool verbose, string customNugetServer, string patToken)
     {
         var services = base.BuildServices(verbose);
-        services.AddSingleton(new PackageUpgradeHandlerOptions(allowPreviewOption, customNugetServer, patToken));
+        services.AddSingleton(new DeprecatedPackageHandlerOptions(customNugetServer, patToken));
         return base.RunFromServices(services, path, dryRun);
     }
 }

@@ -110,6 +110,14 @@ public class NugetVersionTests
     }
 
     [TestMethod]
+    public void TestProdLargerPreview()
+    {
+        var version1 = new NugetVersion("2.2.10");
+        var version2 = new NugetVersion("2.2.10-preview");
+        AssertLeftLarger(version1, version2);
+    }
+
+    [TestMethod]
     public void TestClone()
     {
         var version1 = new NugetVersion("10.1.999.0");

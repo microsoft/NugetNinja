@@ -19,6 +19,10 @@
         "Dryrun Upgrade Pkg": {
             "commandName": "Project",
             "commandLineArgs": "upgrade-pkg -p \"..\\..\\..\\..\\..\" -d"
+        },
+        "Dryrun Remove Deprecated": {
+            "commandName": "Project",
+            "commandLineArgs": "remove-deprecated -p \"..\\..\\..\\..\\..\" -d"
         }
     }
 }

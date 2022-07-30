@@ -5,7 +5,7 @@ using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.NugetNinja.Framework;
+namespace Microsoft.NugetNinja.Core;
 
 public abstract class ServiceCommandHandler<E, S> : CommandHandler
     where E : class, IEntryService
@@ -42,6 +42,12 @@ public abstract class ServiceCommandHandler<E, S> : CommandHandler
         });
 
         var startUp = new S();
+        services.AddMemoryCache();
+        services.AddHttpClient();
+        services.AddSingleton<CacheService>();
+        services.AddTransient<Extractor>();
+        services.AddTransient<ProjectsEnumerator>();
+        services.AddTransient<NugetService>();
         startUp.ConfigureServices(services);
         services.AddTransient<E>();
         return services;

@@ -4,12 +4,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.NugetNinja.Core;
 
-namespace Microsoft.NugetNinja.UselessPackageReferencePlugin;
+namespace Microsoft.NugetNinja.DeprecatedPackagePlugin;
 
 public class StartUp : IStartUp
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<UselessPackageReferenceDetector>();
+        services.AddTransient<DeprecatedPackageDetector>();
     }
 }
