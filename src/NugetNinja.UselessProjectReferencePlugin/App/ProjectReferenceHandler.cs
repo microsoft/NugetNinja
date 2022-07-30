@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.NugetNinja.Core;
-using Microsoft.NugetNinja.Framework;
+using Microsoft.NugetNinja.Core;
 
 namespace Microsoft.NugetNinja.UselessProjectReferencePlugin;
 

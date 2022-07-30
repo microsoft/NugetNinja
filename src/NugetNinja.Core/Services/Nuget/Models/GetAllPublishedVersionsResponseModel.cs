@@ -3,7 +3,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
+namespace Microsoft.NugetNinja.Core;
 
 public class GetAllPublishedVersionsResponseModel
 {

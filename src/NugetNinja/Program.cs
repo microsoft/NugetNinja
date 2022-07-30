@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.CommandLine;
-using Microsoft.NugetNinja.Framework;
+using Microsoft.NugetNinja.Core;
 using Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 using Microsoft.NugetNinja.UselessPackageReferencePlugin;
 using Microsoft.NugetNinja.UselessProjectReferencePlugin;

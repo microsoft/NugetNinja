@@ -3,17 +3,16 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.NugetNinja.Core;
-using Microsoft.NugetNinja.Framework;
+using Microsoft.NugetNinja.Core;
 
-namespace Microsoft.NugetNinja.UselessPackageReferencePlugin
+namespace Microsoft.NugetNinja.UselessPackageReferencePlugin;
+
+public class StartUp : IStartUp
 {
-    public class StartUp : IStartUp
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<Extractor>();
-            services.AddTransient<ProjectsEnumerator>();
-            services.AddTransient<UselessPackageReferenceDetector>();
-        }
+        services.AddTransient<Extractor>();
+        services.AddTransient<ProjectsEnumerator>();
+        services.AddTransient<UselessPackageReferenceDetector>();
     }
 }

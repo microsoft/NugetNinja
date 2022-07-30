@@ -4,7 +4,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
+namespace Microsoft.NugetNinja.Core;
 
 public class CacheService
 {
