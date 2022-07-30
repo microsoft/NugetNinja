@@ -32,11 +32,14 @@ public abstract class ServiceCommandHandler<E, S> : CommandHandler
         var services = new ServiceCollection();
         services.AddLogging(logging =>
         {
+            logging
+                .AddFilter("Microsoft.Extensions", LogLevel.Warning)
+                .AddFilter("System", LogLevel.Warning);
             logging.AddSimpleConsole(options => 
             {
-                options.IncludeScopes = true;
+                options.IncludeScopes = verbose;
                 options.SingleLine = true;
-                options.TimestampFormat = "hh:mm:ss ";
+                options.TimestampFormat = "mm:ss ";
             });
             logging.SetMinimumLevel(verbose ? LogLevel.Trace : LogLevel.Warning);
         });

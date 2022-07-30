@@ -12,6 +12,7 @@ public class NugetService
     private readonly CacheService _cacheService;
     private readonly HttpClient _httpClient;
     private readonly ILogger<NugetService> _logger;
+    public static readonly string DefaultNugetServer = "https://api.nuget.org/v3/index.json";
 
     public NugetService(
         CacheService cacheService,
@@ -65,12 +66,12 @@ public class NugetService
         var responseModel = await this.HttpGetJson<NugetServerIndex>(serverRoot, patToken);
         var packageBaseAddress = responseModel
             ?.Resources
-            ?.FirstOrDefault(r => r.Type == "PackageBaseAddress/3.0.0")
+            ?.FirstOrDefault(r => r.Type.StartsWith("PackageBaseAddress/3.0.0"))
             ?.Id
             ?? throw new WebException($"Couldn't find a valid PackageBaseAddress from nuget server with path: '{serverRoot}'!");
         var registrationsBaseUrl = responseModel
             ?.Resources
-            ?.FirstOrDefault(r => r.Type == "RegistrationsBaseUrl")
+            ?.FirstOrDefault(r => r.Type.StartsWith("RegistrationsBaseUrl"))
             ?.Id
             ?? throw new WebException($"Couldn't find a valid RegistrationsBaseUrl from nuget server with path: '{serverRoot}'!");
         return new NugetServerEndPoints(packageBaseAddress, registrationsBaseUrl);
@@ -102,7 +103,13 @@ public class NugetService
         }
         catch (Exception ex)
         {
-            this._logger.LogCritical(ex, $"Couldn't get the deprecation information based on package: {package}");
+            if(nugetServer != DefaultNugetServer)
+            {
+                // fallback to default server. try again.
+                return await this.GetPackageDeprecationInfoFromNuget(package, DefaultNugetServer, string.Empty);
+            }
+
+            this._logger.LogCritical($"Couldn't get the deprecation information based on package: {package}.");
             return new CatalogInformation
             {
                 Deprecation = null,

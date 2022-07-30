@@ -31,7 +31,7 @@ public class PackageReferenceUpgradeDetector : IActionDetector
 
         if (string.IsNullOrWhiteSpace(_options.CustomNugetServer))
         {
-            _options.CustomNugetServer = "https://api.nuget.org/v3/index.json";
+            _options.CustomNugetServer = NugetService.DefaultNugetServer;
         }
 
         foreach (var project in context.AllProjects)
