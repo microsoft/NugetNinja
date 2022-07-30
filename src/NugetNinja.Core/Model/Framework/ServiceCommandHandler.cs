@@ -4,7 +4,6 @@
 using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
 namespace Microsoft.NugetNinja.Core;
 

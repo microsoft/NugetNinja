@@ -4,9 +4,8 @@
 using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Microsoft.NugetNinja.Core;
 
-namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
+namespace Microsoft.NugetNinja.Core;
 
 public class NugetService
 {
@@ -30,10 +29,10 @@ public class NugetService
         return all.OrderByDescending(t => t).First();
     }
 
-    public Task<(bool isDeprecated, string? alternative)> GetPackageDeprecationInfo(string packageName, NugetVersion version, string nugetServer, string patToken)
+    public Task<(bool isDeprecated, string? alternative)> GetPackageDeprecationInfo(Package package, string nugetServer, string patToken)
     {
-        return _cacheService.RunWithCache($"nuget-{nugetServer}-deprecation-info-{packageName}-version-{version}-cache",
-            () => this.GetPackageDeprecationInfoFromNuget(packageName, version, nugetServer, patToken));
+        return _cacheService.RunWithCache($"nuget-{nugetServer}-deprecation-info-{package}-version-{package.Version}-cache",
+            () => this.GetPackageDeprecationInfoFromNuget(package, nugetServer, patToken));
     }
 
     public Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, string nugetServer, string patToken, bool allowPreview)
@@ -91,12 +90,12 @@ public class NugetService
             ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
     }
 
-    private async Task<(bool isDeprecated, string? alternative)> GetPackageDeprecationInfoFromNuget(string packageName, NugetVersion version, string nugetServer, string patToken)
+    private async Task<(bool isDeprecated, string? alternative)> GetPackageDeprecationInfoFromNuget(Package package, string nugetServer, string patToken)
     {
         var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
-        var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{packageName.ToLower()}/{version.ToString().ToLower()}.json";
+        var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version.ToString().ToLower()}.json";
         var packageContext = await this.HttpGetJson<RegistrationIndex>(requestUrl, patToken);
-        var packageCatalogUrl = packageContext?.CatalogEntry ?? throw new WebException($"Couldn'f ind a valid catalog entry for package: '{packageName}'!");
+        var packageCatalogUrl = packageContext?.CatalogEntry ?? throw new WebException($"Couldn'f ind a valid catalog entry for package: '{package}'!");
         var packageEntry = await this.HttpGetJson<CatalogIndex>(packageCatalogUrl, patToken);
         return (packageEntry?.deprecation != null, packageEntry?.deprecation?.alternatePackage?.id);
 
@@ -113,11 +112,11 @@ public class NugetService
         if (response.IsSuccessStatusCode)
         {
             var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(json);
+            return JsonSerializer.Deserialize<T>(json) ?? throw new WebException($"The remote server returned non-json content: '{json}'");
         }
         else
         {
-            throw new WebException($"The remote server returned unexpected status code: {response.StatusCode} - {response.ReasonPhrase}. Url: {requestUrl}.");
+            throw new WebException($"The remote server returned unexpected status code: {response.StatusCode} - {response.ReasonPhrase}. Url: {url}.");
         }
     }
 }
