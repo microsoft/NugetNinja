@@ -34,7 +34,8 @@ public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenc
         return new Option[]
         {
             AllowPreviewOption,
-            CustomNugetServer
+            CustomNugetServer,
+            PatToken
         };
     }
 
