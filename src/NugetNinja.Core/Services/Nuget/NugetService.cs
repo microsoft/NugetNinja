@@ -30,6 +30,12 @@ public class NugetService
         return all.OrderByDescending(t => t).First();
     }
 
+    public Task<(bool isDeprecated, string? alternative)> GetPackageDeprecationInfo(string packageName, NugetVersion version, string nugetServer, string patToken)
+    {
+        return _cacheService.RunWithCache($"nuget-{nugetServer}-deprecation-info-{packageName}-version-{version}-cache",
+            () => this.GetPackageDeprecationInfoFromNuget(packageName, version, nugetServer, patToken));
+    }
+
     public Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, string nugetServer, string patToken, bool allowPreview)
     {
         return _cacheService.RunWithCache($"all-nuget-{nugetServer}-published-versions-package-{packageName}-preview-{allowPreview}-cache",
@@ -57,56 +63,57 @@ public class NugetService
             serverRoot = serverRoot + "/v3/index.json";
         }
 
-        var request = new HttpRequestMessage(HttpMethod.Get, serverRoot);
-        if (!string.IsNullOrWhiteSpace(patToken))
-        {
-            request.Headers.Add("Authorization", StringExtensions.PatToHeader(patToken));
-        }
-        using var response = await _httpClient.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            var responseJson = await response.Content.ReadAsStringAsync();
-            var responseModel = JsonSerializer.Deserialize<NugetServerIndex>(responseJson);
-            var packageBaseAddress = responseModel
-                ?.Resources
-                ?.FirstOrDefault(r => r.Type == "PackageBaseAddress/3.0.0")
-                ?.Id
-                ?? throw new WebException($"Couldn't find a valid PackageBaseAddress from nuget server with path: '{serverRoot}'!");
-            var registrationsBaseUrl = responseModel
-                ?.Resources
-                ?.FirstOrDefault(r => r.Type == "RegistrationsBaseUrl")
-                ?.Id
-                ?? throw new WebException($"Couldn't find a valid RegistrationsBaseUrl from nuget server with path: '{serverRoot}'!");
-            return new NugetServerEndPoints(packageBaseAddress, registrationsBaseUrl);
-        }
-        else
-        {
-            throw new WebException($"The remote server returned unexpected status code: {response.StatusCode} - {response.ReasonPhrase}. Url: {serverRoot}.");
-        }
+        var responseModel = await this.HttpGetJson<NugetServerIndex>(serverRoot, patToken);
+        var packageBaseAddress = responseModel
+            ?.Resources
+            ?.FirstOrDefault(r => r.Type == "PackageBaseAddress/3.0.0")
+            ?.Id
+            ?? throw new WebException($"Couldn't find a valid PackageBaseAddress from nuget server with path: '{serverRoot}'!");
+        var registrationsBaseUrl = responseModel
+            ?.Resources
+            ?.FirstOrDefault(r => r.Type == "RegistrationsBaseUrl")
+            ?.Id
+            ?? throw new WebException($"Couldn't find a valid RegistrationsBaseUrl from nuget server with path: '{serverRoot}'!");
+        return new NugetServerEndPoints(packageBaseAddress, registrationsBaseUrl);
     }
 
     private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, string nugetServer, string patToken, bool allowPreview)
     {
         var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
         var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{packageName.ToLower()}/index.json";
-        var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+        var responseModel = await this.HttpGetJson<GetAllPublishedVersionsResponseModel>(requestUrl, patToken);
+        return responseModel
+            ?.Versions
+            ?.Select(v => new NugetVersion(v))
+            ?.Where(v => allowPreview || !v.IsPreviewVersion())
+            .ToList()
+            .AsReadOnly()
+            ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
+    }
+
+    private async Task<(bool isDeprecated, string? alternative)> GetPackageDeprecationInfoFromNuget(string packageName, NugetVersion version, string nugetServer, string patToken)
+    {
+        var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
+        var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{packageName.ToLower()}/{version.ToString().ToLower()}.json";
+        var packageContext = await this.HttpGetJson<RegistrationIndex>(requestUrl, patToken);
+        var packageCatalogUrl = packageContext?.CatalogEntry ?? throw new WebException($"Couldn'f ind a valid catalog entry for package: '{packageName}'!");
+        var packageEntry = await this.HttpGetJson<CatalogIndex>(packageCatalogUrl, patToken);
+        return (packageEntry?.deprecation != null, packageEntry?.deprecation?.alternatePackage?.id);
+
+    }
+
+    private async Task<T> HttpGetJson<T>(string url, string patToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
         if (!string.IsNullOrWhiteSpace(patToken))
         {
             request.Headers.Add("Authorization", StringExtensions.PatToHeader(patToken));
         }
-        _logger.LogTrace($"Calling Nuget to fetch all published versions with package name: '{packageName}'...");
         using var response = await _httpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            var responseJson = await response.Content.ReadAsStringAsync();
-            var responseModel = JsonSerializer.Deserialize<GetAllPublishedVersionsResponseModel>(responseJson);
-            return responseModel
-                ?.Versions
-                ?.Select(v => new NugetVersion(v))
-                ?.Where(v => allowPreview || !v.IsPreviewVersion())
-                .ToList()
-                .AsReadOnly()
-                ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<T>(json);
         }
         else
         {

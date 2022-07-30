@@ -50,3 +50,33 @@ public class NugetServerEndPoints
     /// </summary>
     public string PackageBaseAddress { get; set; }
 }
+
+public class RegistrationIndex
+{
+    [JsonPropertyName("catalogEntry")]
+    public string? CatalogEntry { get; set; }
+}
+
+public class AlternatePackage
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public string? id { get; set; }
+}
+
+public class Deprecation
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public AlternatePackage? alternatePackage { get; set; }
+}
+
+public class CatalogIndex
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public Deprecation? deprecation { get; set; }
+}
