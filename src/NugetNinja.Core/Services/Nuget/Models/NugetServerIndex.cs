@@ -27,3 +27,26 @@ public class NugetServerIndex
     [JsonPropertyName("version")]
     public string Version { get; set; } = string.Empty;
 }
+
+public class NugetServerEndPoints
+{
+    public NugetServerEndPoints(string packageBaseAddress, string registrationsBaseUrl)
+    {
+        this.PackageBaseAddress = packageBaseAddress;
+        this.RegistrationsBaseUrl = registrationsBaseUrl;
+    }
+
+    /// <summary>
+    /// Base URL of Azure storage where NuGet package registration info is stored
+    /// 
+    /// Sample: https://api.nuget.org/v3/registration5-semver1/
+    /// </summary>
+    public string RegistrationsBaseUrl { get;set; }
+
+    /// <summary>
+    /// Base URL of where NuGet packages are stored, in the format https://api.nuget.org/v3-flatcontainer/{id-lower}/{version-lower}/{id-lower}.{version-lower}.nupkg
+    /// 
+    /// Sample: https://api.nuget.org/v3-flatcontainer/
+    /// </summary>
+    public string PackageBaseAddress { get; set; }
+}

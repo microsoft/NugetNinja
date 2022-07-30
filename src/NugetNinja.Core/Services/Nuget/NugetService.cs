@@ -36,13 +36,13 @@ public class NugetService
             () => this.GetAllPublishedVersionsFromNuget(packageName, nugetServer, patToken, allowPreview));
     }
 
-    public Task<string> GetApiEndpoint(string serverRoot, string patToken)
+    public Task<NugetServerEndPoints> GetApiEndpoint(string serverRoot, string patToken)
     {
         return _cacheService.RunWithCache($"nuget-server-endpoint-{serverRoot}-cache",
             () => this.GetApiEndpointFromNuget(serverRoot, patToken));
     }
 
-    private async Task<string> GetApiEndpointFromNuget(string serverRoot, string patToken)
+    private async Task<NugetServerEndPoints> GetApiEndpointFromNuget(string serverRoot, string patToken)
     {
         if (serverRoot.EndsWith("/"))
         {
@@ -58,17 +58,26 @@ public class NugetService
         }
 
         var request = new HttpRequestMessage(HttpMethod.Get, serverRoot);
-        request.Headers.Add("Authorization", StringExtensions.PatToHeader(patToken));
+        if (!string.IsNullOrWhiteSpace(patToken))
+        {
+            request.Headers.Add("Authorization", StringExtensions.PatToHeader(patToken));
+        }
         using var response = await _httpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
             var responseJson = await response.Content.ReadAsStringAsync();
             var responseModel = JsonSerializer.Deserialize<NugetServerIndex>(responseJson);
-            return responseModel
+            var packageBaseAddress = responseModel
                 ?.Resources
                 ?.FirstOrDefault(r => r.Type == "PackageBaseAddress/3.0.0")
                 ?.Id
-                ?? throw new WebException($"Couldn't find a valid package base address from nuget server with path: '{serverRoot}'!");
+                ?? throw new WebException($"Couldn't find a valid PackageBaseAddress from nuget server with path: '{serverRoot}'!");
+            var registrationsBaseUrl = responseModel
+                ?.Resources
+                ?.FirstOrDefault(r => r.Type == "RegistrationsBaseUrl")
+                ?.Id
+                ?? throw new WebException($"Couldn't find a valid RegistrationsBaseUrl from nuget server with path: '{serverRoot}'!");
+            return new NugetServerEndPoints(packageBaseAddress, registrationsBaseUrl);
         }
         else
         {
@@ -79,10 +88,12 @@ public class NugetService
     private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, string nugetServer, string patToken, bool allowPreview)
     {
         var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
-        var requestUrl = $"{apiEndpoint.TrimEnd('/')}/{packageName.ToLower()}/index.json";
+        var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{packageName.ToLower()}/index.json";
         var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-        request.Headers.Add("Authorization", StringExtensions.PatToHeader(patToken));
-
+        if (!string.IsNullOrWhiteSpace(patToken))
+        {
+            request.Headers.Add("Authorization", StringExtensions.PatToHeader(patToken));
+        }
         _logger.LogTrace($"Calling Nuget to fetch all published versions with package name: '{packageName}'...");
         using var response = await _httpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)

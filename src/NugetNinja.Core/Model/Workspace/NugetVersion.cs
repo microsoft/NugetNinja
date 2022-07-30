@@ -47,6 +47,19 @@ public sealed class NugetVersion : ICloneable, IComparable<NugetVersion?>, IEqua
             return this.PrimaryVersion.CompareTo(otherNugetVersion.PrimaryVersion);
         }
 
+        if (string.IsNullOrWhiteSpace(this.AdditionalText) || string.IsNullOrWhiteSpace(otherNugetVersion.AdditionalText))
+        {
+            if (!string.IsNullOrWhiteSpace(this.AdditionalText))
+            {
+                return -1;
+            }
+            if (!string.IsNullOrWhiteSpace(otherNugetVersion.AdditionalText))
+            {
+                return 1;
+            }
+            return 0;
+        }
+
         return string.Compare(this.AdditionalText, otherNugetVersion.AdditionalText);
     }
 
