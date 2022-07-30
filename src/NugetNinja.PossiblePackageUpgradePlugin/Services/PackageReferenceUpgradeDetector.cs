@@ -41,6 +41,7 @@ public class PackageReferenceUpgradeDetector : IActionDetector
                 var latest = await _nugetService.GetLatestVersion(
                     package.Name,
                     _options.CustomNugetServer,
+                    _options.PatToken,
                     _options.UsePreview);
                 if (package.Version < latest)
                 {
