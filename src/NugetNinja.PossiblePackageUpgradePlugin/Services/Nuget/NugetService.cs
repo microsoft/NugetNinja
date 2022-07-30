@@ -5,6 +5,7 @@ using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.NugetNinja.Core;
+using Microsoft.NugetNinja.PossiblePackageUpgradePlugin.Services.Nuget.Models;
 
 namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
@@ -13,8 +14,6 @@ public class NugetService
     private readonly CacheService _cacheService;
     private readonly HttpClient _httpClient;
     private readonly ILogger<NugetService> _logger;
-    private static readonly string NugetRootServer = "https://api.nuget.org";
-    private static readonly string NugetJsonFetchFormat = $"{NugetRootServer}/v3-flatcontainer/{{0}}/index.json";
 
     public NugetService(
         CacheService cacheService,
@@ -26,25 +25,64 @@ public class NugetService
         _logger = logger;
     }
 
-    public async Task<NugetVersion> GetLatestVersion(string packageName, bool allowPreview = false)
+    public async Task<NugetVersion> GetLatestVersion(string packageName, string nugetServer, string patToken, bool allowPreview = false)
     {
-        var all = await this.GetAllPublishedVersions(packageName, allowPreview);
+        var all = await this.GetAllPublishedVersions(packageName, nugetServer, patToken, allowPreview);
         return all.OrderByDescending(t => t).First();
     }
 
-    public async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, bool allowPreview)
+    public Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, string nugetServer, string patToken, bool allowPreview)
     {
-        return await _cacheService.RunWithCache($"all-nuget-published-versions-package-{packageName}-preview-{allowPreview}-cache", 
-            () => this.GetAllPublishedVersionsFromNuget(packageName, allowPreview));
+        return _cacheService.RunWithCache($"all-nuget-{nugetServer}-published-versions-package-{packageName}-preview-{allowPreview}-cache",
+            () => this.GetAllPublishedVersionsFromNuget(packageName, nugetServer, patToken, allowPreview));
     }
 
-    private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, bool allowPreview)
+    public Task<string> GetApiEndpoint(string serverRoot, string patToken)
     {
-        var requestUrl = string.Format(NugetJsonFetchFormat, packageName.ToLower().Trim());
-        var request = new HttpRequestMessage(HttpMethod.Get, requestUrl)
+        return _cacheService.RunWithCache($"nuget-server-endpoint-{serverRoot}-cache",
+            () => this.GetApiEndpointFromNuget(serverRoot, patToken));
+    }
+
+    private async Task<string> GetApiEndpointFromNuget(string serverRoot, string patToken)
+    {
+        if (serverRoot.EndsWith("/"))
         {
-            Content = new FormUrlEncodedContent(new Dictionary<string, string>())
-        };
+            serverRoot = serverRoot.TrimEnd('/');
+        }
+        if (!serverRoot.EndsWith("index.json"))
+        {
+            serverRoot = serverRoot + "/index.json";
+        }
+        if (!serverRoot.EndsWith("v3/index.json"))
+        {
+            serverRoot = serverRoot + "/v3/index.json";
+        }
+
+        var request = new HttpRequestMessage(HttpMethod.Get, serverRoot);
+        request.Headers.Add("Authorization", StringExtensions.PatToHeader(patToken));
+        using var response = await _httpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var responseModel = JsonSerializer.Deserialize<NugetServerIndex>(responseJson);
+            return responseModel
+                ?.Resources
+                ?.FirstOrDefault(r => r.Type == "PackageBaseAddress/3.0.0")
+                ?.Id
+                ?? throw new WebException($"Couldn't find a valid package base address from nuget server with path: '{serverRoot}'!");
+        }
+        else
+        {
+            throw new WebException($"The remote server returned unexpected status code: {response.StatusCode} - {response.ReasonPhrase}. Url: {serverRoot}.");
+        }
+    }
+
+    private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, string nugetServer,  string patToken, bool allowPreview)
+    {
+        var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
+        var requestUrl = $"{apiEndpoint.TrimEnd('/')}/{packageName.ToLower()}/index.json";
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+        request.Headers.Add("Authorization", StringExtensions.PatToHeader(patToken));
 
         _logger.LogTrace($"Calling Nuget to fetch all published versions with package name: '{packageName}'...");
         using var response = await _httpClient.SendAsync(request);
@@ -55,10 +93,10 @@ public class NugetService
             return responseModel
                 ?.Versions
                 ?.Select(v => new NugetVersion(v))
-                ?.Where(v => allowPreview || !v.IsPreviewVersion()) // Exclude preview versions.
+                ?.Where(v => allowPreview || !v.IsPreviewVersion())
                 .ToList()
                 .AsReadOnly()
-                ?? throw new WebException($"Couldn't find a valid version from Nuget.org with package: '{packageName}'!");
+                ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
         }
         else
         {

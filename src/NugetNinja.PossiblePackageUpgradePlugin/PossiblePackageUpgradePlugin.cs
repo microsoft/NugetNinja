@@ -9,6 +9,6 @@ public class PossiblePackageUpgradePlugin : INinjaPlugin
 {
     public CommandHandler Install()
     {
-        return new PackageUpgradeHandler<StartUp>();
+        return new PackageUpgradeHandler();
     }
 }

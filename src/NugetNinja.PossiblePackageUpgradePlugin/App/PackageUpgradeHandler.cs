@@ -8,8 +8,7 @@ using Microsoft.NugetNinja.Framework;
 
 namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
-public class PackageUpgradeHandler<S> : DetectorBasedCommandHandler<PackageReferenceUpgradeDetector, S>
-    where S : class, IStartUp, new()
+public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenceUpgradeDetector, StartUp>
 {
     public override string Name => "upgrade-pkg";
 
@@ -20,11 +19,23 @@ public class PackageUpgradeHandler<S> : DetectorBasedCommandHandler<PackageRefer
             aliases: new[] { "--allow-preview" },
             description: "Allow using preview versions of packages from Nuget.");
 
+    public readonly Option<string> CustomNugetServer =
+        new Option<string>(
+            aliases: new[] { "--nuget-server" },
+            description: "If you want to use a customized nuget server instead of the official nuget.org, you can set it with a value like: https://nuget.myserver/v3/index.json");
+
+    public readonly Option<string> PatToken=
+    new Option<string>(
+        aliases: new[] { "--token" },
+        description: "The PAT token which has privilege to access the nuget server. See: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate");
+
     public override Option[] GetOptions()
     {
         return new Option[]
         {
-            AllowPreviewOption
+            AllowPreviewOption,
+            CustomNugetServer,
+            PatToken
         };
     }
 
@@ -36,13 +47,15 @@ public class PackageUpgradeHandler<S> : DetectorBasedCommandHandler<PackageRefer
             OptionsProvider.PathOptions,
             OptionsProvider.DryRunOption,
             OptionsProvider.VerboseOption,
-            AllowPreviewOption);
+            AllowPreviewOption,
+            CustomNugetServer,
+            PatToken);
     }
 
-    public Task ExecutePackageUpgradeHandler(string path, bool dryRun, bool verbose, bool allowPreviewOption)
+    public Task ExecutePackageUpgradeHandler(string path, bool dryRun, bool verbose, bool allowPreviewOption, string customNugetServer, string patToken)
     {
         var services = base.BuildServices(verbose);
-        services.AddSingleton(new PackageUpgradeHandlerOptions(allowPreviewOption));
+        services.AddSingleton(new PackageUpgradeHandlerOptions(allowPreviewOption, customNugetServer, patToken));
         return base.RunFromServices(services, path, dryRun);
     }
 }
