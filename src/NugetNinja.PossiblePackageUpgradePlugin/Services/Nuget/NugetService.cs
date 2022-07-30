@@ -25,25 +25,25 @@ public class NugetService
         _logger = logger;
     }
 
-    public async Task<NugetVersion> GetLatestVersion(string packageName, string nugetServer, bool allowPreview = false)
+    public async Task<NugetVersion> GetLatestVersion(string packageName, string nugetServer, string patToken, bool allowPreview = false)
     {
-        var all = await this.GetAllPublishedVersions(packageName, nugetServer, allowPreview);
+        var all = await this.GetAllPublishedVersions(packageName, nugetServer, patToken, allowPreview);
         return all.OrderByDescending(t => t).First();
     }
 
-    public Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, string nugetServer, bool allowPreview)
+    public Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, string nugetServer, string patToken, bool allowPreview)
     {
         return _cacheService.RunWithCache($"all-nuget-{nugetServer}-published-versions-package-{packageName}-preview-{allowPreview}-cache",
-            () => this.GetAllPublishedVersionsFromNuget(packageName, nugetServer, allowPreview));
+            () => this.GetAllPublishedVersionsFromNuget(packageName, nugetServer, patToken, allowPreview));
     }
 
-    public Task<string> GetApiEndpoint(string serverRoot)
+    public Task<string> GetApiEndpoint(string serverRoot, string patToken)
     {
         return _cacheService.RunWithCache($"nuget-server-endpoint-{serverRoot}-cache",
-            () => this.GetApiEndpointFromNuget(serverRoot));
+            () => this.GetApiEndpointFromNuget(serverRoot, patToken));
     }
 
-    private async Task<string> GetApiEndpointFromNuget(string serverRoot)
+    private async Task<string> GetApiEndpointFromNuget(string serverRoot, string patToken)
     {
         if (serverRoot.EndsWith("/"))
         {
@@ -59,6 +59,7 @@ public class NugetService
         }
 
         var request = new HttpRequestMessage(HttpMethod.Get, serverRoot);
+        request.Headers.Add("Authorization", StringExtensions.PatToHeader(patToken));
         using var response = await _httpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
@@ -76,14 +77,12 @@ public class NugetService
         }
     }
 
-    private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, string nugetServer, bool allowPreview)
+    private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, string nugetServer,  string patToken, bool allowPreview)
     {
-        var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer);
+        var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
         var requestUrl = $"{apiEndpoint.TrimEnd('/')}/{packageName.ToLower()}/index.json";
-        var request = new HttpRequestMessage(HttpMethod.Get, requestUrl)
-        {
-            Content = new FormUrlEncodedContent(new Dictionary<string, string>())
-        };
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+        request.Headers.Add("Authorization", StringExtensions.PatToHeader(patToken));
 
         _logger.LogTrace($"Calling Nuget to fetch all published versions with package name: '{packageName}'...");
         using var response = await _httpClient.SendAsync(request);

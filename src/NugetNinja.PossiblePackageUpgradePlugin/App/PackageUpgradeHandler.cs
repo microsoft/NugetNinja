@@ -21,8 +21,13 @@ public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenc
 
     public readonly Option<string> CustomNugetServer =
         new Option<string>(
-            aliases: new[] { "--use-server" },
+            aliases: new[] { "--nuget-server" },
             description: "If you want to use a customized nuget server instead of the official nuget.org, you can set it with a value like: https://nuget.myserver/v3/index.json");
+
+    public readonly Option<string> PatToken=
+    new Option<string>(
+        aliases: new[] { "--token" },
+        description: "The PAT token which has privilege to access the nuget server. See: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate");
 
     public override Option[] GetOptions()
     {
@@ -42,13 +47,14 @@ public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenc
             OptionsProvider.DryRunOption,
             OptionsProvider.VerboseOption,
             AllowPreviewOption,
-            CustomNugetServer);
+            CustomNugetServer,
+            PatToken);
     }
 
-    public Task ExecutePackageUpgradeHandler(string path, bool dryRun, bool verbose, bool allowPreviewOption, string customNugetServer)
+    public Task ExecutePackageUpgradeHandler(string path, bool dryRun, bool verbose, bool allowPreviewOption, string customNugetServer, string patToken)
     {
         var services = base.BuildServices(verbose);
-        services.AddSingleton(new PackageUpgradeHandlerOptions(allowPreviewOption, customNugetServer));
+        services.AddSingleton(new PackageUpgradeHandlerOptions(allowPreviewOption, customNugetServer, patToken));
         return base.RunFromServices(services, path, dryRun);
     }
 }
