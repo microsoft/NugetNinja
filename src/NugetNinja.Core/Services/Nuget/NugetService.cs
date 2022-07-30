@@ -66,7 +66,7 @@ public class NugetService
         var responseModel = await this.HttpGetJson<NugetServerIndex>(serverRoot, patToken);
         var packageBaseAddress = responseModel
             ?.Resources
-            ?.FirstOrDefault(r => r.Type.StartsWith("PackageBaseAddress/3.0.0"))
+            ?.FirstOrDefault(r => r.Type.StartsWith("PackageBaseAddress"))
             ?.Id
             ?? throw new WebException($"Couldn't find a valid PackageBaseAddress from nuget server with path: '{serverRoot}'!");
         var registrationsBaseUrl = responseModel
