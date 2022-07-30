@@ -20,7 +20,7 @@ public class PossiblePackageUpgrade : IAction
 
     public string BuildMessage()
     {
-        return $"The project: '{SourceProjectName}' can upgrade the package '{Package}' from '{Package.VersionText}' to '{NewVersion}'.";
+        return $"The project: '{SourceProjectName}' should upgrade the package '{Package}' from '{Package.VersionText}' to '{NewVersion}'.";
     }
 
     public void TakeAction()
