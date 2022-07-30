@@ -29,7 +29,7 @@ public class NugetService
         return all.OrderByDescending(t => t).First();
     }
 
-    public Task<(bool isDeprecated, string? alternative)> GetPackageDeprecationInfo(Package package, string nugetServer, string patToken)
+    public Task<CatalogInformation> GetPackageDeprecationInfo(Package package, string nugetServer, string patToken)
     {
         return _cacheService.RunWithCache($"nuget-{nugetServer}-deprecation-info-{package}-version-{package.Version}-cache",
             () => this.GetPackageDeprecationInfoFromNuget(package, nugetServer, patToken));
@@ -90,19 +90,30 @@ public class NugetService
             ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
     }
 
-    private async Task<(bool isDeprecated, string? alternative)> GetPackageDeprecationInfoFromNuget(Package package, string nugetServer, string patToken)
+    private async Task<CatalogInformation> GetPackageDeprecationInfoFromNuget(Package package, string nugetServer, string patToken)
     {
-        var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
-        var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version.ToString().ToLower()}.json";
-        var packageContext = await this.HttpGetJson<RegistrationIndex>(requestUrl, patToken);
-        var packageCatalogUrl = packageContext?.CatalogEntry ?? throw new WebException($"Couldn'f ind a valid catalog entry for package: '{package}'!");
-        var packageEntry = await this.HttpGetJson<CatalogIndex>(packageCatalogUrl, patToken);
-        return (packageEntry?.deprecation != null, packageEntry?.deprecation?.alternatePackage?.id);
-
+        try
+        {
+            var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
+            var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version.ToString().ToLower()}.json";
+            var packageContext = await this.HttpGetJson<RegistrationIndex>(requestUrl, patToken);
+            var packageCatalogUrl = packageContext?.CatalogEntry ?? throw new WebException($"Couldn'f ind a valid catalog entry for package: '{package}'!");
+            return await this.HttpGetJson<CatalogInformation>(packageCatalogUrl, patToken);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogCritical(ex, $"Couldn't get the deprecation information based on package: {package}");
+            return new CatalogInformation
+            {
+                Deprecation = null,
+                Vulnerabilities = new List<Vulnerability>()
+            };
+        }
     }
 
     private async Task<T> HttpGetJson<T>(string url, string patToken)
     {
+        this._logger.LogTrace($"Sending request to: {url}...");
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         if (!string.IsNullOrWhiteSpace(patToken))
         {

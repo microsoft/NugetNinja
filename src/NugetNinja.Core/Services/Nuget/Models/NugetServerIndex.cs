@@ -57,7 +57,8 @@ public class AlternatePackage
     /// <summary>
     /// 
     /// </summary>
-    public string? id { get; set; }
+    [JsonPropertyName("id")]
+    public string? Id { get; set; }
 }
 
 public class Deprecation
@@ -65,13 +66,42 @@ public class Deprecation
     /// <summary>
     /// 
     /// </summary>
-    public AlternatePackage? alternatePackage { get; set; }
+    [JsonPropertyName("alternatePackage")]
+    public AlternatePackage? AlternatePackage { get; set; }
 }
 
-public class CatalogIndex
+public class CatalogInformation
 {
     /// <summary>
     /// 
     /// </summary>
-    public Deprecation? deprecation { get; set; }
+    [JsonPropertyName("deprecation")]
+    public Deprecation? Deprecation { get; set; }
+
+    [JsonPropertyName("vulnerabilities")]
+    public List<Vulnerability> Vulnerabilities { get; set; } = new List<Vulnerability>();
+}
+
+public class Vulnerability
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonPropertyName("@id")]
+    public string Id { get; set; } = string.Empty;
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonPropertyName("@type")]
+    public string Type { get; set; } = string.Empty;
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonPropertyName("advisoryUrl")]
+    public string AdvisoryUrl { get; set; } = string.Empty;
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonPropertyName("severity")]
+    public string Severity { get; set; } = string.Empty;
 }

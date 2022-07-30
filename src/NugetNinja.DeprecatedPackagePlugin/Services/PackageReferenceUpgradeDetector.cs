@@ -33,13 +33,17 @@ public class DeprecatedPackageDetector : IActionDetector
         {
             foreach (var package in project.PackageReferences)
             {
-                var (isDeprecated, alternative) = await _nugetService.GetPackageDeprecationInfo(
+                var catalogInformation = await _nugetService.GetPackageDeprecationInfo(
                     package,
                     _options.CustomNugetServer,
                     _options.PatToken);
-                if (isDeprecated)
+                if (catalogInformation.Deprecation != null)
                 {
-                    yield return new PossiblePackageReplacement(project, package, alternative);
+                    yield return new DeprecatedPackageReplacement(project, package, catalogInformation.Deprecation.AlternatePackage?.Id);
+                }
+                else if(catalogInformation.Vulnerabilities.Any())
+                {
+                    yield return new VulnerablePackageReplacement(project, package);
                 }
             }
         }

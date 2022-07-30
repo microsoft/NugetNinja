@@ -3,6 +3,7 @@
 
 using System.CommandLine;
 using Microsoft.NugetNinja.Core;
+using Microsoft.NugetNinja.DeprecatedPackagePlugin;
 using Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 using Microsoft.NugetNinja.UselessPackageReferencePlugin;
 using Microsoft.NugetNinja.UselessProjectReferencePlugin;
@@ -12,6 +13,7 @@ var description = "Nuget Ninja, a tool for detecting dependencies of .NET projec
 var program = new RootCommand(description)
     .AddGlobalOptions()
     .AddPlugins(
+        new DeprecatedPackagePlugin(),
         new PossiblePackageUpgradePlugin(),
         new UselessPackageReferencePlugin(),
         new UselessProjectReferencePlugin()
