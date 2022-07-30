@@ -4,6 +4,7 @@
 using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
 namespace Microsoft.NugetNinja.Core;
 
@@ -45,6 +46,8 @@ public abstract class ServiceCommandHandler<E, S> : CommandHandler
         services.AddMemoryCache();
         services.AddHttpClient();
         services.AddSingleton<CacheService>();
+        services.AddTransient<Extractor>();
+        services.AddTransient<ProjectsEnumerator>();
         services.AddTransient<NugetService>();
         startUp.ConfigureServices(services);
         services.AddTransient<E>();
