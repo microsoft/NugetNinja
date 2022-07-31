@@ -103,12 +103,12 @@ public class NugetService
         }
         catch (Exception ex)
         {
-            if(nugetServer != DefaultNugetServer)
+            if (nugetServer != DefaultNugetServer)
             {
                 // fallback to default server. try again.
                 return await this.GetPackageDeprecationInfoFromNuget(package, DefaultNugetServer, string.Empty);
             }
-
+            this._logger.LogTrace(ex, $"Couldn't get the deprecation information based on package: {package}.");
             this._logger.LogCritical($"Couldn't get the deprecation information based on package: {package}.");
             return new CatalogInformation
             {

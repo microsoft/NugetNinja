@@ -4,6 +4,10 @@
             "commandName": "Project",
             "commandLineArgs": ""
         },
+        "Dryrun all": {
+            "commandName": "Project",
+            "commandLineArgs": "all -p \"..\\..\\..\\..\\..\" -d"
+        },
         "Dryrun Clean Pkg": {
             "commandName": "Project",
             "commandLineArgs": "clean-pkg -p \"..\\..\\..\\..\\..\" -v -d"
