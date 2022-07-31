@@ -6,10 +6,19 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>Microsoft.NugetNinja</AssemblyName>
+    <AssemblyName>ninja</AssemblyName>
     <RootNamespace>Microsoft.NugetNinja</RootNamespace>
     <PublishSingleFile>true</PublishSingleFile>
     <PublishReadyToRun>true</PublishReadyToRun>
+    <Company>Microsoft</Company>
+		<Product>NugetNinja</Product>
+		<Authors>anduin2017 codgician</Authors>
+    <Description>A tool for detecting dependencies of .NET projects.</Description>
+    <PackageTags>cli nuget dotnet csproj dependencies</PackageTags>
+    <RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/Microsoft/NugetNinja.git</RepositoryUrl>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageId>Microsoft.NugetNinja</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

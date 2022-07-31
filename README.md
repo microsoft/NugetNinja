@@ -9,6 +9,35 @@
 
 Nuget Ninjia is a tool for detecting dependencies of .NET projects. It analyzes the dependency structure of .NET projects in a directory and builds a directed acyclic graph. And will give some modification suggestions for Nuget packages, so that the dependencies of the project are as concise and up-to-date as possible.
 
+## Usage
+
+After getting the binary, run it directly in the terminal.
+
+```cmd
+C:\workspace> ninja.exe
+
+Description:
+  Nuget Ninja, a tool for detecting dependencies of .NET projects.
+
+Usage:
+  Microsoft.NugetNinja [command] [options]
+
+Options:
+  -p, --path <path> (REQUIRED)   Path of the projects to be changed.
+  --nuget-server <nuget-server>  If you want to use a customized nuget server instead of the official nuget.org, 
+  --token <token>                The PAT token which has privilege to access the nuget server.
+  -d, --dry-run                  Preview changes without actually making them
+  -v, --verbose                  Show detailed log
+  -?, -h, --help                 Show help and usage information
+
+Commands:
+  all, all-officials  The command to run all officially supported features.
+  remove-deprecated   The command to replace all deprecated packages to new packages.
+  upgrade-pkg         The command to upgrade all package references to possible latest and avoid conflicts.
+  clean-pkg           The command to clean up possible useless package references.
+  clean-prj           The command to clean up possible useless project references.
+```
+
 ## How to build and run locally
 
 Requirements about how to develop.
