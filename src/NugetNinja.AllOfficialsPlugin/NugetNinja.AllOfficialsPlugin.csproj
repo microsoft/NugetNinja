@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Microsoft.NugetNinja.AllOfficialsPlugin</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NugetNinja.DeprecatedPackagePlugin\NugetNinja.DeprecatedPackagePlugin.csproj" />
+    <ProjectReference Include="..\NugetNinja.PossiblePackageUpgradePlugin\NugetNinja.PossiblePackageUpgradePlugin.csproj" />
+    <ProjectReference Include="..\NugetNinja.UselessPackageReferencePlugin\NugetNinja.UselessPackageReferencePlugin.csproj" />
+    <ProjectReference Include="..\NugetNinja.UselessProjectReferencePlugin\NugetNinja.UselessProjectReferencePlugin.csproj" />
+  </ItemGroup>
+</Project>
