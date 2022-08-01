@@ -33,7 +33,7 @@ public class DetectorStarter<T> : IEntryService where T : IActionDetector
             _logger.LogWarning(action.BuildMessage());
             if (shouldTakeAction)
             {
-                action.TakeAction();
+                await action.TakeActionAsync();
             }
         }
     }

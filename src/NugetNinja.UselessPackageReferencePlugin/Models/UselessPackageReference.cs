@@ -21,9 +21,8 @@ public class UselessPackageReference : IAction
         return $"The project: '{SourceProjectName}' don't have to reference package '{TargetPackage}' because it already has its access via another path!";
     }
 
-    public void TakeAction()
+    public Task TakeActionAsync()
     {
-        // To DO: Remove this reference.
-        throw new NotImplementedException();
+        return this.SourceProjectName.RemoveReferenceAsync(TargetPackage.Name, "PackageReference");
     }
 }

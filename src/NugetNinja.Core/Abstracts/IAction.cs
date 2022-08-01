@@ -7,5 +7,5 @@ public interface IAction
 {
     public string BuildMessage();
 
-    public void TakeAction();
+    public Task TakeActionAsync();
 }

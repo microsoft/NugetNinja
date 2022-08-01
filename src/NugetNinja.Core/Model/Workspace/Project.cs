@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using HtmlAgilityPack;
+
 namespace Microsoft.NugetNinja.Core;
 
 public class Project
@@ -19,5 +21,20 @@ public class Project
     public override string ToString()
     {
         return Path.GetFileNameWithoutExtension(PathOnDisk);
+    }
+
+    public async Task RemoveReferenceAsync(string refName, string nodeName = "PackageReference")
+    {
+        var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
+        var doc = new HtmlDocument();
+        doc.LoadHtml(csprojContent);
+        var node = doc.DocumentNode
+            .Descendants(nodeName)
+            .Where(d => d.Attributes["Include"].Value == refName)
+            .FirstOrDefault();
+
+        node?.Remove();
+
+        doc.Save(File.OpenWrite(PathOnDisk));
     }
 }
