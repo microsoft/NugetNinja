@@ -23,7 +23,7 @@ public class PossiblePackageUpgrade : IAction
         return $"The project: '{SourceProjectName}' should upgrade the package '{Package}' from '{Package.VersionText}' to '{NewVersion}'.";
     }
 
-    public void TakeAction()
+    public Task TakeActionAsync()
     {
         // To DO: Remove this reference.
         throw new NotImplementedException();

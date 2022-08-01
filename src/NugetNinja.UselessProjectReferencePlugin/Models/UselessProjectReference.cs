@@ -21,9 +21,8 @@ public class UselessProjectReference : IAction
         return $"The project: '{SourceProjectName}' don't have to reference project '{TargetProjectName}' because it already has its access via another path!";
     }
 
-    public void TakeAction()
+    public Task TakeActionAsync()
     {
-        // To DO: Remove this reference.
-        throw new NotImplementedException();
+        return this.SourceProjectName.RemoveProjectReference(TargetProjectName.PathOnDisk);
     }
 }

@@ -49,12 +49,13 @@ public class RunAllOfficialPluginsService : IEntryService
 
             _logger.LogInformation($"Analysing possible actions via {plugin.GetType().Name}...");
             var actions = plugin.AnalyzeAsync(model);
+
             await foreach (var action in actions)
             {
                 _logger.LogWarning(action.BuildMessage());
                 if (shouldTakeAction)
                 {
-                    action.TakeAction();
+                    await action.TakeActionAsync();
                 }
             }
         }

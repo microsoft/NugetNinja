@@ -26,7 +26,7 @@ public class DeprecatedPackageReplacement : IAction
         return $"The project: '{SourceProjectName}' referenced a deprecated package: {Package} {Package.Version}! {alternativeText}";
     }
 
-    public void TakeAction()
+    public Task TakeActionAsync()
     {
         // To DO: Remove this reference.
         throw new NotImplementedException();

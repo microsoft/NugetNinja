@@ -21,7 +21,7 @@ public class VulnerablePackageReplacement : IAction
         return $@"The project: '{SourceProjectName}' referenced a package {Package} {Package.Version} which has known vulnerabilities! Please consider to upgrade\remove\replace it!";
     }
 
-    public void TakeAction()
+    public Task TakeActionAsync()
     {
         // To DO: Remove this reference.
         throw new NotImplementedException();
