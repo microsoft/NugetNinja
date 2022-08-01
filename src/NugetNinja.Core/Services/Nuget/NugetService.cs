@@ -94,6 +94,11 @@ public class NugetService
         }
         catch (Exception e)
         {
+            if (nugetServer != DefaultNugetServer)
+            {
+                // fallback to default server. try again.
+                return await this.GetAllPublishedVersionsFromNuget(packageName, DefaultNugetServer, string.Empty, allowPreview);
+            }
             _logger.LogTrace(e, $"Couldn't get version info based on package name: '{packageName}'.");
             _logger.LogCritical($"Couldn't get version info based on package name: '{packageName}'.");
             return new List<NugetVersion>()
