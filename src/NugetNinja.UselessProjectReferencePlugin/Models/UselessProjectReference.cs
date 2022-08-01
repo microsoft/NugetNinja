@@ -23,6 +23,6 @@ public class UselessProjectReference : IAction
 
     public Task TakeActionAsync()
     {
-        return this.SourceProjectName.RemoveReferenceAsync(TargetProjectName.PathOnDisk, "ProjectReference");
+        return this.SourceProjectName.RemoveProjectReference(TargetProjectName.PathOnDisk);
     }
 }
