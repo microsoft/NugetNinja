@@ -79,16 +79,28 @@ public class NugetService
 
     private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, string nugetServer, string patToken, bool allowPreview)
     {
-        var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
-        var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{packageName.ToLower()}/index.json";
-        var responseModel = await this.HttpGetJson<GetAllPublishedVersionsResponseModel>(requestUrl, patToken);
-        return responseModel
-            ?.Versions
-            ?.Select(v => new NugetVersion(v))
-            ?.Where(v => allowPreview || !v.IsPreviewVersion())
-            .ToList()
-            .AsReadOnly()
-            ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
+        try
+        {
+            var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
+            var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{packageName.ToLower()}/index.json";
+            var responseModel = await this.HttpGetJson<GetAllPublishedVersionsResponseModel>(requestUrl, patToken);
+            return responseModel
+                ?.Versions
+                ?.Select(v => new NugetVersion(v))
+                ?.Where(v => allowPreview || !v.IsPreviewVersion())
+                .ToList()
+                .AsReadOnly()
+                ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
+        }
+        catch (Exception e)
+        {
+            _logger.LogTrace(e, $"Couldn't get version info based on package name: '{packageName}'.");
+            _logger.LogCritical($"Couldn't get version info based on package name: '{packageName}'.");
+            return new List<NugetVersion>()
+            {
+                new NugetVersion("0.0.1")
+            };
+        }
     }
 
     private async Task<CatalogInformation> GetPackageDeprecationInfoFromNuget(Package package, string nugetServer, string patToken)
