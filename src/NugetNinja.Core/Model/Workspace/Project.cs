@@ -109,8 +109,8 @@ public class Project
         memoryStream.Seek(0, SeekOrigin.Begin);
         var csprojText = await new StreamReader(memoryStream).ReadToEndAsync();
         csprojText = csprojText
-            .Replace(@"></PackageReference>", "/>")
-            .Replace(@"></ProjectReference>", "/>");
+            .Replace(@"></PackageReference>", " />")
+            .Replace(@"></ProjectReference>", " />");
         await File.WriteAllTextAsync(this.PathOnDisk, csprojText);
     }
 }
