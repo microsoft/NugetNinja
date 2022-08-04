@@ -25,7 +25,6 @@ public class PossiblePackageUpgrade : IAction
 
     public Task TakeActionAsync()
     {
-        // To DO: Remove this reference.
-        throw new NotImplementedException();
+        return this.SourceProjectName.SetPackageReferenceVersionAsync(Package.Name, NewVersion);
     }
 }
