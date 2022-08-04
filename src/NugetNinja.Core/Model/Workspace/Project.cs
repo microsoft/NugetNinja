@@ -110,7 +110,8 @@ public class Project
         var csprojText = await new StreamReader(memoryStream).ReadToEndAsync();
         csprojText = csprojText
             .Replace(@"></PackageReference>", " />")
-            .Replace(@"></ProjectReference>", " />");
+            .Replace(@"></ProjectReference>", " />")
+            .Replace(@"></FrameworkReference>", " />");
         await File.WriteAllTextAsync(this.PathOnDisk, csprojText);
     }
 }
