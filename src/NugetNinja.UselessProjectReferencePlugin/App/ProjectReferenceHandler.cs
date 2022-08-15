@@ -5,7 +5,7 @@ using Microsoft.NugetNinja.Core;
 
 namespace Microsoft.NugetNinja.UselessProjectReferencePlugin;
 
-public class ProjectReferenceHandler<S> : DetectorBasedCommandHandler<UselessProjectReferenceDetector, StartUp>
+public class ProjectReferenceHandler : DetectorBasedCommandHandler<UselessProjectReferenceDetector, StartUp>
 {
     public override string Name => "clean-prj";
 

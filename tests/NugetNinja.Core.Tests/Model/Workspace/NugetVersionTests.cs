@@ -4,6 +4,9 @@
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS0253 // Possible unintended reference comparison; right hand side needs cast
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
+// ReSharper disable EqualExpressionComparison
+// ReSharper disable ArrangeObjectCreationWhenTypeEvident
+// ReSharper disable SuspiciousTypeConversion.Global
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

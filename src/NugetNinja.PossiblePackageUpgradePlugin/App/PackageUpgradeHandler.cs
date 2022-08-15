@@ -14,17 +14,17 @@ public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenc
     public override string Description => "The command to upgrade all package references to possible latest and avoid conflicts.";
 
     public readonly Option<bool> AllowPreviewOption =
-        new Option<bool>(
+        new(
             aliases: new[] { "--allow-preview" },
             description: "Allow using preview versions of packages from Nuget.");
 
     public readonly Option<string> CustomNugetServer =
-        new Option<string>(
+        new(
             aliases: new[] { "--nuget-server" },
             description: "If you want to use a customized nuget server instead of the official nuget.org, you can set it with a value like: https://nuget.myserver/v3/index.json");
 
     public readonly Option<string> PatToken=
-    new Option<string>(
+    new(
         aliases: new[] { "--token" },
         description: "The PAT token which has privilege to access the nuget server. See: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate");
 
@@ -40,7 +40,6 @@ public class PackageUpgradeHandler : DetectorBasedCommandHandler<PackageReferenc
 
     public override void OnCommandBuilt(Command command)
     {
-        var globalOptions = OptionsProvider.GetGlobalOptions();
         command.SetHandler(
             ExecutePackageUpgradeHandler,
             OptionsProvider.PathOptions,

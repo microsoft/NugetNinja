@@ -13,7 +13,6 @@ public abstract class ServiceCommandHandler<E, S> : CommandHandler
 {
     public override void OnCommandBuilt(Command command)
     {
-        var globalOptions = OptionsProvider.GetGlobalOptions();
         command.SetHandler(
             Execute,
             OptionsProvider.PathOptions,
