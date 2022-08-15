@@ -20,7 +20,6 @@ public class UselessPackageReferenceDetector : IActionDetector
 
     public async IAsyncEnumerable<IAction> AnalyzeAsync(Model context)
     {
-        var refe = await this._nugetService.GetPackageDependencies(new Package("aiursoft.sdk", "6.0.7"), NugetService.DefaultNugetServer, string.Empty);
         foreach (var rootProject in context.AllProjects)
         {
             var uselessReferences = this.AnalyzeProject(rootProject);
