@@ -14,9 +14,9 @@ public class Project
 
     public string PathOnDisk { get; set; }
 
-    public List<Project> ProjectReferences { get; init; } = new List<Project>();
+    public List<Project> ProjectReferences { get; init; } = new();
 
-    public List<Package> PackageReferences { get; init; } = new List<Package>();
+    public List<Package> PackageReferences { get; init; } = new();
 
     public override string ToString()
     {
@@ -90,7 +90,7 @@ public class Project
     private async Task RemoveNode(HtmlNode node, HtmlDocument doc)
     {
         var parent = node.ParentNode;
-        if (!parent.Descendants(0).Where(n => n.NodeType == HtmlNodeType.Element).Except(new HtmlNode[] { node }).Any())
+        if (!parent.Descendants(0).Where(n => n.NodeType == HtmlNodeType.Element).Except(new[] { node }).Any())
         {
             parent.Remove();
         }

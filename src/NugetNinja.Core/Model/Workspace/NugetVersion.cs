@@ -20,8 +20,8 @@ public sealed class NugetVersion : ICloneable, IComparable<NugetVersion?>, IEqua
     }
 
     public string SourceString { get; set; }
-    public Version PrimaryVersion { get; set; }
-    public string AdditionalText { get; set; } = string.Empty;
+    public Version PrimaryVersion { get; }
+    public string AdditionalText { get; } = string.Empty;
 
     public static bool operator ==(NugetVersion? lvs, NugetVersion? rvs) => lvs?.Equals(rvs) ?? ReferenceEquals(lvs, rvs);
 
@@ -60,7 +60,7 @@ public sealed class NugetVersion : ICloneable, IComparable<NugetVersion?>, IEqua
             return 0;
         }
 
-        return string.Compare(this.AdditionalText, otherNugetVersion.AdditionalText);
+        return string.CompareOrdinal(this.AdditionalText, otherNugetVersion.AdditionalText);
     }
 
     public bool Equals(NugetVersion? otherNugetVersion)

@@ -72,13 +72,13 @@ public class NugetService
 
         var responseModel = await this.HttpGetJson<NugetServerIndex>(serverRoot, patToken);
         var packageBaseAddress = responseModel
-            ?.Resources
-            ?.FirstOrDefault(r => r.Type.StartsWith("PackageBaseAddress"))
+            .Resources
+            .FirstOrDefault(r => r.Type.StartsWith("PackageBaseAddress"))
             ?.Id
             ?? throw new WebException($"Couldn't find a valid PackageBaseAddress from nuget server with path: '{serverRoot}'!");
         var registrationsBaseUrl = responseModel
-            ?.Resources
-            ?.FirstOrDefault(r => r.Type.StartsWith("RegistrationsBaseUrl"))
+            .Resources
+            .FirstOrDefault(r => r.Type.StartsWith("RegistrationsBaseUrl"))
             ?.Id
             ?? throw new WebException($"Couldn't find a valid RegistrationsBaseUrl from nuget server with path: '{serverRoot}'!");
         return new NugetServerEndPoints(packageBaseAddress, registrationsBaseUrl);
@@ -92,9 +92,9 @@ public class NugetService
             var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{packageName.ToLower()}/index.json";
             var responseModel = await this.HttpGetJson<GetAllPublishedVersionsResponseModel>(requestUrl, patToken);
             return responseModel
-                ?.Versions
+                .Versions
                 ?.Select(v => new NugetVersion(v))
-                ?.Where(v => allowPreview || !v.IsPreviewVersion())
+                .Where(v => allowPreview || !v.IsPreviewVersion())
                 .ToList()
                 .AsReadOnly()
                 ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
@@ -110,7 +110,7 @@ public class NugetService
             _logger.LogCritical($"Couldn't get version info based on package name: '{packageName}'.");
             return new List<NugetVersion>()
             {
-                new NugetVersion("0.0.1")
+                new("0.0.1")
             };
         }
     }
@@ -122,7 +122,7 @@ public class NugetService
             var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
             var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version.ToString().ToLower()}.json";
             var packageContext = await this.HttpGetJson<RegistrationIndex>(requestUrl, patToken);
-            var packageCatalogUrl = packageContext?.CatalogEntry ?? throw new WebException($"Couldn'f ind a valid catalog entry for package: '{package}'!");
+            var packageCatalogUrl = packageContext.CatalogEntry ?? throw new WebException($"Couldn'f ind a valid catalog entry for package: '{package}'!");
             return await this.HttpGetJson<CatalogInformation>(packageCatalogUrl, patToken);
         }
         catch (Exception ex)

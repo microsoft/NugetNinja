@@ -7,11 +7,11 @@ namespace Microsoft.NugetNinja.Core;
 
 public class Model
 {
-    public List<Project> RootProjects { get; set; } = new List<Project>();
+    public List<Project> RootProjects { get; set; } = new();
 
-    public List<Project> AllProjects { get; set; } = new List<Project>();
+    public List<Project> AllProjects { get; set; } = new();
 
-    public List<Package> AllPackages { get; set; } = new List<Package>();
+    public List<Package> AllPackages { get; set; } = new();
 
     public async Task<Project> IncludeProject(string path)
     {

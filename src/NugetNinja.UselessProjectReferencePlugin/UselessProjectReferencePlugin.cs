@@ -9,6 +9,6 @@ public class UselessProjectReferencePlugin : INinjaPlugin
 {
     public CommandHandler[] Install()
     {
-        return new CommandHandler[] { new ProjectReferenceHandler<StartUp>() };
+        return new CommandHandler[] { new ProjectReferenceHandler() };
     }
 }
