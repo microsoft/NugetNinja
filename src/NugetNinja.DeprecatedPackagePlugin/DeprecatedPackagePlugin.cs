@@ -7,8 +7,8 @@ namespace Microsoft.NugetNinja.DeprecatedPackagePlugin;
 
 public class DeprecatedPackagePlugin : INinjaPlugin
 {
-    public CommandHandler Install()
+    public CommandHandler[] Install()
     {
-        return new DeprecatedPackageHandler();
+        return new CommandHandler[] { new DeprecatedPackageHandler() };
     }
 }

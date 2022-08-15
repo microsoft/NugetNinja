@@ -5,5 +5,5 @@ namespace Microsoft.NugetNinja.Core;
 
 public interface INinjaPlugin
 {
-    public CommandHandler Install();
+    public CommandHandler[] Install();
 }

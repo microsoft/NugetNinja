@@ -46,7 +46,10 @@ public static class OptionsProvider
     {
         foreach (var plugin in pluginInstallers)
         {
-            command.Add(plugin.Install().BuildAsCommand());
+            foreach (var pluginFeature in plugin.Install())
+            {
+                command.Add(pluginFeature.BuildAsCommand());
+            }
         }
         return command;
     }

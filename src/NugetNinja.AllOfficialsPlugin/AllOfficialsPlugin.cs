@@ -1,11 +1,14 @@
-﻿using Microsoft.NugetNinja.Core;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.NugetNinja.Core;
 
 namespace Microsoft.NugetNinja.AllOfficialsPlugin;
 
 public class AllOfficialsPlugin : INinjaPlugin
 {
-    public CommandHandler Install()
+    public CommandHandler[] Install()
     {
-        return new AllOfficialsHandler();
+        return new CommandHandler[] { new AllOfficialsHandler() };
     }
 }

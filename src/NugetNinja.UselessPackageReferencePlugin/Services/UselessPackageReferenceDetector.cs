@@ -7,38 +7,59 @@ namespace Microsoft.NugetNinja.UselessPackageReferencePlugin;
 
 public class UselessPackageReferenceDetector : IActionDetector
 {
+    private readonly NugetService _nugetService;
     private readonly ProjectsEnumerator enumerator;
 
-    public UselessPackageReferenceDetector(ProjectsEnumerator enumerator)
+    public UselessPackageReferenceDetector(
+        NugetService nugetService,
+        ProjectsEnumerator enumerator)
     {
+        _nugetService = nugetService;
         this.enumerator = enumerator;
     }
 
-    public IAsyncEnumerable<IAction> AnalyzeAsync(Model context)
-    {
-        return Analyze(context).ToAsyncEnumerable();
-    }
-
-    private IEnumerable<IAction> Analyze(Model context)
+    public async IAsyncEnumerable<IAction> AnalyzeAsync(Model context)
     {
         foreach (var rootProject in context.AllProjects)
         {
             var uselessReferences = this.AnalyzeProject(rootProject);
-            foreach (var reference in uselessReferences)
+            await foreach (var reference in uselessReferences)
             {
                 yield return reference;
             }
         }
     }
 
-    private IEnumerable<UselessPackageReference> AnalyzeProject(Project context)
+    private async IAsyncEnumerable<UselessPackageReference> AnalyzeProject(Project context)
     {
-        var allRelatedProjects = enumerator.EnumerateAllBuiltProjects(context, false);
-        var allPackagesBroughtUp = allRelatedProjects.SelectMany(p => p.PackageReferences).ToArray();
+        var relatedProjects = enumerator.EnumerateAllBuiltProjects(context, false);
+        var accessiablePackages = new List<Package>();
+        foreach (var relatedProject in relatedProjects)
+        {
+            accessiablePackages.AddRange(relatedProject.PackageReferences);
+            foreach(var package in relatedProject.PackageReferences)
+            {
+                var recursivePackagesBroughtUp = await this._nugetService.GetPackageDependencies(
+                    package: package,
+                    nugetServer: NugetService.DefaultNugetServer,
+                    patToken: string.Empty);
+                accessiablePackages.AddRange(recursivePackagesBroughtUp);
+            }
+        }
 
         foreach (var directReference in context.PackageReferences)
         {
-            if (allPackagesBroughtUp.Any(pa => pa.Name == directReference.Name))
+            var accessiablePackagesForThisProject = accessiablePackages.ToList();
+            foreach (var otherDirectReference in context.PackageReferences.Where(p => p != directReference))
+            {
+                var references = await this._nugetService.GetPackageDependencies(
+                    package: otherDirectReference,
+                    nugetServer: NugetService.DefaultNugetServer,
+                    patToken: string.Empty);
+                accessiablePackagesForThisProject.AddRange(references);
+            }
+
+            if (accessiablePackagesForThisProject.Any(pa => pa.Name == directReference.Name))
             {
                 yield return new UselessPackageReference(context, directReference);
             }

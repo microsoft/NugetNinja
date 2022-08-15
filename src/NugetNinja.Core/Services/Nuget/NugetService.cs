@@ -3,6 +3,7 @@
 
 using System.Net;
 using System.Text.Json;
+using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.NugetNinja.Core;
@@ -46,6 +47,12 @@ public class NugetService
     {
         return _cacheService.RunWithCache($"nuget-server-endpoint-{serverRoot}-cache",
             () => this.GetApiEndpointFromNuget(serverRoot, patToken));
+    }
+
+    public Task<Package[]> GetPackageDependencies(Package package, string nugetServer, string patToken)
+    {
+        return _cacheService.RunWithCache($"nuget-package-{package.Name}-dependencies-{package.Version}-cache",
+            () => this.GetPackageDependenciesFromNuget(package, nugetServer, patToken));
     }
 
     private async Task<NugetServerEndPoints> GetApiEndpointFromNuget(string serverRoot, string patToken)
@@ -135,7 +142,30 @@ public class NugetService
         }
     }
 
+    private async Task<Package[]> GetPackageDependenciesFromNuget(Package package, string nugetServer, string patToken)
+    {
+        var apiEndpoint = await this.GetApiEndpoint(serverRoot: nugetServer, patToken);
+        var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version}/{package.Name.ToLower()}.nuspec";
+        var nuspec = await this.HttpGetString(requestUrl, patToken);
+        var doc = new HtmlDocument();
+        doc.LoadHtml(nuspec);
+        var packageReferences = doc.DocumentNode
+            .Descendants("dependency")
+            .Select(p => new Package(
+                name: p.Attributes["id"].Value,
+                versionText: p.Attributes["version"].Value))
+            .DistinctBy(p => p.Name)
+            .ToArray();
+        return packageReferences;
+    }
+
     private async Task<T> HttpGetJson<T>(string url, string patToken)
+    {
+        var json = await this.HttpGetString(url, patToken);
+        return JsonSerializer.Deserialize<T>(json) ?? throw new WebException($"The remote server returned non-json content: '{json}'");
+    }
+
+    private async Task<string> HttpGetString(string url, string patToken)
     {
         this._logger.LogTrace($"Sending request to: {url}...");
         var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -146,8 +176,8 @@ public class NugetService
         using var response = await _httpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(json) ?? throw new WebException($"The remote server returned non-json content: '{json}'");
+            var text = await response.Content.ReadAsStringAsync();
+            return text;
         }
         else
         {
