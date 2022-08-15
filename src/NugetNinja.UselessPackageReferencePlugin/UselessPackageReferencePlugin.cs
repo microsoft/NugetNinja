@@ -7,8 +7,8 @@ namespace Microsoft.NugetNinja.UselessPackageReferencePlugin;
 
 public class UselessPackageReferencePlugin : INinjaPlugin
 {
-    public CommandHandler Install()
+    public CommandHandler[] Install()
     {
-        return new PackageReferenceHandler();
+        return new CommandHandler[] { new PackageReferenceHandler() };
     }
 }

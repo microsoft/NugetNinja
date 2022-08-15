@@ -7,8 +7,8 @@ namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 
 public class PossiblePackageUpgradePlugin : INinjaPlugin
 {
-    public CommandHandler Install()
+    public CommandHandler[] Install()
     {
-        return new PackageUpgradeHandler();
+        return new CommandHandler[] { new PackageUpgradeHandler() };
     }
 }
