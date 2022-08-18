@@ -23,6 +23,6 @@ public class UselessPackageReference : IAction
 
     public Task TakeActionAsync()
     {
-        return this.SourceProjectName.RemovePackageReferenceAsync(TargetPackage.Name);
+        return SourceProjectName.RemovePackageReferenceAsync(TargetPackage.Name);
     }
 }

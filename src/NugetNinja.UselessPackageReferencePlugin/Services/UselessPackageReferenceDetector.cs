@@ -22,7 +22,7 @@ public class UselessPackageReferenceDetector : IActionDetector
     {
         foreach (var rootProject in context.AllProjects)
         {
-            var uselessReferences = this.AnalyzeProject(rootProject);
+            var uselessReferences = AnalyzeProject(rootProject);
             await foreach (var reference in uselessReferences)
             {
                 yield return reference;
@@ -39,7 +39,7 @@ public class UselessPackageReferenceDetector : IActionDetector
             accessiablePackages.AddRange(relatedProject.PackageReferences);
             foreach(var package in relatedProject.PackageReferences)
             {
-                var recursivePackagesBroughtUp = await this._nugetService.GetPackageDependencies(
+                var recursivePackagesBroughtUp = await _nugetService.GetPackageDependencies(
                     package: package,
                     nugetServer: NugetService.DefaultNugetServer,
                     patToken: string.Empty);
@@ -52,7 +52,7 @@ public class UselessPackageReferenceDetector : IActionDetector
             var accessiablePackagesForThisProject = accessiablePackages.ToList();
             foreach (var otherDirectReference in context.PackageReferences.Where(p => p != directReference))
             {
-                var references = await this._nugetService.GetPackageDependencies(
+                var references = await _nugetService.GetPackageDependencies(
                     package: otherDirectReference,
                     nugetServer: NugetService.DefaultNugetServer,
                     patToken: string.Empty);

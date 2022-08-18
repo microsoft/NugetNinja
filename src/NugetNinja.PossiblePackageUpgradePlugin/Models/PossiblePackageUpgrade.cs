@@ -25,6 +25,6 @@ public class PossiblePackageUpgrade : IAction
 
     public Task TakeActionAsync()
     {
-        return this.SourceProjectName.SetPackageReferenceVersionAsync(Package.Name, NewVersion);
+        return SourceProjectName.SetPackageReferenceVersionAsync(Package.Name, NewVersion);
     }
 }

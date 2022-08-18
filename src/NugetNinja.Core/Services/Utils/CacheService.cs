@@ -8,8 +8,8 @@ namespace Microsoft.NugetNinja.Core;
 
 public class CacheService
 {
-    private readonly IMemoryCache cache;
-    private readonly ILogger<CacheService> logger;
+    private readonly IMemoryCache _cache;
+    private readonly ILogger<CacheService> _logger;
 
     /// <summary>
     /// Creates a new cache service.
@@ -20,8 +20,8 @@ public class CacheService
         IMemoryCache cache,
         ILogger<CacheService> logger)
     {
-        this.cache = cache;
-        this.logger = logger;
+        _cache = cache;
+        _logger = logger;
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class CacheService
         Func<Task<T>> fallback,
         int cachedMinutes = 20)
     {
-        if (!this.cache.TryGetValue(cacheKey, out T resultValue) || cachedMinutes <= 0)
+        if (!_cache.TryGetValue(cacheKey, out T resultValue) || cachedMinutes <= 0)
         {
             resultValue = await fallback();
             if (cachedMinutes > 0)
@@ -45,13 +45,13 @@ public class CacheService
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(cachedMinutes));
 
-                this.cache.Set(cacheKey, resultValue, cacheEntryOptions);
-                this.logger.LogTrace($"Cache set For {cachedMinutes} minutes! Cached key: {cacheKey}");
+                _cache.Set(cacheKey, resultValue, cacheEntryOptions);
+                _logger.LogTrace($"Cache set For {cachedMinutes} minutes! Cached key: {cacheKey}");
             }
         }
         else
         {
-            this.logger.LogTrace($"Cache hit! Cached key: {cacheKey}");
+            _logger.LogTrace($"Cache hit! Cached key: {cacheKey}");
         }
 
         return resultValue;

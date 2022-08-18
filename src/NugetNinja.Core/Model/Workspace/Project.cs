@@ -43,7 +43,7 @@ public class Project
 
         node.Attributes["Version"].Value = newVersion.ToString();
 
-        await this.SaveDocToDisk(doc);
+        await SaveDocToDisk(doc);
     }
 
     public async Task RemovePackageReferenceAsync(string refName)
@@ -64,7 +64,7 @@ public class Project
             throw new InvalidOperationException($"Could remove PackageReference {refName} in project {this} because it was not found!");
         }
 
-        await this.RemoveNode(node, doc);
+        await RemoveNode(node, doc);
     }
 
     public async Task RemoveProjectReference(string absPath)
@@ -84,7 +84,7 @@ public class Project
             throw new InvalidOperationException($"Could remove PackageReference {absPath} in project {this} because it was not found!");
         }
 
-        await this.RemoveNode(node, doc);
+        await RemoveNode(node, doc);
     }
 
     private async Task RemoveNode(HtmlNode node, HtmlDocument doc)
@@ -99,7 +99,7 @@ public class Project
             node.Remove();
         }
 
-        await this.SaveDocToDisk(doc);
+        await SaveDocToDisk(doc);
     }
 
     private async Task SaveDocToDisk(HtmlDocument doc)
@@ -112,6 +112,6 @@ public class Project
             .Replace(@"></PackageReference>", " />")
             .Replace(@"></ProjectReference>", " />")
             .Replace(@"></FrameworkReference>", " />");
-        await File.WriteAllTextAsync(this.PathOnDisk, csprojText);
+        await File.WriteAllTextAsync(PathOnDisk, csprojText);
     }
 }

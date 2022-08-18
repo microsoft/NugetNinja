@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.CommandLine;
-using Microsoft.NugetNinja.Core;
 using Microsoft.NugetNinja.AllOfficialsPlugin;
+using Microsoft.NugetNinja.Core;
 using Microsoft.NugetNinja.DeprecatedPackagePlugin;
 using Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 using Microsoft.NugetNinja.UselessPackageReferencePlugin;

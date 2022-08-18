@@ -20,7 +20,7 @@ public class DeprecatedPackageReplacement : IAction
 
     public string BuildMessage()
     {
-        var alternativeText = string.IsNullOrWhiteSpace(this.Alternative) ?
+        var alternativeText = string.IsNullOrWhiteSpace(Alternative) ?
             string.Empty :
             $"Please consider to replace that to: '{Alternative}'.";
         return $"The project: '{SourceProjectName}' referenced a deprecated package: {Package} {Package.Version}! {alternativeText}";

@@ -27,8 +27,8 @@ public class NugetServerEndPoints
 {
     public NugetServerEndPoints(string packageBaseAddress, string registrationsBaseUrl)
     {
-        this.PackageBaseAddress = packageBaseAddress;
-        this.RegistrationsBaseUrl = registrationsBaseUrl;
+        PackageBaseAddress = packageBaseAddress;
+        RegistrationsBaseUrl = registrationsBaseUrl;
     }
 
     /// <summary>

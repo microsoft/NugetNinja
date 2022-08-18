@@ -21,13 +21,11 @@ public class Model
             RootProjects.RemoveAll(p => p.PathOnDisk == path);
             return projectInDatabaes;
         }
-        else
-        {
-            var builtProject = await BuildNewProject(path);
-            AllProjects.Add(builtProject);
-            RootProjects.Add(builtProject);
-            return builtProject;
-        }
+
+        var builtProject = await BuildNewProject(path);
+        AllProjects.Add(builtProject);
+        RootProjects.Add(builtProject);
+        return builtProject;
     }
 
     private async Task<Project> BuildNewProject(string csprojPath)

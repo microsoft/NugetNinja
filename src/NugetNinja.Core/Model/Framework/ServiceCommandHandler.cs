@@ -22,8 +22,8 @@ public abstract class ServiceCommandHandler<E, S> : CommandHandler
 
     public Task Execute(string path, bool dryRun, bool verbose)
     {
-        var services = this.BuildServices(verbose);
-        return this.RunFromServices(services, path, dryRun);
+        var services = BuildServices(verbose);
+        return RunFromServices(services, path, dryRun);
     }
 
     protected virtual ServiceCollection BuildServices(bool verbose)
