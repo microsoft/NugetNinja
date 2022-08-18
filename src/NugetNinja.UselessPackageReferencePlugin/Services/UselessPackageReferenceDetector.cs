@@ -8,14 +8,14 @@ namespace Microsoft.NugetNinja.UselessPackageReferencePlugin;
 public class UselessPackageReferenceDetector : IActionDetector
 {
     private readonly NugetService _nugetService;
-    private readonly ProjectsEnumerator enumerator;
+    private readonly ProjectsEnumerator _enumerator;
 
     public UselessPackageReferenceDetector(
         NugetService nugetService,
         ProjectsEnumerator enumerator)
     {
         _nugetService = nugetService;
-        this.enumerator = enumerator;
+        this._enumerator = enumerator;
     }
 
     public async IAsyncEnumerable<IAction> AnalyzeAsync(Model context)
@@ -32,34 +32,34 @@ public class UselessPackageReferenceDetector : IActionDetector
 
     private async IAsyncEnumerable<UselessPackageReference> AnalyzeProject(Project context)
     {
-        var relatedProjects = enumerator.EnumerateAllBuiltProjects(context, false);
-        var accessiablePackages = new List<Package>();
+        var relatedProjects = _enumerator.EnumerateAllBuiltProjects(context, false);
+        var accessiblePackages = new List<Package>();
         foreach (var relatedProject in relatedProjects)
         {
-            accessiablePackages.AddRange(relatedProject.PackageReferences);
+            accessiblePackages.AddRange(relatedProject.PackageReferences);
             foreach(var package in relatedProject.PackageReferences)
             {
                 var recursivePackagesBroughtUp = await this._nugetService.GetPackageDependencies(
                     package: package,
                     nugetServer: NugetService.DefaultNugetServer,
                     patToken: string.Empty);
-                accessiablePackages.AddRange(recursivePackagesBroughtUp);
+                accessiblePackages.AddRange(recursivePackagesBroughtUp);
             }
         }
 
         foreach (var directReference in context.PackageReferences)
         {
-            var accessiablePackagesForThisProject = accessiablePackages.ToList();
+            var accessiblePackagesForThisProject = accessiblePackages.ToList();
             foreach (var otherDirectReference in context.PackageReferences.Where(p => p != directReference))
             {
                 var references = await this._nugetService.GetPackageDependencies(
                     package: otherDirectReference,
                     nugetServer: NugetService.DefaultNugetServer,
                     patToken: string.Empty);
-                accessiablePackagesForThisProject.AddRange(references);
+                accessiblePackagesForThisProject.AddRange(references);
             }
 
-            if (accessiablePackagesForThisProject.Any(pa => pa.Name == directReference.Name))
+            if (accessiblePackagesForThisProject.Any(pa => pa.Name == directReference.Name))
             {
                 yield return new UselessPackageReference(context, directReference);
             }

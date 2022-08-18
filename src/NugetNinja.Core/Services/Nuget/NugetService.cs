@@ -63,11 +63,11 @@ public class NugetService
         }
         if (!serverRoot.EndsWith("index.json"))
         {
-            serverRoot = serverRoot + "/index.json";
+            serverRoot += "/index.json";
         }
         if (!serverRoot.EndsWith("v3/index.json"))
         {
-            serverRoot = serverRoot + "/v3/index.json";
+            serverRoot += "/v3/index.json";
         }
 
         var responseModel = await this.HttpGetJson<NugetServerIndex>(serverRoot, patToken);
