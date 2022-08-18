@@ -111,7 +111,8 @@ public class Project
         csprojText = csprojText
             .Replace(@"></PackageReference>", " />")
             .Replace(@"></ProjectReference>", " />")
-            .Replace(@"></FrameworkReference>", " />");
+            .Replace(@"></FrameworkReference>", " />")
+            .Replace(@"></Using>", " />");
         await File.WriteAllTextAsync(PathOnDisk, csprojText);
     }
 }

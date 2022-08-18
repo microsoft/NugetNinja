@@ -9,6 +9,15 @@ public class Package
     {
         Name = name;
         VersionText = versionText;
+
+        if (versionText.Contains('(') ||
+            versionText.Contains(')') ||
+            versionText.Contains('[') ||
+            versionText.Contains(']'))
+        {
+            versionText = versionText.Substring(1, versionText.IndexOf(',') - 1);
+        }
+
         Version = new NugetVersion(versionText); 
     }
 
