@@ -54,8 +54,11 @@ public abstract class ServiceCommandHandler<E, S> : CommandHandler
         services.AddTransient<ProjectsEnumerator>();
         services.AddTransient<NugetService>();
 
+        if (!string.IsNullOrWhiteSpace(customNugetServer))
+        {
+            NugetService.CustomNugetServer = customNugetServer;
+        }
         NugetService.AllowPreview = allowPreview;
-        NugetService.CustomNugetServer = customNugetServer;
         NugetService.PatToken = patToken;
         
         startUp.ConfigureServices(services);
