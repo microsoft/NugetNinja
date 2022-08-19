@@ -40,7 +40,7 @@ public class DeprecatedPackageDetector : IActionDetector
                 {
                     yield return new DeprecatedPackageReplacement(project, package, catalogInformation.Deprecation.AlternatePackage?.Id);
                 }
-                else if(catalogInformation.Vulnerabilities.Any())
+                else if (catalogInformation.Vulnerabilities.Any() == true)
                 {
                     yield return new VulnerablePackageReplacement(project, package);
                 }
