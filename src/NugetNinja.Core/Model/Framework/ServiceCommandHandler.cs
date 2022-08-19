@@ -17,16 +17,19 @@ public abstract class ServiceCommandHandler<E, S> : CommandHandler
             Execute,
             OptionsProvider.PathOptions,
             OptionsProvider.DryRunOption,
-            OptionsProvider.VerboseOption);
+            OptionsProvider.VerboseOption,
+            OptionsProvider.AllowPreviewOption,
+            OptionsProvider.CustomNugetServer,
+            OptionsProvider.PatToken);
     }
 
-    public Task Execute(string path, bool dryRun, bool verbose)
+    public Task Execute(string path, bool dryRun, bool verbose, bool allowPreview, string customNugetServer, string patToken)
     {
-        var services = BuildServices(verbose);
+        var services = BuildServices(verbose, allowPreview, customNugetServer, patToken);
         return RunFromServices(services, path, dryRun);
     }
 
-    protected virtual ServiceCollection BuildServices(bool verbose)
+    protected virtual ServiceCollection BuildServices(bool verbose, bool allowPreview, string customNugetServer, string patToken)
     {
         var services = new ServiceCollection();
         services.AddLogging(logging =>
@@ -50,6 +53,11 @@ public abstract class ServiceCommandHandler<E, S> : CommandHandler
         services.AddTransient<Extractor>();
         services.AddTransient<ProjectsEnumerator>();
         services.AddTransient<NugetService>();
+
+        NugetService.AllowPreview = allowPreview;
+        NugetService.CustomNugetServer = customNugetServer;
+        NugetService.PatToken = patToken;
+        
         startUp.ConfigureServices(services);
         services.AddTransient<E>();
         return services;

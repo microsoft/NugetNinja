@@ -39,10 +39,7 @@ public class UselessPackageReferenceDetector : IActionDetector
             accessiblePackages.AddRange(relatedProject.PackageReferences);
             foreach(var package in relatedProject.PackageReferences)
             {
-                var recursivePackagesBroughtUp = await _nugetService.GetPackageDependencies(
-                    package: package,
-                    nugetServer: NugetService.DefaultNugetServer,
-                    patToken: string.Empty);
+                var recursivePackagesBroughtUp = await _nugetService.GetPackageDependencies(package: package);
                 accessiblePackages.AddRange(recursivePackagesBroughtUp);
             }
         }
@@ -52,10 +49,7 @@ public class UselessPackageReferenceDetector : IActionDetector
             var accessiblePackagesForThisProject = accessiblePackages.ToList();
             foreach (var otherDirectReference in context.PackageReferences.Where(p => p != directReference))
             {
-                var references = await _nugetService.GetPackageDependencies(
-                    package: otherDirectReference,
-                    nugetServer: NugetService.DefaultNugetServer,
-                    patToken: string.Empty);
+                var references = await _nugetService.GetPackageDependencies(package: otherDirectReference);
                 accessiblePackagesForThisProject.AddRange(references);
             }
 

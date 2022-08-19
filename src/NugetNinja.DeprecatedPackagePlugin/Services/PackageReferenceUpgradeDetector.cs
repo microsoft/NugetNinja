@@ -7,32 +7,20 @@ namespace Microsoft.NugetNinja.DeprecatedPackagePlugin;
 
 public class DeprecatedPackageDetector : IActionDetector
 {
-    private readonly DeprecatedPackageHandlerOptions _options;
     private readonly NugetService _nugetService;
 
-    public DeprecatedPackageDetector(
-        DeprecatedPackageHandlerOptions options,
-        NugetService nugetService)
+    public DeprecatedPackageDetector(NugetService nugetService)
     {
-        _options = options;
         _nugetService = nugetService;
     }
 
     public async IAsyncEnumerable<IAction> AnalyzeAsync(Model context)
     {
-        if (string.IsNullOrWhiteSpace(_options.CustomNugetServer))
-        {
-            _options.CustomNugetServer = NugetService.DefaultNugetServer;
-        }
-
         foreach (var project in context.AllProjects)
         {
             foreach (var package in project.PackageReferences)
             {
-                var catalogInformation = await _nugetService.GetPackageDeprecationInfo(
-                    package,
-                    _options.CustomNugetServer,
-                    _options.PatToken);
+                var catalogInformation = await _nugetService.GetPackageDeprecationInfo(package);
                 if (catalogInformation.Deprecation != null)
                 {
                     yield return new DeprecatedPackageReplacement(project, package, catalogInformation.Deprecation.AlternatePackage?.Id);

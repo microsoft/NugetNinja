@@ -13,7 +13,11 @@ public class NugetService
     private readonly CacheService _cacheService;
     private readonly HttpClient _httpClient;
     private readonly ILogger<NugetService> _logger;
-    public static readonly string DefaultNugetServer = "https://api.nuget.org/v3/index.json";
+    public const string DefaultNugetServer = "https://api.nuget.org/v3/index.json";
+
+    public static string CustomNugetServer = DefaultNugetServer;
+    public static string PatToken = string.Empty;
+    public static bool AllowPreview = false;
 
     public NugetService(
         CacheService cacheService,
@@ -25,38 +29,38 @@ public class NugetService
         _logger = logger;
     }
 
-    public async Task<NugetVersion> GetLatestVersion(string packageName, string nugetServer, string patToken, bool allowPreview = false)
+    public async Task<NugetVersion> GetLatestVersion(string packageName)
     {
-        var all = await GetAllPublishedVersions(packageName, nugetServer, patToken, allowPreview);
+        var all = await GetAllPublishedVersions(packageName);
         return all.OrderByDescending(t => t).First();
     }
 
-    public Task<CatalogInformation> GetPackageDeprecationInfo(Package package, string nugetServer, string patToken)
+    public Task<CatalogInformation> GetPackageDeprecationInfo(Package package)
     {
-        return _cacheService.RunWithCache($"nuget-{nugetServer}-deprecation-info-{package}-version-{package.Version}-cache",
-            () => GetPackageDeprecationInfoFromNuget(package, nugetServer, patToken));
+        return _cacheService.RunWithCache($"nuget-deprecation-info-{package}-version-{package.Version}-cache",
+            () => GetPackageDeprecationInfoFromNuget(package));
     }
 
-    public Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName, string nugetServer, string patToken, bool allowPreview)
+    public Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersions(string packageName)
     {
-        return _cacheService.RunWithCache($"all-nuget-{nugetServer}-published-versions-package-{packageName}-preview-{allowPreview}-cache",
-            () => GetAllPublishedVersionsFromNuget(packageName, nugetServer, patToken, allowPreview));
+        return _cacheService.RunWithCache($"all-nuget-published-versions-package-{packageName}-preview-cache",
+            () => GetAllPublishedVersionsFromNuget(packageName));
     }
 
-    public Task<NugetServerEndPoints> GetApiEndpoint(string serverRoot, string patToken)
+    public Task<NugetServerEndPoints> GetApiEndpoint()
     {
-        return _cacheService.RunWithCache($"nuget-server-endpoint-{serverRoot}-cache",
-            () => GetApiEndpointFromNuget(serverRoot, patToken));
+        return _cacheService.RunWithCache($"nuget-server-endpoint-cache", GetApiEndpointFromNuget);
     }
 
-    public Task<Package[]> GetPackageDependencies(Package package, string nugetServer, string patToken)
+    public Task<Package[]> GetPackageDependencies(Package package)
     {
         return _cacheService.RunWithCache($"nuget-package-{package.Name}-dependencies-{package.Version}-cache",
-            () => GetPackageDependenciesFromNuget(package, nugetServer, patToken));
+            () => GetPackageDependenciesFromNuget(package));
     }
 
-    private async Task<NugetServerEndPoints> GetApiEndpointFromNuget(string serverRoot, string patToken)
+    private async Task<NugetServerEndPoints> GetApiEndpointFromNuget()
     {
+        var serverRoot = CustomNugetServer;
         if (serverRoot.EndsWith("/"))
         {
             serverRoot = serverRoot.TrimEnd('/');
@@ -70,7 +74,7 @@ public class NugetService
             serverRoot += "/v3/index.json";
         }
 
-        var responseModel = await HttpGetJson<NugetServerIndex>(serverRoot, patToken);
+        var responseModel = await HttpGetJson<NugetServerIndex>(serverRoot, PatToken);
         var packageBaseAddress = responseModel
             .Resources
             .FirstOrDefault(r => r.Type.StartsWith("PackageBaseAddress"))
@@ -84,28 +88,23 @@ public class NugetService
         return new NugetServerEndPoints(packageBaseAddress, registrationsBaseUrl);
     }
 
-    private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName, string nugetServer, string patToken, bool allowPreview)
+    private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName)
     {
         try
         {
-            var apiEndpoint = await GetApiEndpoint(serverRoot: nugetServer, patToken);
+            var apiEndpoint = await GetApiEndpoint();
             var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{packageName.ToLower()}/index.json";
-            var responseModel = await HttpGetJson<GetAllPublishedVersionsResponseModel>(requestUrl, patToken);
+            var responseModel = await HttpGetJson<GetAllPublishedVersionsResponseModel>(requestUrl, PatToken);
             return responseModel
                 .Versions
                 ?.Select(v => new NugetVersion(v))
-                .Where(v => allowPreview || !v.IsPreviewVersion())
+                .Where(v => AllowPreview || !v.IsPreviewVersion())
                 .ToList()
                 .AsReadOnly()
                 ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
         }
         catch (Exception e)
         {
-            if (nugetServer != DefaultNugetServer)
-            {
-                // fallback to default server. try again.
-                return await GetAllPublishedVersionsFromNuget(packageName, DefaultNugetServer, string.Empty, allowPreview);
-            }
             _logger.LogTrace(e, $"Couldn't get version info based on package name: '{packageName}'.");
             _logger.LogCritical($"Couldn't get version info based on package name: '{packageName}'.");
             return new List<NugetVersion>
@@ -115,24 +114,19 @@ public class NugetService
         }
     }
 
-    private async Task<CatalogInformation> GetPackageDeprecationInfoFromNuget(Package package, string nugetServer, string patToken)
+    private async Task<CatalogInformation> GetPackageDeprecationInfoFromNuget(Package package)
     {
         try
         {
-            var apiEndpoint = await GetApiEndpoint(serverRoot: nugetServer, patToken);
+            var apiEndpoint = await GetApiEndpoint();
             var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version.ToString().ToLower()}.json";
-            var packageContext = await HttpGetJson<RegistrationIndex>(requestUrl, patToken);
-            var packageCatalogUrl = packageContext.CatalogEntry ?? throw new WebException($"Couldn'f ind a valid catalog entry for package: '{package}'!");
-            return await HttpGetJson<CatalogInformation>(packageCatalogUrl, patToken);
+            var packageContext = await HttpGetJson<RegistrationIndex>(requestUrl, PatToken);
+            var packageCatalogUrl = packageContext.CatalogEntry ?? throw new WebException($"Couldn't ind a valid catalog entry for package: '{package}'!");
+            return await HttpGetJson<CatalogInformation>(packageCatalogUrl, PatToken);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            if (nugetServer != DefaultNugetServer)
-            {
-                // fallback to default server. try again.
-                return await GetPackageDeprecationInfoFromNuget(package, DefaultNugetServer, string.Empty);
-            }
-            _logger.LogTrace(ex, $"Couldn't get the deprecation information based on package: {package}.");
+            _logger.LogTrace(e, $"Couldn't get version info based on package name: '{package}'.");
             _logger.LogCritical($"Couldn't get the deprecation information based on package: {package}.");
             return new CatalogInformation
             {
@@ -142,11 +136,11 @@ public class NugetService
         }
     }
 
-    private async Task<Package[]> GetPackageDependenciesFromNuget(Package package, string nugetServer, string patToken)
+    private async Task<Package[]> GetPackageDependenciesFromNuget(Package package)
     {
-        var apiEndpoint = await GetApiEndpoint(serverRoot: nugetServer, patToken);
+        var apiEndpoint = await GetApiEndpoint();
         var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version}/{package.Name.ToLower()}.nuspec";
-        var nuspec = await HttpGetString(requestUrl, patToken);
+        var nuspec = await HttpGetString(requestUrl, PatToken);
         var doc = new HtmlDocument();
         doc.LoadHtml(nuspec);
         var packageReferences = doc.DocumentNode
