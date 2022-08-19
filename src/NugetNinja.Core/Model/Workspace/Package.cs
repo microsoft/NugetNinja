@@ -15,7 +15,12 @@ public class Package
             versionText.Contains('[') ||
             versionText.Contains(']'))
         {
-            versionText = versionText.Substring(1, versionText.IndexOf(',') - 1);
+            versionText = versionText
+                .Replace("(", string.Empty)
+                .Replace(")", string.Empty)
+                .Replace("[", string.Empty)
+                .Replace("]", string.Empty)
+                .Split(',')[0];
         }
 
         Version = new NugetVersion(versionText); 

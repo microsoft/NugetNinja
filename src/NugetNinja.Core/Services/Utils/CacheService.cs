@@ -10,6 +10,7 @@ public class CacheService
 {
     private readonly IMemoryCache _cache;
     private readonly ILogger<CacheService> _logger;
+    private readonly Dictionary<string, Exception> _exceptions = new();
 
     /// <summary>
     /// Creates a new cache service.
@@ -37,9 +38,22 @@ public class CacheService
         Func<Task<T>> fallback,
         int cachedMinutes = 20)
     {
+        if (_exceptions.ContainsKey(cacheKey))
+        {
+            throw _exceptions[cacheKey];
+        }
+
         if (!_cache.TryGetValue(cacheKey, out T resultValue) || cachedMinutes <= 0)
         {
-            resultValue = await fallback();
+            try
+            {
+                resultValue = await fallback();
+            }
+            catch (Exception e)
+            {
+                _exceptions.Add(cacheKey, e);
+                throw;
+            }
             if (cachedMinutes > 0)
             {
                 var cacheEntryOptions = new MemoryCacheEntryOptions()

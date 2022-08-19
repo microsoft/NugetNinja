@@ -29,6 +29,6 @@ public class DeprecatedPackageReplacement : IAction
     public Task TakeActionAsync()
     {
         // To DO: Remove this reference.
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }
