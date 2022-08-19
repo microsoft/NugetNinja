@@ -23,7 +23,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Inspect
-      uses: glassechidna/resharper-action@master
+      uses: Anduin2017/resharper-action@master
       with:
         solution: 'Microsoft.NugetNinja.sln'
     - name: Test
