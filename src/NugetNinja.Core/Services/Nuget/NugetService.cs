@@ -90,69 +90,42 @@ public class NugetService
 
     private async Task<IReadOnlyCollection<NugetVersion>> GetAllPublishedVersionsFromNuget(string packageName)
     {
-        try
-        {
-            var apiEndpoint = await GetApiEndpoint();
-            var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{packageName.ToLower()}/index.json";
-            var responseModel = await HttpGetJson<GetAllPublishedVersionsResponseModel>(requestUrl, PatToken);
-            return responseModel
-                .Versions
-                ?.Select(v => new NugetVersion(v))
-                .Where(v => AllowPreview || !v.IsPreviewVersion())
-                .ToList()
-                .AsReadOnly()
-                ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
-        }
-        catch (Exception e)
-        {
-            _logger.LogTrace(e, $"Couldn't get version info based on package name: '{packageName}'.");
-            _logger.LogCritical($"Couldn't get version info based on package name: '{packageName}'.");
-            throw;
-        }
+        var apiEndpoint = await GetApiEndpoint();
+        var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{packageName.ToLower()}/index.json";
+        var responseModel = await HttpGetJson<GetAllPublishedVersionsResponseModel>(requestUrl, PatToken);
+        return responseModel
+            .Versions
+            ?.Select(v => new NugetVersion(v))
+            .Where(v => AllowPreview || !v.IsPreviewVersion())
+            .ToList()
+            .AsReadOnly()
+            ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
     }
 
     private async Task<CatalogInformation> GetPackageDeprecationInfoFromNuget(Package package)
     {
-        try
-        {
-            var apiEndpoint = await GetApiEndpoint();
-            var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version.ToString().ToLower()}.json";
-            var packageContext = await HttpGetJson<RegistrationIndex>(requestUrl, PatToken);
-            var packageCatalogUrl = packageContext.CatalogEntry ?? throw new WebException($"Couldn't ind a valid catalog entry for package: '{package}'!");
-            return await HttpGetJson<CatalogInformation>(packageCatalogUrl, PatToken);
-        }
-        catch (Exception e)
-        {
-            _logger.LogTrace(e, $"Couldn't get version info based on package name: '{package}'.");
-            _logger.LogCritical($"Couldn't get the deprecation information based on package: {package}.");
-            throw;
-        }
+        var apiEndpoint = await GetApiEndpoint();
+        var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version.ToString().ToLower()}.json";
+        var packageContext = await HttpGetJson<RegistrationIndex>(requestUrl, PatToken);
+        var packageCatalogUrl = packageContext.CatalogEntry ?? throw new WebException($"Couldn't ind a valid catalog entry for package: '{package}'!");
+        return await HttpGetJson<CatalogInformation>(packageCatalogUrl, PatToken);
     }
 
     private async Task<Package[]> GetPackageDependenciesFromNuget(Package package)
     {
-        try
-        {
-            var apiEndpoint = await GetApiEndpoint();
-            var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version}/{package.Name.ToLower()}.nuspec";
-            var nuspec = await HttpGetString(requestUrl, PatToken);
-            var doc = new HtmlDocument();
-            doc.LoadHtml(nuspec);
-            var packageReferences = doc.DocumentNode
-                .Descendants("dependency")
-                .Select(p => new Package(
-                    name: p.Attributes["id"].Value,
-                    versionText: p.Attributes["version"].Value))
-                .DistinctBy(p => p.Name)
-                .ToArray();
-            return packageReferences;
-        }
-        catch (Exception e)
-        {
-            _logger.LogTrace(e, $"Couldn't get version info based on package name: '{package}'.");
-            _logger.LogCritical($"Couldn't get the deprecation information based on package: {package}.");
-            throw;
-        }
+        var apiEndpoint = await GetApiEndpoint();
+        var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version}/{package.Name.ToLower()}.nuspec";
+        var nuspec = await HttpGetString(requestUrl, PatToken);
+        var doc = new HtmlDocument();
+        doc.LoadHtml(nuspec);
+        var packageReferences = doc.DocumentNode
+            .Descendants("dependency")
+            .Select(p => new Package(
+                name: p.Attributes["id"].Value,
+                versionText: p.Attributes["version"].Value))
+            .DistinctBy(p => p.Name)
+            .ToArray();
+        return packageReferences;
     }
 
     private async Task<T> HttpGetJson<T>(string url, string patToken)
