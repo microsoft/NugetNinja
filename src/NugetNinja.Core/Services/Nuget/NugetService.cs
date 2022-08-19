@@ -107,10 +107,7 @@ public class NugetService
         {
             _logger.LogTrace(e, $"Couldn't get version info based on package name: '{packageName}'.");
             _logger.LogCritical($"Couldn't get version info based on package name: '{packageName}'.");
-            return new List<NugetVersion>
-            {
-                new("0.0.1")
-            };
+            throw;
         }
     }
 
@@ -128,11 +125,7 @@ public class NugetService
         {
             _logger.LogTrace(e, $"Couldn't get version info based on package name: '{package}'.");
             _logger.LogCritical($"Couldn't get the deprecation information based on package: {package}.");
-            return new CatalogInformation
-            {
-                Deprecation = null,
-                Vulnerabilities = new List<Vulnerability>()
-            };
+            throw;
         }
     }
 
