@@ -131,19 +131,28 @@ public class NugetService
 
     private async Task<Package[]> GetPackageDependenciesFromNuget(Package package)
     {
-        var apiEndpoint = await GetApiEndpoint();
-        var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version}/{package.Name.ToLower()}.nuspec";
-        var nuspec = await HttpGetString(requestUrl, PatToken);
-        var doc = new HtmlDocument();
-        doc.LoadHtml(nuspec);
-        var packageReferences = doc.DocumentNode
-            .Descendants("dependency")
-            .Select(p => new Package(
-                name: p.Attributes["id"].Value,
-                versionText: p.Attributes["version"].Value))
-            .DistinctBy(p => p.Name)
-            .ToArray();
-        return packageReferences;
+        try
+        {
+            var apiEndpoint = await GetApiEndpoint();
+            var requestUrl = $"{apiEndpoint.PackageBaseAddress.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version}/{package.Name.ToLower()}.nuspec";
+            var nuspec = await HttpGetString(requestUrl, PatToken);
+            var doc = new HtmlDocument();
+            doc.LoadHtml(nuspec);
+            var packageReferences = doc.DocumentNode
+                .Descendants("dependency")
+                .Select(p => new Package(
+                    name: p.Attributes["id"].Value,
+                    versionText: p.Attributes["version"].Value))
+                .DistinctBy(p => p.Name)
+                .ToArray();
+            return packageReferences;
+        }
+        catch (Exception e)
+        {
+            _logger.LogTrace(e, $"Couldn't get version info based on package name: '{package}'.");
+            _logger.LogCritical($"Couldn't get the deprecation information based on package: {package}.");
+            throw;
+        }
     }
 
     private async Task<T> HttpGetJson<T>(string url, string patToken)

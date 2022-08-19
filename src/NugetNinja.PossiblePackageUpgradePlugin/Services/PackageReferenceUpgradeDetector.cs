@@ -32,7 +32,8 @@ public class PackageReferenceUpgradeDetector : IActionDetector
                 }
                 catch (Exception e)
                 {
-                    _logger.LogCritical(e, $"Failed to get package latest version by name: '{package}'.");
+                    _logger.LogTrace(e, $"Failed to get package latest version by name: '{package}'.");
+                    _logger.LogCritical($"Failed to get package latest version by name: '{package}'.");
                     continue;
                 }
                 

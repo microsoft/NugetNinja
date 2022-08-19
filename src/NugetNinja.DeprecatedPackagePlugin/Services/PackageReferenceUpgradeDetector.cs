@@ -32,7 +32,8 @@ public class DeprecatedPackageDetector : IActionDetector
                 }
                 catch (Exception e)
                 {
-                    _logger.LogCritical(e, $"Failed to get package deprecation info by name: '{package}'.");
+                    _logger.LogTrace(e, $"Failed to get package deprecation info by name: '{package}'.");
+                    _logger.LogCritical($"Failed to get package deprecation info by name: '{package}'.");
                     continue;
                 }
                 if (catalogInformation.Deprecation != null)
