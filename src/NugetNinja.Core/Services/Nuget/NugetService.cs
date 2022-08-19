@@ -47,9 +47,10 @@ public class NugetService
             () => GetAllPublishedVersionsFromNuget(packageName));
     }
 
-    public Task<NugetServerEndPoints> GetApiEndpoint()
+    public Task<NugetServerEndPoints> GetApiEndpoint(string? overrideServer = null)
     {
-        return _cacheService.RunWithCache($"nuget-server-endpoint-cache", GetApiEndpointFromNuget);
+        var server = overrideServer ?? CustomNugetServer;
+        return _cacheService.RunWithCache($"nuget-server-{server}-endpoint-cache", () => GetApiEndpointFromNuget(server));
     }
 
     public Task<Package[]> GetPackageDependencies(Package package)
@@ -58,9 +59,9 @@ public class NugetService
             () => GetPackageDependenciesFromNuget(package));
     }
 
-    private async Task<NugetServerEndPoints> GetApiEndpointFromNuget()
+    private async Task<NugetServerEndPoints> GetApiEndpointFromNuget(string? overrideServer = null)
     {
-        var serverRoot = CustomNugetServer;
+        var serverRoot = overrideServer ?? CustomNugetServer;
         if (serverRoot.EndsWith("/"))
         {
             serverRoot = serverRoot.TrimEnd('/');
@@ -102,13 +103,27 @@ public class NugetService
             ?? throw new WebException($"Couldn't find a valid version from Nuget with package: '{packageName}'!");
     }
 
-    private async Task<CatalogInformation> GetPackageDeprecationInfoFromNuget(Package package)
+    private async Task<CatalogInformation> GetPackageDeprecationInfoFromNuget(Package package, string? overrideServer = null, string? overridePat = null)
     {
-        var apiEndpoint = await GetApiEndpoint();
-        var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version.ToString().ToLower()}.json";
-        var packageContext = await HttpGetJson<RegistrationIndex>(requestUrl, PatToken);
-        var packageCatalogUrl = packageContext.CatalogEntry ?? throw new WebException($"Couldn't ind a valid catalog entry for package: '{package}'!");
-        return await HttpGetJson<CatalogInformation>(packageCatalogUrl, PatToken);
+        var server = overrideServer ?? CustomNugetServer;
+        var pat = overridePat ?? PatToken;
+        try
+        {
+            var apiEndpoint = await GetApiEndpoint(server);
+            var requestUrl = $"{apiEndpoint.RegistrationsBaseUrl.TrimEnd('/')}/{package.Name.ToLower()}/{package.Version.ToString().ToLower()}.json";
+            var packageContext = await HttpGetJson<RegistrationIndex>(requestUrl, pat);
+            var packageCatalogUrl = packageContext.CatalogEntry ?? throw new WebException($"Couldn't ind a valid catalog entry for package: '{package}'!");
+            return await HttpGetJson<CatalogInformation>(packageCatalogUrl, pat);
+        }
+        catch
+        {
+            if (server != DefaultNugetServer)
+            {
+                // fall back to default server.
+                return await GetPackageDeprecationInfoFromNuget(package, DefaultNugetServer, string.Empty);
+            }
+            throw;
+        }
     }
 
     private async Task<Package[]> GetPackageDependenciesFromNuget(Package package)
