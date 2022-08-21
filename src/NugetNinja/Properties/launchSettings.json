@@ -27,6 +27,10 @@
         "Dryrun Remove Deprecated": {
             "commandName": "Project",
             "commandLineArgs": "remove-deprecated -p \"..\\..\\..\\..\\..\" -v -d"
+        },
+        "Run missing": {
+            "commandName": "Project",
+            "commandLineArgs": "fill-properties -p \"..\\..\\..\\..\\..\""
         }
     }
 }

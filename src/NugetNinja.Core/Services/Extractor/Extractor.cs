@@ -7,11 +7,11 @@ namespace Microsoft.NugetNinja.Core;
 
 public class Extractor
 {
-    private readonly ILogger<Extractor> logger;
+    private readonly ILogger<Extractor> _logger;
 
     public Extractor(ILogger<Extractor> logger)
     {
-        this.logger = logger;
+        _logger = logger;
     }
 
     public async Task<Model> Parse(string rootPath)
@@ -24,7 +24,7 @@ public class Extractor
 
         foreach (var csprojPath in csprojs)
         {
-            logger.LogTrace($"Parsing {csprojPath}...");
+            _logger.LogTrace($"Parsing {csprojPath}...");
             await model.IncludeProject(csprojPath);
         }
 

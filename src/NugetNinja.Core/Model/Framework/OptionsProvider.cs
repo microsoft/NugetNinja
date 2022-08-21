@@ -22,23 +22,22 @@ public static class OptionsProvider
         aliases: new[] { "--verbose", "-v" },
         description: "Show detailed log");
 
-    public static Option<bool> AllowPreviewOption =
+    public static readonly Option<bool> AllowPreviewOption =
         new(
             aliases: new[] { "--allow-preview" },
             description: "Allow using preview versions of packages from Nuget.");
 
-    public static Option<string> CustomNugetServer =
+    public static readonly Option<string> CustomNugetServer =
         new(
             aliases: new[] { "--nuget-server" },
             description: "If you want to use a customized nuget server instead of the official nuget.org, you can set it with a value like: https://nuget.myserver/v3/index.json");
 
-    public static Option<string> PatToken =
+    public static readonly Option<string> PatToken =
         new(
             aliases: new[] { "--token" },
             description: "The PAT token which has privilege to access the nuget server. See: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate");
 
-
-    public static Option[] GetGlobalOptions()
+    private static Option[] GetGlobalOptions()
     {
         return new Option[]
         {

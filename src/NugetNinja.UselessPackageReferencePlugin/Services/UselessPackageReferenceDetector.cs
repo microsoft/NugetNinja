@@ -19,7 +19,7 @@ public class UselessPackageReferenceDetector : IActionDetector
     {
         _logger = logger;
         _nugetService = nugetService;
-        this._enumerator = enumerator;
+        _enumerator = enumerator;
     }
 
     public async IAsyncEnumerable<IAction> AnalyzeAsync(Model context)

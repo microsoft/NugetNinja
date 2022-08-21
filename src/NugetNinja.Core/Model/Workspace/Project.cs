@@ -7,16 +7,69 @@ namespace Microsoft.NugetNinja.Core;
 
 public class Project
 {
-    public Project(string pathOnDisk)
+    public Project(string pathOnDisk, HtmlNode doc)
     {
         PathOnDisk = pathOnDisk;
+        Sdk = doc.ChildNodes["Project"].Attributes[nameof(Sdk)]?.Value;
+        OutputType = doc.Descendants(nameof(OutputType)).SingleOrDefault()?.FirstChild.InnerText;
+        TargetFramework = doc.Descendants(nameof(TargetFramework)).SingleOrDefault()?.FirstChild.InnerText;
+        Nullable = doc.Descendants(nameof(Nullable)).SingleOrDefault()?.FirstChild.InnerText;
+        ImplicitUsings = doc.Descendants(nameof(ImplicitUsings)).SingleOrDefault()?.FirstChild.InnerText;
+        PackageLicenseFile = doc.Descendants(nameof(PackageLicenseFile)).SingleOrDefault()?.FirstChild.InnerText;
+        PackageLicenseExpression = doc.Descendants(nameof(PackageLicenseExpression)).SingleOrDefault()?.FirstChild.InnerText;
+        Description = doc.Descendants(nameof(Description)).SingleOrDefault()?.FirstChild.InnerText;
+        Version = doc.Descendants(nameof(Version)).SingleOrDefault()?.FirstChild.InnerText;
+        Company = doc.Descendants(nameof(Company)).SingleOrDefault()?.FirstChild.InnerText;
+        Product = doc.Descendants(nameof(Product)).SingleOrDefault()?.FirstChild.InnerText;
+        Authors = doc.Descendants(nameof(Authors)).SingleOrDefault()?.FirstChild.InnerText;
+        PackageTags = doc.Descendants(nameof(PackageTags)).SingleOrDefault()?.FirstChild.InnerText;
+        PackageProjectUrl = doc.Descendants(nameof(PackageProjectUrl)).SingleOrDefault()?.FirstChild.InnerText;
+        RepositoryUrl = doc.Descendants(nameof(RepositoryUrl)).SingleOrDefault()?.FirstChild.InnerText;
+        RepositoryType = doc.Descendants(nameof(RepositoryType)).SingleOrDefault()?.FirstChild.InnerText;
     }
 
     public string PathOnDisk { get; set; }
 
+    #region Framework
+    public string? Sdk { get; set; }
+    public string? OutputType { get; set; }
+    public string? TargetFramework { get; set; }
+    #endregion
+
+    #region Features
+    public string? Nullable { get; set; }
+    public string? ImplicitUsings { get; set; }
+    #endregion
+
+    #region Nuget Packaging
+    public string? PackageLicenseFile { get; set; }
+    public string? PackageLicenseExpression { get; set; }
+    public string? Description { get; set; }
+    public string? Version { get; set; }
+    public string? Company { get; set; }
+    public string? Product { get; set; }
+    public string? Authors { get; set; }
+    public string? PackageTags { get; set; }
+    public string? PackageProjectUrl { get; set; }
+    public string? RepositoryUrl { get; set; }
+    public string? RepositoryType { get; set; }
+    #endregion
+
     public List<Project> ProjectReferences { get; init; } = new();
 
     public List<Package> PackageReferences { get; init; } = new();
+
+    public bool Executable()
+    {
+        return Sdk?.EndsWith("Web") ?? OutputType?.ToLower().EndsWith("exe") ?? false;
+    }
+
+    public bool IsTest()
+    {
+        return 
+            PackageReferences.Any(p => p.Name.Contains("test", StringComparison.OrdinalIgnoreCase)) ||
+            PackageReferences.Any(p => p.Name.Contains("xunit", StringComparison.OrdinalIgnoreCase));
+    }
 
     public override string ToString()
     {
@@ -33,8 +86,7 @@ public class Project
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("PackageReference")
-            .Where(d => d.Attributes["Include"].Value == refName)
-            .FirstOrDefault();
+            .FirstOrDefault(d => d.Attributes["Include"].Value == refName);
 
         if (node == null)
         {
@@ -56,8 +108,7 @@ public class Project
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("PackageReference")
-            .Where(d => d.Attributes["Include"].Value == refName)
-            .FirstOrDefault();
+            .FirstOrDefault(d => d.Attributes["Include"].Value == refName);
 
         if (node == null)
         {
@@ -76,8 +127,7 @@ public class Project
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("ProjectReference")
-            .Where(p => Equals(absPath, StringExtensions.GetAbsolutePath(contextPath, p.Attributes["Include"].Value)))
-            .FirstOrDefault();
+            .FirstOrDefault(p => Equals(absPath, StringExtensions.GetAbsolutePath(contextPath, p.Attributes["Include"].Value)));
 
         if (node == null)
         {
@@ -85,6 +135,28 @@ public class Project
         }
 
         await RemoveNode(node, doc);
+    }
+
+    public async Task AddProperty(string propertyName, string propertyValue)
+    {
+        var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
+        var contextPath = Path.GetDirectoryName(PathOnDisk) ?? throw new IOException($"Couldn't find the project path based on: '{PathOnDisk}'.");
+        var doc = new HtmlDocument();
+        doc.OptionOutputOriginalCase = true;
+        doc.LoadHtml(csprojContent);
+
+        var newline = HtmlNode.CreateNode("\r\n");
+        var property = doc.CreateElement(propertyName);
+        property.InnerHtml = propertyValue;
+
+        var propertyGroup = doc.DocumentNode
+            .Descendants("PropertyGroup")
+            .First();
+
+        propertyGroup.AppendChild(property);
+        propertyGroup.AppendChild(newline);
+
+        await SaveDocToDisk(doc);
     }
 
     private async Task RemoveNode(HtmlNode node, HtmlDocument doc)

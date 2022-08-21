@@ -14,5 +14,6 @@ public class StartUp : IStartUp
         new PossiblePackageUpgradePlugin.StartUp().ConfigureServices(services);
         new UselessPackageReferencePlugin.StartUp().ConfigureServices(services);
         new UselessProjectReferencePlugin.StartUp().ConfigureServices(services);
+        new MissingPropertyPlugin.StartUp().ConfigureServices(services);
     }
 }

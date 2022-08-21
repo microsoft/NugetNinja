@@ -3,8 +3,8 @@
 
 namespace Microsoft.NugetNinja.Core;
 
-public abstract class DetectorBasedCommandHandler<T, S> : ServiceCommandHandler<DetectorStarter<T>, S> 
+public abstract class DetectorBasedCommandHandler<T, TS> : ServiceCommandHandler<DetectorStarter<T>, TS> 
     where T : IActionDetector
-    where S : class, IStartUp, new()
+    where TS : class, IStartUp, new()
 {
 }
