@@ -44,12 +44,10 @@ public class Model
             var projectObject = await IncludeProject(projectReference);
             subProjectReferenceObjects.Add(projectObject);
         }
-        var project = new Project(csprojPath)
+        var project = new Project(csprojPath, csprojDoc.DocumentNode)
         {
             PackageReferences = packageReferences.ToList(),
-            ProjectReferences = subProjectReferenceObjects,
-            Sdk = csprojDoc.DocumentNode.Attributes["Sdk"].Value,
-            OutputType = csprojDoc.DocumentNode.Descendants("OutputType").ToString()
+            ProjectReferences = subProjectReferenceObjects
         };
         return project;
     }

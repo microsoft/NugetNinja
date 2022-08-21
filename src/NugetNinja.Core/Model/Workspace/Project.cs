@@ -7,9 +7,23 @@ namespace Microsoft.NugetNinja.Core;
 
 public class Project
 {
-    public Project(string pathOnDisk)
+    public Project(string pathOnDisk, HtmlNode doc)
     {
         PathOnDisk = pathOnDisk;
+        Sdk = doc.ChildNodes["Project"].Attributes[nameof(Sdk)]?.Value;
+        OutputType = doc.Descendants(nameof(OutputType)).SingleOrDefault()?.FirstChild.InnerText;
+        TargetFramework = doc.Descendants(nameof(TargetFramework)).SingleOrDefault()?.FirstChild.InnerText;
+        Nullable = doc.Descendants(nameof(Nullable)).SingleOrDefault()?.FirstChild.InnerText;
+        ImplicitUsings = doc.Descendants(nameof(ImplicitUsings)).SingleOrDefault()?.FirstChild.InnerText;
+        Description = doc.Descendants(nameof(Description)).SingleOrDefault()?.FirstChild.InnerText;
+        Version = doc.Descendants(nameof(Version)).SingleOrDefault()?.FirstChild.InnerText;
+        Company = doc.Descendants(nameof(Company)).SingleOrDefault()?.FirstChild.InnerText;
+        Product = doc.Descendants(nameof(Product)).SingleOrDefault()?.FirstChild.InnerText;
+        Authors = doc.Descendants(nameof(Authors)).SingleOrDefault()?.FirstChild.InnerText;
+        PackageTags = doc.Descendants(nameof(PackageTags)).SingleOrDefault()?.FirstChild.InnerText;
+        PackageProjectUrl = doc.Descendants(nameof(PackageProjectUrl)).SingleOrDefault()?.FirstChild.InnerText;
+        RepositoryUrl = doc.Descendants(nameof(RepositoryUrl)).SingleOrDefault()?.FirstChild.InnerText;
+        RepositoryType = doc.Descendants(nameof(RepositoryType)).SingleOrDefault()?.FirstChild.InnerText;
     }
 
     public string PathOnDisk { get; set; }
@@ -105,6 +119,25 @@ public class Project
         }
 
         await RemoveNode(node, doc);
+    }
+
+    public async Task SetProperty(string propertyName, string propertyValue)
+    {
+        var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
+        var contextPath = Path.GetDirectoryName(PathOnDisk) ?? throw new IOException($"Couldn't find the project path based on: '{PathOnDisk}'.");
+        var doc = new HtmlDocument();
+        doc.OptionOutputOriginalCase = true;
+        doc.LoadHtml(csprojContent);
+
+        var property = doc.CreateElement(propertyName);
+        property.InnerHtml = propertyValue;
+
+        doc.DocumentNode
+            .Descendants("PropertyGroup")
+            .First()
+            .AppendChild(property);
+
+        await SaveDocToDisk(doc);
     }
 
     private async Task RemoveNode(HtmlNode node, HtmlDocument doc)
