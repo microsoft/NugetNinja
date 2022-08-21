@@ -7,6 +7,7 @@ using Microsoft.NugetNinja.DeprecatedPackagePlugin;
 using Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 using Microsoft.NugetNinja.UselessPackageReferencePlugin;
 using Microsoft.NugetNinja.UselessProjectReferencePlugin;
+using Microsoft.NugetNinja.MissingPropertyPlugin;
 
 namespace Microsoft.NugetNinja.AllOfficialsPlugin;
 
@@ -19,6 +20,7 @@ public class RunAllOfficialPluginsService : IEntryService
     public RunAllOfficialPluginsService(
         ILogger<RunAllOfficialPluginsService> logger,
         Extractor extractor,
+        MissingPropertyDetector missingPropertyDetector,
         DeprecatedPackageDetector deprecatedPackageDetector,
         PackageReferenceUpgradeDetector packageReferenceUpgradeDetector,
         UselessPackageReferenceDetector uselessPackageReferenceDetector,
@@ -28,6 +30,7 @@ public class RunAllOfficialPluginsService : IEntryService
         _extractor = extractor;
         _pluginDetectors = new List<IActionDetector>
         {
+            missingPropertyDetector,
             uselessPackageReferenceDetector,
             uselessProjectReferenceDetector,
             packageReferenceUpgradeDetector,
@@ -42,7 +45,7 @@ public class RunAllOfficialPluginsService : IEntryService
             _logger.LogInformation($"Parsing files to build project structure based on path: '{path}'...");
             var model = await _extractor.Parse(path);
 
-            _logger.LogInformation($"Analysing possible actions via {plugin.GetType().Name}...");
+            _logger.LogInformation($"Analyzing possible actions via {plugin.GetType().Name}...");
             var actions = plugin.AnalyzeAsync(model);
 
             await foreach (var action in actions)
