@@ -59,6 +59,18 @@ public class Project
 
     public List<Package> PackageReferences { get; init; } = new();
 
+    public bool Executable()
+    {
+        return Sdk?.EndsWith("Web") ?? OutputType?.ToLower().EndsWith("exe") ?? false;
+    }
+
+    public bool IsTest()
+    {
+        return 
+            PackageReferences.Any(p => p.Name.Contains("test", StringComparison.OrdinalIgnoreCase)) ||
+            PackageReferences.Any(p => p.Name.Contains("xunit", StringComparison.OrdinalIgnoreCase));
+    }
+
     public override string ToString()
     {
         return Path.GetFileNameWithoutExtension(PathOnDisk);

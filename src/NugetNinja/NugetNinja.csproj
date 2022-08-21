@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,14 +11,16 @@
     <PublishSingleFile>true</PublishSingleFile>
     <PublishReadyToRun>true</PublishReadyToRun>
     <Company>Microsoft</Company>
-		<Product>NugetNinja</Product>
-		<Authors>anduin2017 codgician</Authors>
+    <Product>NugetNinja</Product>
+    <Authors>anduin2017 codgician</Authors>
     <Description>A tool for detecting dependencies of .NET projects.</Description>
     <PackageTags>cli nuget dotnet csproj dependencies</PackageTags>
     <RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/Microsoft/NugetNinja.git</RepositoryUrl>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<PackageId>Microsoft.NugetNinja</PackageId>
+    <RepositoryUrl>https://github.com/Microsoft/NugetNinja.git</RepositoryUrl>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>Microsoft.NugetNinja</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Microsoft/Nugetninja</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
