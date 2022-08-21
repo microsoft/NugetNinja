@@ -2,9 +2,8 @@
 // Licensed under the MIT License.
 
 using Microsoft.NugetNinja.Core;
-using Microsoft.NugetNinja.MissingPropertyPlugin;
 
-namespace Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
+namespace Microsoft.NugetNinja.MissingPropertyPlugin;
 
 public class MissingPropertyPlugin : INinjaPlugin
 {

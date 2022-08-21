@@ -4,6 +4,7 @@
 using System.CommandLine;
 using Microsoft.NugetNinja.AllOfficialsPlugin;
 using Microsoft.NugetNinja.Core;
+using Microsoft.NugetNinja.MissingPropertyPlugin;
 using Microsoft.NugetNinja.DeprecatedPackagePlugin;
 using Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 using Microsoft.NugetNinja.UselessPackageReferencePlugin;
@@ -15,6 +16,7 @@ var program = new RootCommand(description)
     .AddGlobalOptions()
     .AddPlugins(
         new AllOfficialsPlugin(),
+        new MissingPropertyPlugin(),
         new DeprecatedPackagePlugin(),
         new PossiblePackageUpgradePlugin(),
         new UselessPackageReferencePlugin(),
