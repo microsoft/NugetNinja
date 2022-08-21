@@ -10,7 +10,6 @@
     <Nullable>enable</Nullable>
     <AssemblyName>ninja</AssemblyName>
     <RootNamespace>Microsoft.NugetNinja</RootNamespace>
-    <PublishReadyToRun>true</PublishReadyToRun>
     <Company>Microsoft</Company>
     <Product>NugetNinja</Product>
     <Authors>anduin2017 codgician</Authors>
