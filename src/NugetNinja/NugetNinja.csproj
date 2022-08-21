@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <Version>0.0.1</Version>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>dotlang</ToolCommandName>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
