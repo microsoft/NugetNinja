@@ -35,6 +35,8 @@ public class MissingPropertyDetector : IActionDetector
                 yield return new MissingProperty(project, nameof(project.Nullable), "enable");
             if (string.IsNullOrWhiteSpace(project.ImplicitUsings))
                 yield return new MissingProperty(project, nameof(project.ImplicitUsings), "enable");
+            if (string.IsNullOrWhiteSpace(project.PackageLicenseExpression) && string.IsNullOrWhiteSpace(project.PackageLicenseFile))
+                yield return new MissingProperty(project, nameof(project.PackageLicenseExpression), "MIT");
             if (string.IsNullOrWhiteSpace(project.Description))
                 yield return new MissingProperty(project, nameof(project.Description), "A library that shared to nuget.");
             if (string.IsNullOrWhiteSpace(project.Version))

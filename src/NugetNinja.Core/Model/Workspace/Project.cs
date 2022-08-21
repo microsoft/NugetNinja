@@ -15,6 +15,8 @@ public class Project
         TargetFramework = doc.Descendants(nameof(TargetFramework)).SingleOrDefault()?.FirstChild.InnerText;
         Nullable = doc.Descendants(nameof(Nullable)).SingleOrDefault()?.FirstChild.InnerText;
         ImplicitUsings = doc.Descendants(nameof(ImplicitUsings)).SingleOrDefault()?.FirstChild.InnerText;
+        PackageLicenseFile = doc.Descendants(nameof(PackageLicenseFile)).SingleOrDefault()?.FirstChild.InnerText;
+        PackageLicenseExpression = doc.Descendants(nameof(PackageLicenseExpression)).SingleOrDefault()?.FirstChild.InnerText;
         Description = doc.Descendants(nameof(Description)).SingleOrDefault()?.FirstChild.InnerText;
         Version = doc.Descendants(nameof(Version)).SingleOrDefault()?.FirstChild.InnerText;
         Company = doc.Descendants(nameof(Company)).SingleOrDefault()?.FirstChild.InnerText;
@@ -40,6 +42,8 @@ public class Project
     #endregion
 
     #region Nuget Packaging
+    public string? PackageLicenseFile { get; set; }
+    public string? PackageLicenseExpression { get; set; }
     public string? Description { get; set; }
     public string? Version { get; set; }
     public string? Company { get; set; }
