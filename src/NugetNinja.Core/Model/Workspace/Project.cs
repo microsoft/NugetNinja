@@ -125,7 +125,7 @@ public class Project
         await RemoveNode(node, doc);
     }
 
-    public async Task SetProperty(string propertyName, string propertyValue)
+    public async Task AddProperty(string propertyName, string propertyValue)
     {
         var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
         var contextPath = Path.GetDirectoryName(PathOnDisk) ?? throw new IOException($"Couldn't find the project path based on: '{PathOnDisk}'.");
@@ -133,13 +133,16 @@ public class Project
         doc.OptionOutputOriginalCase = true;
         doc.LoadHtml(csprojContent);
 
+        var newline = HtmlNode.CreateNode("\r\n");
         var property = doc.CreateElement(propertyName);
         property.InnerHtml = propertyValue;
 
-        doc.DocumentNode
+        var propertyGroup = doc.DocumentNode
             .Descendants("PropertyGroup")
-            .First()
-            .AppendChild(property);
+            .First();
+
+        propertyGroup.AppendChild(property);
+        propertyGroup.AppendChild(newline);
 
         await SaveDocToDisk(doc);
     }
