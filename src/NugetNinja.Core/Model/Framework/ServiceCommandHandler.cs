@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.NugetNinja.Core;
 
-public abstract class ServiceCommandHandler<E, S> : CommandHandler
-    where E : class, IEntryService
-    where S : class, IStartUp, new()
+public abstract class ServiceCommandHandler<TE, TS> : CommandHandler
+    where TE : class, IEntryService
+    where TS : class, IStartUp, new()
 {
     public override void OnCommandBuilt(Command command)
     {
@@ -46,7 +46,7 @@ public abstract class ServiceCommandHandler<E, S> : CommandHandler
             logging.SetMinimumLevel(verbose ? LogLevel.Trace : LogLevel.Warning);
         });
 
-        var startUp = new S();
+        var startUp = new TS();
         services.AddMemoryCache();
         services.AddHttpClient();
         services.AddSingleton<CacheService>();
@@ -62,18 +62,18 @@ public abstract class ServiceCommandHandler<E, S> : CommandHandler
         NugetService.PatToken = patToken;
         
         startUp.ConfigureServices(services);
-        services.AddTransient<E>();
+        services.AddTransient<TE>();
         return services;
     }
 
     protected virtual Task RunFromServices(ServiceCollection services, string path, bool dryRun)
     {
         var serviceProvider = services.BuildServiceProvider();
-        var service = serviceProvider.GetRequiredService<E>();
-        var logger = serviceProvider.GetRequiredService<ILogger<E>>();
+        var service = serviceProvider.GetRequiredService<TE>();
+        var logger = serviceProvider.GetRequiredService<ILogger<TE>>();
 
         var fullPath = Path.GetFullPath(path);
-        logger.LogTrace($"Starting service: '{typeof(E).Name}'. Full path is: '{fullPath}', Dry run is: '{dryRun}'.");
+        logger.LogTrace($"Starting service: '{typeof(TE).Name}'. Full path is: '{fullPath}', Dry run is: '{dryRun}'.");
         return service.OnServiceStartedAsync(fullPath, shouldTakeAction: !dryRun);
     }
 }

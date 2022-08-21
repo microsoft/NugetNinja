@@ -7,11 +7,11 @@ namespace Microsoft.NugetNinja.UselessProjectReferencePlugin;
 
 public class UselessProjectReferenceDetector : IActionDetector
 {
-    private readonly ProjectsEnumerator enumerator;
+    private readonly ProjectsEnumerator _enumerator;
 
     public UselessProjectReferenceDetector(ProjectsEnumerator enumerator)
     {
-        this.enumerator = enumerator;
+        _enumerator = enumerator;
     }
 
     public IAsyncEnumerable<IAction> AnalyzeAsync(Model context)
@@ -38,7 +38,7 @@ public class UselessProjectReferenceDetector : IActionDetector
         var allRecursiveReferences = new List<Project>();
         foreach (var directReference in directReferences)
         {
-            var recursiveReferences = enumerator.EnumerateAllBuiltProjects(directReference, includeSelf: false);
+            var recursiveReferences = _enumerator.EnumerateAllBuiltProjects(directReference, includeSelf: false);
             allRecursiveReferences.AddRange(recursiveReferences);
         }
 
