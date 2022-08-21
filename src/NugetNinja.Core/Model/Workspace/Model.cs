@@ -33,8 +33,10 @@ public class Model
         var csprojFolder = new FileInfo(csprojPath).Directory?.FullName
             ?? throw new IOException($"Can not get the .csproj file location based on path: '{csprojPath}'!");
         var csprojContent = await File.ReadAllTextAsync(csprojPath);
-        var packageReferences = GetPackageReferences(csprojContent);
-        var projectReferences = GetProjectReferences(csprojContent, csprojFolder);
+        var csprojDoc = new HtmlDocument();
+        csprojDoc.LoadHtml(csprojContent);
+        var packageReferences = GetPackageReferences(csprojDoc);
+        var projectReferences = GetProjectReferences(csprojDoc, csprojFolder);
 
         var subProjectReferenceObjects = new List<Project>();
         foreach (var projectReference in projectReferences)
@@ -45,15 +47,15 @@ public class Model
         var project = new Project(csprojPath)
         {
             PackageReferences = packageReferences.ToList(),
-            ProjectReferences = subProjectReferenceObjects
+            ProjectReferences = subProjectReferenceObjects,
+            Sdk = csprojDoc.DocumentNode.Attributes["Sdk"].Value,
+            OutputType = csprojDoc.DocumentNode.Descendants("OutputType").ToString()
         };
         return project;
     }
 
-    private Package[] GetPackageReferences(string csprojContent)
+    private Package[] GetPackageReferences(HtmlDocument doc)
     {
-        var doc = new HtmlDocument();
-        doc.LoadHtml(csprojContent);
         var packageReferences = doc.DocumentNode
             .Descendants("PackageReference")
             .Select(p => new Package(
@@ -74,10 +76,8 @@ public class Model
         return packageReferences;
     }
 
-    private string[] GetProjectReferences(string csprojContent, string csprojFolder)
+    private string[] GetProjectReferences(HtmlDocument doc, string csprojFolder)
     {
-        var doc = new HtmlDocument();
-        doc.LoadHtml(csprojContent);
         var projectReferences = doc.DocumentNode
             .Descendants("ProjectReference")
             .Select(p => p.Attributes["Include"].Value)

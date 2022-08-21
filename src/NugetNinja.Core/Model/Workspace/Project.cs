@@ -14,6 +14,29 @@ public class Project
 
     public string PathOnDisk { get; set; }
 
+    #region Framework
+    public string? Sdk { get; set; }
+    public string? OutputType { get; set; }
+    public string? TargetFramework { get; set; }
+    #endregion
+
+    #region Features
+    public string? Nullable { get; set; }
+    public string? ImplicitUsings { get; set; }
+    #endregion
+
+    #region Nuget Packaging
+    public string? Description { get; set; }
+    public string? Version { get; set; }
+    public string? Company { get; set; }
+    public string? Product { get; set; }
+    public string? Authors { get; set; }
+    public string? PackageTags { get; set; }
+    public string? PackageProjectUrl { get; set; }
+    public string? RepositoryUrl { get; set; }
+    public string? RepositoryType { get; set; }
+    #endregion
+
     public List<Project> ProjectReferences { get; init; } = new();
 
     public List<Package> PackageReferences { get; init; } = new();
@@ -33,8 +56,7 @@ public class Project
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("PackageReference")
-            .Where(d => d.Attributes["Include"].Value == refName)
-            .FirstOrDefault();
+            .FirstOrDefault(d => d.Attributes["Include"].Value == refName);
 
         if (node == null)
         {
@@ -56,8 +78,7 @@ public class Project
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("PackageReference")
-            .Where(d => d.Attributes["Include"].Value == refName)
-            .FirstOrDefault();
+            .FirstOrDefault(d => d.Attributes["Include"].Value == refName);
 
         if (node == null)
         {
@@ -76,8 +97,7 @@ public class Project
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("ProjectReference")
-            .Where(p => Equals(absPath, StringExtensions.GetAbsolutePath(contextPath, p.Attributes["Include"].Value)))
-            .FirstOrDefault();
+            .FirstOrDefault(p => Equals(absPath, StringExtensions.GetAbsolutePath(contextPath, p.Attributes["Include"].Value)));
 
         if (node == null)
         {
