@@ -9,23 +9,32 @@ namespace Microsoft.NugetNinja.MissingPropertyPlugin
     {
         private readonly Project _csproj;
         private readonly string _propertyName;
-        private readonly string _propertyValue;
+        private readonly string? _currentValue;
+        private readonly string _suggestedValue;
 
-        public MissingProperty(Project csproj, string propertyName, string propertyValue)
+        public MissingProperty(Project csproj, string propertyName, string suggestedValue, string? currentValue = null)
         {
             _csproj = csproj;
             _propertyName = propertyName;
-            _propertyValue = propertyValue;
+            _suggestedValue = suggestedValue;
+            _currentValue = currentValue;
         }
 
         public string BuildMessage()
         {
-            return $"The project: '{_csproj}' seems to be a library that might be shared. But lack of property '{_propertyName}'. You can possibly set that to: '{_propertyValue}'.";
+            if (string.IsNullOrWhiteSpace(_currentValue))
+            {
+                return $"The project: '{_csproj}' seems to be a library that might be shared. But lack of property '{_propertyName}'. You can possibly set that to: '{_suggestedValue}'.";
+            }
+            else
+            {
+                return $"The project: '{_csproj}' seems to be a library that might be shared. But property '{_propertyName}' with value '{_currentValue}' was not suggested. You can possibly set that to: '{_suggestedValue}'.";
+            }
         }
 
         public Task TakeActionAsync()
         {
-            return _csproj.AddProperty(_propertyName, _propertyValue);
+            return _csproj.AddProperty(_propertyName, _suggestedValue);
         }
     }
 }

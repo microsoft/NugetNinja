@@ -66,7 +66,7 @@ public class Project
 
     public bool IsTest()
     {
-        return 
+        return
             PackageReferences.Any(p => p.Name.Contains("test", StringComparison.OrdinalIgnoreCase)) ||
             PackageReferences.Any(p => p.Name.Contains("xunit", StringComparison.OrdinalIgnoreCase));
     }
@@ -162,12 +162,20 @@ public class Project
     public async Task AddProperty(string propertyName, string propertyValue)
     {
         var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
-        var contextPath = Path.GetDirectoryName(PathOnDisk) ?? throw new IOException($"Couldn't find the project path based on: '{PathOnDisk}'.");
         var doc = new HtmlDocument();
         doc.OptionOutputOriginalCase = true;
         doc.LoadHtml(csprojContent);
 
-        var newline = HtmlNode.CreateNode("\r\n");
+        var existingNodes = doc.DocumentNode
+            .Descendants(propertyName)
+            .ToArray();
+
+        foreach (var existingNode in existingNodes)
+        {
+            existingNode.Remove();
+        }
+
+        var newline = HtmlNode.CreateNode("\r\n    ");
         var property = doc.CreateElement(propertyName);
         property.InnerHtml = propertyValue;
 

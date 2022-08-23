@@ -35,8 +35,10 @@ public class MissingPropertyDetector : IActionDetector
 
             if (string.IsNullOrWhiteSpace(project.OutputType))
                 yield return new MissingProperty(project, nameof(project.OutputType), "Library");
-            if (string.IsNullOrWhiteSpace(project.TargetFramework) || string.Compare(project.TargetFramework, "net6.0", StringComparison.Ordinal) < 0)
-                yield return new MissingProperty(project, nameof(project.TargetFramework), "net6.0");
+            if (string.IsNullOrWhiteSpace(project.TargetFramework) || 
+                project.TargetFramework.StartsWith("netcore") ||
+                string.Compare(project.TargetFramework, "net6.0", StringComparison.Ordinal) < 0)
+                yield return new MissingProperty(project, nameof(project.TargetFramework), "net6.0", project.TargetFramework);
             if (string.IsNullOrWhiteSpace(project.Nullable))
                 yield return new MissingProperty(project, nameof(project.Nullable), "enable");
             if (string.IsNullOrWhiteSpace(project.ImplicitUsings))
