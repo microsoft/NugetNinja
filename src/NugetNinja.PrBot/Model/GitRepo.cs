@@ -46,4 +46,9 @@ public class GitRepo
     public string? NugetPatToken { get; set; }
 
     public RepoProvider Provider { get; set; }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

@@ -16,7 +16,7 @@ namespace Microsoft.NugetNinja.PrBot;
 public class WorkspaceManager
 {
     private readonly RetryEngine _retryEngine;
-    private readonly CommandRunner commandRunner;
+    private readonly CommandRunner _commandRunner;
 
     /// <summary>
     /// Creates new WorkspaceInitializer
@@ -27,7 +27,7 @@ public class WorkspaceManager
         CommandRunner commandRunner)
     {
         _retryEngine = retryEngine;
-        this.commandRunner = commandRunner;
+        _commandRunner = commandRunner;
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public class WorkspaceManager
     /// <returns>Current branch.</returns>
     public async Task<string> GetBranch(string path)
     {
-        var gitBranchOutput = await this.commandRunner.RunGit(path, $"rev-parse --abbrev-ref HEAD");
+        var gitBranchOutput = await _commandRunner.RunGit(path, $"rev-parse --abbrev-ref HEAD");
         return gitBranchOutput
             .Split('\n')
             .Single(s => !string.IsNullOrWhiteSpace(s))
@@ -53,7 +53,7 @@ public class WorkspaceManager
     /// <returns>Remote URL.</returns>
     public async Task<string> GetRemoteUrl(string path)
     {
-        var gitRemoteOutput = await this.commandRunner.RunGit(path, $"remote -v");
+        var gitRemoteOutput = await _commandRunner.RunGit(path, $"remote -v");
         return gitRemoteOutput
             .Split('\n')
             .First(t => t.StartsWith("origin"))
@@ -73,7 +73,7 @@ public class WorkspaceManager
     /// <returns>Task</returns>
     public async Task Clone(string path, string branch, string endPoint)
     {
-        await this.commandRunner.RunGit(path, $"clone -b {branch} {endPoint} .");
+        await _commandRunner.RunGit(path, $"clone -b {branch} {endPoint} .");
     }
 
     /// <summary>
@@ -94,23 +94,24 @@ public class WorkspaceManager
     {
         try
         {
-            var remote = await this.GetRemoteUrl(path);
+            var remote = await GetRemoteUrl(path);
             if (!string.Equals(remote, endPoint, StringComparison.OrdinalIgnoreCase))
             {
                 throw new GitCommandException($"The repository with remote: '{remote}' is not a repository for {endPoint}.", command: "remote -v", result: remote, path);
             }
 
-            await this.commandRunner.RunGit(path, "reset --hard HEAD");
-            await this.commandRunner.RunGit(path, "clean -fdx");
-            await this.commandRunner.RunGit(path, "pull");
+            await _commandRunner.RunGit(path, "reset --hard HEAD");
+            await _commandRunner.RunGit(path, "clean . -fdx");
+            await this.Fetch(path);
+            await _commandRunner.RunGit(path, $"reset --hard origin/{branch}");
         }
         catch (GitCommandException e) when (
             e.Message.Contains("not a git repository") ||
             e.Message.Contains("unknown revision or path") ||
             e.Message.Contains($"is not a repository for {endPoint}"))
         {
-            this.ClearPath(path);
-            await this.Clone(path, branch, endPoint);
+            ClearPath(path);
+            await Clone(path, branch, endPoint);
         }
     }
 
@@ -121,10 +122,11 @@ public class WorkspaceManager
     /// <param name="logger">Logger</param>
     /// <param name="message">Commie message.</param>
     /// <returns>Saved.</returns>
-    public async Task<bool> Commit(string sourcePath, string message = "Update from Nuget Ninja.")
+    public async Task<bool> Commit(string sourcePath, string message, string branch)
     {
-        await this.commandRunner.RunGit(sourcePath, $"add .");
-        var commitResult = await this.commandRunner.RunGit(sourcePath, $@"commit -m ""{message}""");
+        await _commandRunner.RunGit(sourcePath, $"add .");
+        await _commandRunner.RunGit(sourcePath, $"checkout -b {branch}");
+        var commitResult = await _commandRunner.RunGit(sourcePath, $@"commit -m ""{message}""");
         return !commitResult.Contains("nothing to commit, working tree clean");
     }
 
@@ -140,17 +142,17 @@ public class WorkspaceManager
         // Set origin url.
         try
         {
-            await this.commandRunner.RunGit(sourcePath, $@"remote set-url ninja {endpoint}");
+            await _commandRunner.RunGit(sourcePath, $@"remote set-url ninja {endpoint}");
         }
         catch (GitCommandException e) when (e.GitOutput.Contains("No such remote"))
         {
-            await this.commandRunner.RunGit(sourcePath, $@"remote add ninja {endpoint}");
+            await _commandRunner.RunGit(sourcePath, $@"remote add ninja {endpoint}");
         }
 
         // Push to that origin.
         try
         {
-            var pushResult = await this.commandRunner.RunGit(sourcePath, $@"push --set-upstream ninja {branch}");
+            var pushResult = await _commandRunner.RunGit(sourcePath, $@"push --set-upstream ninja {branch}");
             return pushResult.Contains("->") || pushResult.Contains("Everything up-to-date");
         }
         catch (GitCommandException e) when (e.GitOutput.Contains("rejected]"))
@@ -161,13 +163,25 @@ public class WorkspaceManager
         }
     }
 
+    /// <summary>
+    /// If current path is pending a git commit.
+    /// </summary>
+    /// <param name="sourcePath">Path</param>
+    /// <param name="logger">logger</param>
+    /// <returns>Bool</returns>
+    public async Task<bool> PendingCommit(string sourcePath)
+    {
+        var statusResult = await _commandRunner.RunGit(sourcePath, $@"status");
+        var clean = statusResult.Contains("working tree clean");
+        return !clean;
+    }
 
     private Task Fetch(string path)
     {
         return _retryEngine.RunWithTry(
             async attempt =>
             {
-                var workJob = this.commandRunner.RunGit(path, "fetch --verbose",
+                var workJob = _commandRunner.RunGit(path, "fetch --verbose",
                     integrateResultInProcess: attempt % 2 == 0);
                 var waitJob = Task.Delay(TimeSpan.FromSeconds(attempt * 50));
                 await Task.WhenAny(workJob, waitJob);

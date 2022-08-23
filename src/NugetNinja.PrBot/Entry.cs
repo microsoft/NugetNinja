@@ -43,10 +43,13 @@ public class Entry
         _logger.LogInformation("Migrating database...");
         await _repoDbContext.Database.MigrateAsync();
 
-        if (!await _repoDbContext.Repos.AnyAsync())
+        if (await _repoDbContext.Repos.CountAsync() < 2)
         {
             _logger.LogInformation("Seeding test database...");
+            _repoDbContext.Repos.RemoveRange(_repoDbContext.Repos);
+            await _repoDbContext.SaveChangesAsync();
             await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "main", "https://github.com/Microsoft/NugetNinja.git", RepoProvider.GitHub));
+            await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "master", "https://github.com/AiursoftWeb/Infrastructures.git", RepoProvider.GitHub));
             await _repoDbContext.SaveChangesAsync();
         }
 
@@ -56,6 +59,22 @@ public class Entry
             var workPath = Path.Combine(WorkspaceFolder, $"workspace-{repo.Name}");
             await _workspaceManager.ResetRepo(workPath, repo.DefaultBranch, repo.CloneEndpoint);
             await _runAllOfficialPluginsService.OnServiceStartedAsync(workPath, true);
+
+            if (!await _workspaceManager.PendingCommit(workPath))
+            {
+                _logger.LogInformation($"{repo} has no suggestion that we can make. Ignore.");
+                continue;
+            }
+
+            _logger.LogInformation($"{repo} is pending some fix. We will try to create\\update related pull request.");
+            var workingBranch = _configuration["ContributionBranch"];
+            var saved = await _workspaceManager.Commit(workPath, "Auto csproj fix and update by bot.", workingBranch);
+            
+            if (!saved)
+            {
+                _logger.LogInformation($"{repo} has no suggestion that we can make. Ignore.");
+                continue;
+            }
         }
     }
 }
