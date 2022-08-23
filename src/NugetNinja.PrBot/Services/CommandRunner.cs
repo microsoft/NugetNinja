@@ -51,7 +51,7 @@ public class CommandRunner
             }
         };
 
-        _logger.LogTrace($"Running command: {path.TrimEnd('\\').Trim()} git {arguments}");
+        _logger.LogInformation($"Running command: {path.TrimEnd('\\').Trim()} git {arguments}");
 
         try
         {

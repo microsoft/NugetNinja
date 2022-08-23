@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.NugetNinja.AllOfficialsPlugin;
 using Microsoft.NugetNinja.Core;
 
 namespace Microsoft.NugetNinja.PrBot
@@ -39,11 +40,15 @@ namespace Microsoft.NugetNinja.PrBot
                     services.AddHttpClient();
                     services.AddSingleton<CacheService>();
                     services.AddTransient<RetryEngine>();
+                    services.AddTransient<Extractor>();
+                    services.AddTransient<ProjectsEnumerator>();
                     services.AddTransient<NugetService>();
                     services.AddTransient<CommandRunner>();
                     services.AddTransient<WorkspaceManager>();
                     services.AddDbContextPool<RepoDbContext>(optionsBuilder =>
                         optionsBuilder.UseSqlite(connectionString: "DataSource=app.db;Cache=Shared"));
+                    new StartUp().ConfigureServices(services);
+                    services.AddTransient<RunAllOfficialPluginsService>();
                     services.AddTransient<Entry>();
                 });
         }

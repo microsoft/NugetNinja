@@ -98,6 +98,28 @@ public class Project
         await SaveDocToDisk(doc);
     }
 
+    public async Task ReplacePackageReferenceAsync(string refName, Package newPackage)
+    {
+        var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
+        var doc = new HtmlDocument();
+        doc.OptionOutputOriginalCase = true;
+        doc.OptionAutoCloseOnEnd = true;
+        doc.OptionWriteEmptyNodes = true;
+        doc.LoadHtml(csprojContent);
+        var node = doc.DocumentNode
+            .Descendants("PackageReference")
+            .FirstOrDefault(d => d.Attributes["Include"].Value == refName);
+
+        if (node == null)
+        {
+            throw new InvalidOperationException($"Could remove PackageReference {refName} in project {this} because it was not found!");
+        }
+
+        node.Attributes["Include"].Value = newPackage.Name;
+        node.Attributes["Version"].Value = newPackage.Version.ToString();
+        await SaveDocToDisk(doc);
+    }
+
     public async Task RemovePackageReferenceAsync(string refName)
     {
         var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
