@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.NugetNinja.Core;
 
 namespace Microsoft.NugetNinja.PrBot;
@@ -43,6 +44,32 @@ public class WorkspaceManager
             .Split('\n')
             .Single(s => !string.IsNullOrWhiteSpace(s))
             .Trim();
+    }
+
+    public async Task SwitchToBranch(string sourcePath, string targetBranch, bool fromCurrent)
+    {
+        var currentBranch = await GetBranch(sourcePath);
+        if (string.Equals(currentBranch, targetBranch, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+        
+        try
+        {
+            await _commandRunner.RunGit(sourcePath, $"checkout -b {targetBranch}");
+        }
+        catch (GitCommandException e) when (e.Message.Contains("already exists"))
+        {
+            if (fromCurrent)
+            {
+                await _commandRunner.RunGit(sourcePath, $"branch -D {targetBranch}");
+                await SwitchToBranch(sourcePath, targetBranch, fromCurrent);
+            }
+            else
+            {
+                await _commandRunner.RunGit(sourcePath, $"checkout {targetBranch}");
+            }
+        }
     }
 
     /// <summary>
@@ -102,6 +129,7 @@ public class WorkspaceManager
 
             await _commandRunner.RunGit(path, "reset --hard HEAD");
             await _commandRunner.RunGit(path, "clean . -fdx");
+            await this.SwitchToBranch(path, branch, fromCurrent: false);
             await this.Fetch(path);
             await _commandRunner.RunGit(path, $"reset --hard origin/{branch}");
         }
@@ -122,10 +150,10 @@ public class WorkspaceManager
     /// <param name="logger">Logger</param>
     /// <param name="message">Commie message.</param>
     /// <returns>Saved.</returns>
-    public async Task<bool> Commit(string sourcePath, string message, string branch)
+    public async Task<bool> CommitToBranch(string sourcePath, string message, string branch)
     {
         await _commandRunner.RunGit(sourcePath, $"add .");
-        await _commandRunner.RunGit(sourcePath, $"checkout -b {branch}");
+        await SwitchToBranch(sourcePath, branch, fromCurrent: true);
         var commitResult = await _commandRunner.RunGit(sourcePath, $@"commit -m ""{message}""");
         return !commitResult.Contains("nothing to commit, working tree clean");
     }

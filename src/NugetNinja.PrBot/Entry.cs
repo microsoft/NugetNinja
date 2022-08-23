@@ -56,7 +56,7 @@ public class Entry
             _repoDbContext.Repos.RemoveRange(_repoDbContext.Repos);
             await _repoDbContext.SaveChangesAsync();
             await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "Microsoft", "main", "https://github.com/Microsoft/NugetNinja.git", RepoProvider.GitHub));
-            await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "Aiursoft", "master", "https://github.com/AiursoftWeb/Infrastructures.git", RepoProvider.GitHub));
+            await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "AiursoftWeb", "master", "https://github.com/AiursoftWeb/Infrastructures.git", RepoProvider.GitHub));
             await _repoDbContext.SaveChangesAsync();
         }
 
@@ -74,7 +74,7 @@ public class Entry
             }
 
             _logger.LogInformation($"{repo} is pending some fix. We will try to create\\update related pull request.");
-            var saved = await _workspaceManager.Commit(workPath, "Auto csproj fix and update by bot.", branch: _workingBranch);
+            var saved = await _workspaceManager.CommitToBranch(workPath, "Auto csproj fix and update by bot.", branch: _workingBranch);
 
             if (!saved)
             {
@@ -83,7 +83,6 @@ public class Entry
             }
 
             await _gitHubService.ForkRepo(repo.Org, repo.Name);
-            await Task.Delay(5000);
             await _workspaceManager.Push(workPath, _workingBranch, $"https://{_githubUserName}:{_githubToken}@github.com/{_githubUserName}/{repo.Name}.git");
         }
     }

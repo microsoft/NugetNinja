@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -38,7 +39,14 @@ public class GitHubService
         request.Headers.Add("User-Agent", ".NET HTTP Client");
 
         var result = await _httpClient.SendAsync(request);
-        var resultContent = await result.Content.ReadAsStringAsync();
-        result.EnsureSuccessStatusCode();
+        try
+        {
+            result.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException)
+        {
+            var resultContent = await result.Content.ReadAsStringAsync();
+            throw new WebException(resultContent);
+        }
     }
 }
