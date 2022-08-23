@@ -40,6 +40,7 @@ namespace Microsoft.NugetNinja.PrBot
                     services.AddTransient<RetryEngine>();
                     services.AddTransient<Extractor>();
                     services.AddTransient<ProjectsEnumerator>();
+                    services.AddTransient<GitHubService>();
                     services.AddTransient<NugetService>();
                     services.AddTransient<CommandRunner>();
                     services.AddTransient<WorkspaceManager>();

@@ -15,23 +15,30 @@ namespace Microsoft.NugetNinja.PrBot;
 
 public class Entry
 {
+    private readonly string _githubToken;
+    private readonly string _workingBranch;
+    private readonly string _githubUserName;
+    private readonly GitHubService _gitHubService;
     private readonly RunAllOfficialPluginsService _runAllOfficialPluginsService;
     private readonly WorkspaceManager _workspaceManager;
-    private readonly IConfiguration _configuration;
     private readonly RepoDbContext _repoDbContext;
     private readonly ILogger<Entry> _logger;
     private static readonly string WorkspaceFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NugetNinjaWorkspace");
 
     public Entry(
+        GitHubService gitHubService,
         RunAllOfficialPluginsService runAllOfficialPluginsService,
         WorkspaceManager workspaceManager,
         IConfiguration configuration,
         RepoDbContext repoDbContext,
         ILogger<Entry> logger)
     {
+        _githubToken = configuration["GitHubToken"];
+        _workingBranch = configuration["ContributionBranch"];
+        _githubUserName = configuration["GitHubUserName"];
+        _gitHubService = gitHubService;
         _runAllOfficialPluginsService = runAllOfficialPluginsService;
         _workspaceManager = workspaceManager;
-        _configuration = configuration;
         _repoDbContext = repoDbContext;
         _logger = logger;
     }
@@ -48,11 +55,11 @@ public class Entry
             _logger.LogInformation("Seeding test database...");
             _repoDbContext.Repos.RemoveRange(_repoDbContext.Repos);
             await _repoDbContext.SaveChangesAsync();
-            await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "main", "https://github.com/Microsoft/NugetNinja.git", RepoProvider.GitHub));
-            await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "master", "https://github.com/AiursoftWeb/Infrastructures.git", RepoProvider.GitHub));
+            await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "Microsoft", "main", "https://github.com/Microsoft/NugetNinja.git", RepoProvider.GitHub));
+            await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "Aiursoft", "master", "https://github.com/AiursoftWeb/Infrastructures.git", RepoProvider.GitHub));
             await _repoDbContext.SaveChangesAsync();
         }
-        var token = _configuration["GitHubToken"];
+
         foreach (var repo in await _repoDbContext.Repos.ToListAsync())
         {
             _logger.LogInformation($"Cloning repository: {repo.Name}...");
@@ -67,14 +74,17 @@ public class Entry
             }
 
             _logger.LogInformation($"{repo} is pending some fix. We will try to create\\update related pull request.");
-            var workingBranch = _configuration["ContributionBranch"];
-            var saved = await _workspaceManager.Commit(workPath, "Auto csproj fix and update by bot.", workingBranch);
-            
+            var saved = await _workspaceManager.Commit(workPath, "Auto csproj fix and update by bot.", branch: _workingBranch);
+
             if (!saved)
             {
                 _logger.LogInformation($"{repo} has no suggestion that we can make. Ignore.");
                 continue;
             }
+
+            await _gitHubService.ForkRepo(repo.Org, repo.Name);
+            await Task.Delay(5000);
+            await _workspaceManager.Push(workPath, _workingBranch, $"https://{_githubUserName}:{_githubToken}@github.com/{_githubUserName}/{repo.Name}.git");
         }
     }
 }

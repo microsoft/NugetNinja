@@ -9,8 +9,7 @@ namespace Microsoft.NugetNinja.PrBot;
 
 public enum RepoProvider
 {
-    GitHub,
-    AzureDevOps
+    GitHub
 }
 
 public class GitRepo
@@ -21,12 +20,14 @@ public class GitRepo
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public GitRepo(
-        string name,
+        string repoName,
+        string org,
         string defaultBranch,
         string cloneEndpoint,
         RepoProvider repoProvider)
     {
-        Name = name;
+        Name = repoName;
+        Org = org;
         DefaultBranch = defaultBranch;
         CloneEndpoint = cloneEndpoint;
         Provider = repoProvider;
@@ -35,6 +36,7 @@ public class GitRepo
     [Key]
     public int Id { get; set; }
     
+    public string Org { get; set; }
     public string Name { get; set; }
 
     public string DefaultBranch { get; set; }
