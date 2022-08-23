@@ -52,7 +52,7 @@ public class Entry
             await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "master", "https://github.com/AiursoftWeb/Infrastructures.git", RepoProvider.GitHub));
             await _repoDbContext.SaveChangesAsync();
         }
-
+        var token = _configuration["GitHubToken"];
         foreach (var repo in await _repoDbContext.Repos.ToListAsync())
         {
             _logger.LogInformation($"Cloning repository: {repo.Name}...");
