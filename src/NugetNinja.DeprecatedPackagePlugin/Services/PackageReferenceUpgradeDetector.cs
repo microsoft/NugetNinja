@@ -38,7 +38,7 @@ public class DeprecatedPackageDetector : IActionDetector
                 }
                 if (catalogInformation.Deprecation != null)
                 {
-                    Package? alternative;
+                    Package? alternative = null;
                     if (!string.IsNullOrWhiteSpace(catalogInformation.Deprecation.AlternatePackage?.Id))
                     {
                         var alternativeVersion = await _nugetService.GetLatestVersion(catalogInformation.Deprecation.AlternatePackage.Id);
