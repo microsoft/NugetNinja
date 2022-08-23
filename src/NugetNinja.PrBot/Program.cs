@@ -3,6 +3,7 @@
 
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -24,17 +25,16 @@ namespace Microsoft.NugetNinja.PrBot
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureDefaults(args)
+                .ConfigureLogging(logging => 
+                {
+                    logging
+                        .AddFilter("Microsoft.Extensions", LogLevel.Warning)
+                        .AddFilter("System", LogLevel.Warning);
+                    logging.AddConsole();
+                    logging.SetMinimumLevel(LogLevel.Information);
+                })
                 .ConfigureServices(services =>
                 {
-                    services.AddLogging(logging =>
-                    {
-                        logging
-                            .AddFilter("Microsoft.Extensions", LogLevel.Warning)
-                            .AddFilter("System", LogLevel.Warning);
-                        logging.AddConsole();
-                        logging.SetMinimumLevel(LogLevel.Information);
-                    });
                     services.AddMemoryCache();
                     services.AddHttpClient();
                     services.AddSingleton<CacheService>();
