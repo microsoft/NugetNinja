@@ -39,7 +39,7 @@ public class RetryEngine
         {
             try
             {
-                logger.LogInformation($"Starting a job with retry. Attempt: {i}. (Starts from 1)");
+                logger.LogTrace($"Starting a job with retry. Attempt: {i}. (Starts from 1)");
                 var response = await taskFactory(i);
                 return response;
             }

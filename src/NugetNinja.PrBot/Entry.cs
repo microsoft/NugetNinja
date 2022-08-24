@@ -106,9 +106,13 @@ public class Entry
         }
 
         // Fork repo.
-        while ((await _gitHubService.GetRepos(_githubUserName)).All(r => r.Name != repo.Name))
+        if ((await _gitHubService.GetRepos(_githubUserName)).All(r => r.Name != repo.Name))
         {
             await _gitHubService.ForkRepo(repo.Org, repo.Name);
+            await Task.Delay(5000);
+        }
+        while ((await _gitHubService.GetRepos(_githubUserName)).All(r => r.Name != repo.Name))
+        {
             // Wait a while. GitHub may need some time to fork the repo.
             await Task.Delay(3000);
         }
