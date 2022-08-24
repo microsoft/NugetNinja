@@ -54,7 +54,7 @@ public class Entry
             _logger.LogInformation("Seeding test database...");
             _repoDbContext.Repos.RemoveRange(_repoDbContext.Repos);
             await _repoDbContext.SaveChangesAsync();
-            await _repoDbContext.Repos.AddAsync(new GitRepo("QRCoder", "codebude"));
+            await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "Microsoft"));
             await _repoDbContext.SaveChangesAsync();
         }
 
