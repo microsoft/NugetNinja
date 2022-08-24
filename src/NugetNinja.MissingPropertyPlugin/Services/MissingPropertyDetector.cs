@@ -11,6 +11,7 @@ public class MissingPropertyDetector : IActionDetector
     private readonly ILogger<MissingPropertyDetector> _logger;
     private readonly bool _fillInOutputType = false;
     private readonly bool _enforceNullable = false;
+    private readonly bool _enforceImplicitUsings = false;
     private readonly string[] _notSupportedRuntimes = {
         "net5.0",
         "netcoreapp3.0",
@@ -56,7 +57,7 @@ public class MissingPropertyDetector : IActionDetector
 
             if (string.IsNullOrWhiteSpace(project.Nullable) && _enforceNullable)
                 yield return new MissingProperty(project, nameof(project.Nullable), "enable");
-            if (string.IsNullOrWhiteSpace(project.ImplicitUsings))
+            if (string.IsNullOrWhiteSpace(project.ImplicitUsings) && _enforceImplicitUsings)
                 yield return new MissingProperty(project, nameof(project.ImplicitUsings), "enable");
             if (string.IsNullOrWhiteSpace(project.Version))
             {
