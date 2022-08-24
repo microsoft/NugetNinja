@@ -267,12 +267,18 @@ public class Project
             .Replace(@"></Compile>", " />")
             .Replace(@"></Content>", " />")
             .Replace(@"></None>", " />")
+            .Replace(@"></Exec>", " />")
+            .Replace(@"></Output>", " />")
+            .Replace(@"></Message>", " />")
+            .Replace(@"></Watch>", " />")
+            .Replace(@"></Resource>", " />")
             .Replace(@"></Folder>", " />")
             .Replace(@"></AdditionalFiles>", " />")
             .Replace(@"></UserProperties>", " />")
             .Replace(@"></EmbeddedResource>", " />")
+            .Replace(@"></ServiceWorker>", " />")
             .Replace(@"></Using>", " />");
-        
+
         await File.WriteAllTextAsync(PathOnDisk, csprojText);
     }
 }
