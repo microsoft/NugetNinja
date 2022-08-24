@@ -22,13 +22,11 @@ public class GitRepo
     public GitRepo(
         string repoName,
         string org,
-        string defaultBranch,
         string cloneEndpoint,
         RepoProvider repoProvider)
     {
         Name = repoName;
         Org = org;
-        DefaultBranch = defaultBranch;
         CloneEndpoint = cloneEndpoint;
         Provider = repoProvider;
     }
@@ -38,8 +36,6 @@ public class GitRepo
     
     public string Org { get; set; }
     public string Name { get; set; }
-
-    public string DefaultBranch { get; set; }
 
     public string CloneEndpoint { get; set; }
     public string? CloneToken { get; set; }

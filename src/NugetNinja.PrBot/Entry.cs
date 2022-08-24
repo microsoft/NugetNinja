@@ -59,8 +59,8 @@ public class Entry
             _logger.LogInformation("Seeding test database...");
             _repoDbContext.Repos.RemoveRange(_repoDbContext.Repos);
             await _repoDbContext.SaveChangesAsync();
-            await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "Microsoft", "main", "https://github.com/Microsoft/NugetNinja.git", RepoProvider.GitHub));
-            await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "AiursoftWeb", "master", "https://github.com/AiursoftWeb/Infrastructures.git", RepoProvider.GitHub));
+            await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "Microsoft", "https://github.com/Microsoft/NugetNinja.git", RepoProvider.GitHub));
+            await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "AiursoftWeb", "https://github.com/AiursoftWeb/Infrastructures.git", RepoProvider.GitHub));
             await _repoDbContext.SaveChangesAsync();
         }
 

@@ -434,22 +434,22 @@ public class Repository
     /// 
     /// </summary>
     [JsonPropertyName("has_projects")]
-    public string? has_projects { get; set; }
+    public bool? has_projects { get; set; }
     /// <summary>
     /// 
     /// </summary>
     [JsonPropertyName("has_downloads")]
-    public string? has_downloads { get; set; }
+    public bool? has_downloads { get; set; }
     /// <summary>
     /// 
     /// </summary>
     [JsonPropertyName("has_wiki")]
-    public string? has_wiki { get; set; }
+    public bool? has_wiki { get; set; }
     /// <summary>
     /// 
     /// </summary>
     [JsonPropertyName("has_pages")]
-    public string? has_pages { get; set; }
+    public bool? has_pages { get; set; }
     /// <summary>
     /// 
     /// </summary>
@@ -464,12 +464,12 @@ public class Repository
     /// 
     /// </summary>
     [JsonPropertyName("archived")]
-    public string? archived { get; set; }
+    public bool? archived { get; set; }
     /// <summary>
     /// 
     /// </summary>
     [JsonPropertyName("disabled")]
-    public string? disabled { get; set; }
+    public bool? disabled { get; set; }
     /// <summary>
     /// 
     /// </summary>
@@ -484,17 +484,17 @@ public class Repository
     /// 
     /// </summary>
     [JsonPropertyName("allow_forking")]
-    public string? allow_forking { get; set; }
+    public bool? allow_forking { get; set; }
     /// <summary>
     /// 
     /// </summary>
     [JsonPropertyName("is_template")]
-    public string? is_template { get; set; }
+    public bool? is_template { get; set; }
     /// <summary>
     /// 
     /// </summary>
     [JsonPropertyName("web_commit_signoff_required")]
-    public string? web_commit_signoff_required { get; set; }
+    public bool? web_commit_signoff_required { get; set; }
     /// <summary>
     /// 
     /// </summary>
