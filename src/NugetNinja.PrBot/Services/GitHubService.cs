@@ -34,10 +34,10 @@ public class GitHubService
 
     public async Task<bool> RepoExists(string orgName, string repoName)
     {
-        _logger.LogInformation($"Getting repository details based on org: {orgName}, repo: {repoName}...");
+        _logger.LogInformation($"Getting if repository exists based on org: {orgName}, repo: {repoName}...");
         var endpoint = $@"https://api.github.com/repos/{orgName}/{repoName}";
         var response = await _httpClient.GetAsync(endpoint);
-        return response.StatusCode == HttpStatusCode.OK;
+        return response.IsSuccessStatusCode;
     }
 
     public async Task<List<Repository>> GetRepos(string userName)

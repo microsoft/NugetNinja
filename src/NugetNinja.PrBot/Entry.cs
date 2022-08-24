@@ -113,7 +113,7 @@ public class Entry
             while (!await _gitHubService.RepoExists(_githubUserName, repo.Name))
             {
                 // Wait a while. GitHub may need some time to fork the repo.
-                await Task.Delay(3000);
+                await Task.Delay(5000);
             }
         }
 
