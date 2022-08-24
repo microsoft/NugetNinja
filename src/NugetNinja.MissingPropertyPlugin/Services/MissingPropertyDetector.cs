@@ -48,7 +48,7 @@ public class MissingPropertyDetector : IActionDetector
             if (string.IsNullOrWhiteSpace(project.OutputType) && _fillInOutputType)
                 yield return new MissingProperty(project, nameof(project.OutputType), "Library");
 
-            var versionSuggestion = this.AnalyseVersion(project);
+            var versionSuggestion = this.AnalyzeVersion(project);
             if (versionSuggestion != null)
             {
                 yield return versionSuggestion;
@@ -61,11 +61,12 @@ public class MissingPropertyDetector : IActionDetector
             if (string.IsNullOrWhiteSpace(project.Version))
             {
                 _logger.LogTrace($"Skip scanning properties for project: '{project}' because it seems won't publish to Nuget. It doesn't have a version property.");
-                continue;
             }
 
-            if (string.IsNullOrWhiteSpace(project.PackageLicenseExpression) && string.IsNullOrWhiteSpace(project.PackageLicenseFile))
-                yield return new MissingProperty(project, nameof(project.PackageLicenseExpression), "MIT");
+            // To do: Load those properties from GitHub API.
+
+            //if (string.IsNullOrWhiteSpace(project.PackageLicenseExpression) && string.IsNullOrWhiteSpace(project.PackageLicenseFile))
+            //    yield return new MissingProperty(project, nameof(project.PackageLicenseExpression), "MIT");
             //if (string.IsNullOrWhiteSpace(project.Description))
             //    yield return new MissingProperty(project, nameof(project.Description), "A library that shared to nuget.");
             //if (string.IsNullOrWhiteSpace(project.Company))
@@ -85,7 +86,7 @@ public class MissingPropertyDetector : IActionDetector
         }
     }
 
-    private ResetRuntime? AnalyseVersion(Project project)
+    private ResetRuntime? AnalyzeVersion(Project project)
     {
         var runtimes = project.GetTargetFrameworks();
         for (int i = 0; i < runtimes.Length; i++)
