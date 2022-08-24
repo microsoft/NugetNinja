@@ -214,6 +214,7 @@ public class Project
             .Replace(@"></PackageReference>", " />")
             .Replace(@"></ProjectReference>", " />")
             .Replace(@"></FrameworkReference>", " />")
+            .Replace(@"></None>", " />")
             .Replace(@"></Using>", " />");
         await File.WriteAllTextAsync(PathOnDisk, csprojText);
     }

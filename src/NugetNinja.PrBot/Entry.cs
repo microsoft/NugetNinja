@@ -18,6 +18,7 @@ public class Entry
     private readonly string _githubToken;
     private readonly string _workingBranch;
     private readonly string _githubUserName;
+    private readonly string _githubUserDisplayName;
     private readonly string _githubUserEmail;
     private readonly string WorkspaceFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NugetNinjaWorkspace");
     private readonly GitHubService _gitHubService;
@@ -37,6 +38,7 @@ public class Entry
         _githubToken = configuration["GitHubToken"];
         _workingBranch = configuration["ContributionBranch"];
         _githubUserName = configuration["GitHubUserName"];
+        _githubUserDisplayName = configuration["GitHubUserDisplayName"];
         _githubUserEmail = configuration["GitHubUserEmail"];
         _gitHubService = gitHubService;
         _runAllOfficialPluginsService = runAllOfficialPluginsService;
@@ -64,28 +66,41 @@ public class Entry
 
         foreach (var repo in await _repoDbContext.Repos.ToListAsync())
         {
+            // Get details from GitHub
+            var repoDetails = await _gitHubService.GetRepo(repo.Org, repo.Name);
+
+            // Clone locally.
             _logger.LogInformation($"Cloning repository: {repo.Name}...");
             var workPath = Path.Combine(WorkspaceFolder, $"workspace-{repo.Name}");
-            await _workspaceManager.ResetRepo(workPath, repo.DefaultBranch, repo.CloneEndpoint);
+            await _workspaceManager.ResetRepo(workPath, repoDetails.DefaultBranch ?? throw new NullReferenceException($"The default branch of {repoDetails.Name} is null!"), repo.CloneEndpoint);
+
+            // Run all plugins.
             await _runAllOfficialPluginsService.OnServiceStartedAsync(workPath, true);
 
+            // Considere changes...
             if (!await _workspaceManager.PendingCommit(workPath))
             {
                 _logger.LogInformation($"{repo} has no suggestion that we can make. Ignore.");
                 continue;
             }
-
             _logger.LogInformation($"{repo} is pending some fix. We will try to create\\update related pull request.");
-            await _workspaceManager.SetUserConfig(workPath, username: _githubUserName, email: _githubUserEmail);
+            await _workspaceManager.SetUserConfig(workPath, username: _githubUserDisplayName, email: _githubUserEmail);
             var saved = await _workspaceManager.CommitToBranch(workPath, "Auto csproj fix and update by bot.", branch: _workingBranch);
-
             if (!saved)
             {
                 _logger.LogInformation($"{repo} has no suggestion that we can make. Ignore.");
                 continue;
             }
 
-            await _gitHubService.ForkRepo(repo.Org, repo.Name);
+            // Fork repo.
+            while (!(await _gitHubService.GetRepos(_githubUserName)).Any(r => r.Name == repo.Name))
+            {
+                await _gitHubService.ForkRepo(repo.Org, repo.Name);
+                // Wait a while. GitHub may need some time to fork the repo.
+                await Task.Delay(3000); 
+            }
+
+            // Push to forked repo.
             await _workspaceManager.Push(workPath, _workingBranch, $"https://{_githubUserName}:{_githubToken}@github.com/{_githubUserName}/{repo.Name}.git", force: true);
         }
     }

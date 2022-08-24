@@ -3,6 +3,8 @@
 
 using System;
 using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -24,12 +26,31 @@ public class GitHubService
         _logger = logger;
     }
 
+    public async Task<Repository> GetRepo(string orgName, string repoName)
+    {
+        _logger.LogInformation($"Getting repository details based on org: {orgName}, repo: {repoName}...");
+        var endpoint = $@"https://api.github.com/repos/{orgName}/{repoName}";
+        return await this.SendHttpAndGetJson<Repository>(endpoint, HttpMethod.Get);
+    }
+
+    public async Task<List<Repository>> GetRepos(string userName)
+    {
+        _logger.LogInformation($"Listing all repositories based on user name: {userName}...");
+        var endpoint = $@"https://api.github.com/users/{userName}/repos";
+        return await this.SendHttpAndGetJson<List<Repository>>(endpoint, HttpMethod.Get);
+    }
+
     public async Task ForkRepo(string org, string repo)
     {
         _logger.LogInformation($"Forking repository on GitHub with org: {org}, repo: {repo}...");
 
         var endpoint = $@"https://api.github.com/repos/{org}/{repo}/forks";
-        var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+        await SendHttp(endpoint, HttpMethod.Post);
+    }
+
+    private async Task<string> SendHttp(string endPoint, HttpMethod method)
+    {
+        var request = new HttpRequestMessage(method, endPoint)
         {
             Content = new FormUrlEncodedContent(new Dictionary<string, string>())
         };
@@ -38,15 +59,25 @@ public class GitHubService
         request.Headers.Add("accept", "application/json");
         request.Headers.Add("User-Agent", ".NET HTTP Client");
 
-        var result = await _httpClient.SendAsync(request);
+        var response = await _httpClient.SendAsync(request);
         try
         {
-            result.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
         }
-        catch (HttpRequestException)
+        catch (HttpRequestException e)
         {
-            var resultContent = await result.Content.ReadAsStringAsync();
+            var resultContent = e.Message + await response.Content.ReadAsStringAsync();
             throw new WebException(resultContent);
         }
+
+        var json = await response.Content.ReadAsStringAsync();
+        return json;
+    }
+
+    private async Task<T> SendHttpAndGetJson<T>(string endPoint, HttpMethod method)
+    {
+        var json = await this.SendHttp(endPoint, method);
+        var repos = JsonSerializer.Deserialize<T>(json) ?? throw new WebException($"The remote server returned non-json content: '{json}'");
+        return repos;
     }
 }
