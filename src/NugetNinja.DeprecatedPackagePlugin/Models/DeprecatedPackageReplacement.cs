@@ -7,28 +7,34 @@ namespace Microsoft.NugetNinja.DeprecatedPackagePlugin;
 
 public class DeprecatedPackageReplacement : IAction
 {
-    public DeprecatedPackageReplacement(Project source, Package target, string? alternative)
+    public DeprecatedPackageReplacement(Project source, Package target, Package? alternative)
     {
-        SourceProjectName = source;
+        SourceProject = source;
         Package = target;
         Alternative = alternative;
     }
 
-    public Project SourceProjectName { get; }
+    public Project SourceProject { get; }
     public Package Package { get; }
-    public string? Alternative { get; }
+    public Package? Alternative { get; }
 
     public string BuildMessage()
     {
-        var alternativeText = string.IsNullOrWhiteSpace(Alternative) ?
+        var alternativeText = Alternative != null ?
             string.Empty :
             $"Please consider to replace that to: '{Alternative}'.";
-        return $"The project: '{SourceProjectName}' referenced a deprecated package: {Package} {Package.Version}! {alternativeText}";
+        return $"The project: '{SourceProject}' referenced a deprecated package: {Package} {Package.Version}! {alternativeText}";
     }
 
-    public Task TakeActionAsync()
+    public async Task TakeActionAsync()
     {
-        // To DO: Remove this reference.
-        return Task.CompletedTask;
+        if (this.Alternative != null)
+        {
+            await SourceProject.ReplacePackageReferenceAsync(Package.Name, Alternative);
+        }
+        else
+        {
+            await SourceProject.RemovePackageReferenceAsync(Package.Name);
+        }
     }
 }

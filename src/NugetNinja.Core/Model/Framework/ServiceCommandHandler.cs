@@ -50,6 +50,7 @@ public abstract class ServiceCommandHandler<TE, TS> : CommandHandler
         services.AddMemoryCache();
         services.AddHttpClient();
         services.AddSingleton<CacheService>();
+        services.AddTransient<RetryEngine>();
         services.AddTransient<Extractor>();
         services.AddTransient<ProjectsEnumerator>();
         services.AddTransient<NugetService>();
