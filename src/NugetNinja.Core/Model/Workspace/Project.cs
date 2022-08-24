@@ -110,9 +110,11 @@ public class Project
             throw new InvalidOperationException($"Could remove PackageReference {refName} in project {this} because it was not found!");
         }
 
-        node.Attributes["Version"].Value = newVersion.ToString();
-
-        await SaveDocToDisk(doc);
+        if (node.Attributes["Version"] != null)
+        {
+            node.Attributes["Version"].Value = newVersion.ToString();
+            await SaveDocToDisk(doc);
+        }
     }
 
     public async Task ReplacePackageReferenceAsync(string refName, Package newPackage)
