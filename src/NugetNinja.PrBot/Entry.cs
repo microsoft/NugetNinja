@@ -18,12 +18,13 @@ public class Entry
     private readonly string _githubToken;
     private readonly string _workingBranch;
     private readonly string _githubUserName;
+    private readonly string _githubUserEmail;
+    private readonly string WorkspaceFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NugetNinjaWorkspace");
     private readonly GitHubService _gitHubService;
     private readonly RunAllOfficialPluginsService _runAllOfficialPluginsService;
     private readonly WorkspaceManager _workspaceManager;
     private readonly RepoDbContext _repoDbContext;
     private readonly ILogger<Entry> _logger;
-    private static readonly string WorkspaceFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NugetNinjaWorkspace");
 
     public Entry(
         GitHubService gitHubService,
@@ -36,6 +37,7 @@ public class Entry
         _githubToken = configuration["GitHubToken"];
         _workingBranch = configuration["ContributionBranch"];
         _githubUserName = configuration["GitHubUserName"];
+        _githubUserEmail = configuration["GitHubUserEmail"];
         _gitHubService = gitHubService;
         _runAllOfficialPluginsService = runAllOfficialPluginsService;
         _workspaceManager = workspaceManager;
@@ -74,6 +76,7 @@ public class Entry
             }
 
             _logger.LogInformation($"{repo} is pending some fix. We will try to create\\update related pull request.");
+            await _workspaceManager.SetUserConfig(workPath, username: _githubUserName, email: _githubUserEmail);
             var saved = await _workspaceManager.CommitToBranch(workPath, "Auto csproj fix and update by bot.", branch: _workingBranch);
 
             if (!saved)
@@ -83,7 +86,7 @@ public class Entry
             }
 
             await _gitHubService.ForkRepo(repo.Org, repo.Name);
-            await _workspaceManager.Push(workPath, _workingBranch, $"https://{_githubUserName}:{_githubToken}@github.com/{_githubUserName}/{repo.Name}.git");
+            await _workspaceManager.Push(workPath, _workingBranch, $"https://{_githubUserName}:{_githubToken}@github.com/{_githubUserName}/{repo.Name}.git", force: true);
         }
     }
 }

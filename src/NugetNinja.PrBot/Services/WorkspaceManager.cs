@@ -158,6 +158,12 @@ public class WorkspaceManager
         return !commitResult.Contains("nothing to commit, working tree clean");
     }
 
+    public async Task SetUserConfig(string sourcePath, string username, string email)
+    {
+        await _commandRunner.RunGit(sourcePath, $@"config user.name ""{username}""");
+        await _commandRunner.RunGit(sourcePath, $@"config user.email ""{email}""");
+    }
+
     /// <summary>
     /// Push a local folder to remote.
     /// </summary>
@@ -165,7 +171,7 @@ public class WorkspaceManager
     /// <param name="branch">Remote branch.</param>
     /// <param name="logger">Logger.</param>
     /// <returns>Pushed.</returns>
-    public async Task<bool> Push(string sourcePath, string branch, string endpoint)
+    public async Task<bool> Push(string sourcePath, string branch, string endpoint, bool force = false)
     {
         // Set origin url.
         try
@@ -180,7 +186,8 @@ public class WorkspaceManager
         // Push to that origin.
         try
         {
-            var pushResult = await _commandRunner.RunGit(sourcePath, $@"push --set-upstream ninja {branch}");
+            var forceString = force ? "--force" : string.Empty;
+            var pushResult = await _commandRunner.RunGit(sourcePath, $@"push --set-upstream ninja {branch} {forceString}");
             return pushResult.Contains("->") || pushResult.Contains("Everything up-to-date");
         }
         catch (GitCommandException e) when (e.GitOutput.Contains("rejected]"))

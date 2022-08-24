@@ -10,10 +10,10 @@ using Microsoft.NugetNinja.Core;
 using Microsoft.NugetNinja.PrBot;
 
 await CreateHostBuilder(args)
-            .Build()
-            .Services
-            .GetRequiredService<Entry>()
-            .RunAsync();
+    .Build()
+    .Services
+    .GetRequiredService<Entry>()
+    .RunAsync();
 
 static IHostBuilder CreateHostBuilder(string[] args)
 {
