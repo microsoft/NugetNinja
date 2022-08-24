@@ -8,14 +8,15 @@ public sealed class NugetVersion : ICloneable, IComparable<NugetVersion?>, IEqua
     public NugetVersion(string versionString)
     {
         SourceString = versionString;
-        if (versionString.Contains("-"))
+        var trimmedVersion = versionString.Replace("*", "0");
+        if (trimmedVersion.Contains("-"))
         {
-            PrimaryVersion = Version.Parse(versionString.Split("-")[0]);
-            AdditionalText = versionString.Split("-")[1].ToLower().Trim();
+            PrimaryVersion = Version.Parse(trimmedVersion.Split("-")[0]);
+            AdditionalText = trimmedVersion.Split("-")[1].ToLower().Trim();
         }
         else
         {
-            PrimaryVersion = Version.Parse(versionString);
+            PrimaryVersion = Version.Parse(trimmedVersion);
         }
     }
 
