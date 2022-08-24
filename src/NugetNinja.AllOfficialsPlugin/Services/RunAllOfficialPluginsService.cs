@@ -42,7 +42,7 @@ public class RunAllOfficialPluginsService : IEntryService
     {
         foreach (var plugin in _pluginDetectors)
         {
-            _logger.LogInformation($"Parsing files to build project structure based on path: '{path}'...");
+            _logger.LogTrace($"Parsing files to build project structure based on path: '{path}'...");
             var model = await _extractor.Parse(path);
 
             _logger.LogInformation($"Analyzing possible actions via {plugin.GetType().Name}...");

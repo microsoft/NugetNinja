@@ -45,7 +45,7 @@ public class CommandRunner
             }
         };
 
-        _logger.LogInformation($"Running command: {path.TrimEnd('\\').Trim()} git {arguments}");
+        _logger.LogTrace($"Running command: {path.TrimEnd('\\').Trim()} git {arguments}");
 
         try
         {
@@ -88,7 +88,7 @@ public class CommandRunner
             consoleOutput = error;
             if (error.Contains("fatal") || error.Contains("error:"))
             {
-                _logger.LogError(consoleOutput);
+                _logger.LogTrace(consoleOutput);
                 throw new GitCommandException(
                     $"Git command resulted an error: git {arguments} on {path} got result: {error}",
                     command: arguments,
