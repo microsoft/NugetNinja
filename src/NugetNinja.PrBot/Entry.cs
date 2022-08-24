@@ -49,13 +49,12 @@ public class Entry
         _logger.LogInformation("Migrating database...");
         await _repoDbContext.Database.MigrateAsync();
 
-        if (await _repoDbContext.Repos.CountAsync() < 2)
+        if (!await _repoDbContext.Repos.AnyAsync())
         {
             _logger.LogInformation("Seeding test database...");
             _repoDbContext.Repos.RemoveRange(_repoDbContext.Repos);
             await _repoDbContext.SaveChangesAsync();
-            await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "Microsoft"));
-            await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "AiursoftWeb"));
+            await _repoDbContext.Repos.AddAsync(new GitRepo("QRCoder", "codebude"));
             await _repoDbContext.SaveChangesAsync();
         }
 
