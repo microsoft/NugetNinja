@@ -59,8 +59,8 @@ public class Entry
             _logger.LogInformation("Seeding test database...");
             _repoDbContext.Repos.RemoveRange(_repoDbContext.Repos);
             await _repoDbContext.SaveChangesAsync();
-            await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "Microsoft", "https://github.com/Microsoft/NugetNinja.git", RepoProvider.GitHub));
-            await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "AiursoftWeb", "https://github.com/AiursoftWeb/Infrastructures.git", RepoProvider.GitHub));
+            await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "Microsoft"));
+            await _repoDbContext.Repos.AddAsync(new GitRepo("Infrastructures", "AiursoftWeb"));
             await _repoDbContext.SaveChangesAsync();
         }
 
@@ -72,12 +72,12 @@ public class Entry
             // Clone locally.
             _logger.LogInformation($"Cloning repository: {repo.Name}...");
             var workPath = Path.Combine(WorkspaceFolder, $"workspace-{repo.Name}");
-            await _workspaceManager.ResetRepo(workPath, repoDetails.DefaultBranch ?? throw new NullReferenceException($"The default branch of {repoDetails.Name} is null!"), repo.CloneEndpoint);
+            await _workspaceManager.ResetRepo(workPath, repoDetails.DefaultBranch ?? throw new NullReferenceException($"The default branch of {repoDetails.Name} is null!"), repoDetails.CloneUrl);
 
             // Run all plugins.
             await _runAllOfficialPluginsService.OnServiceStartedAsync(workPath, true);
 
-            // Considere changes...
+            // Consider changes...
             if (!await _workspaceManager.PendingCommit(workPath))
             {
                 _logger.LogInformation($"{repo} has no suggestion that we can make. Ignore.");

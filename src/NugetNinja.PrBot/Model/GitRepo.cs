@@ -7,11 +7,6 @@ using Microsoft.NugetNinja.Core;
 
 namespace Microsoft.NugetNinja.PrBot;
 
-public enum RepoProvider
-{
-    GitHub
-}
-
 public class GitRepo
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -21,14 +16,10 @@ public class GitRepo
 
     public GitRepo(
         string repoName,
-        string org,
-        string cloneEndpoint,
-        RepoProvider repoProvider)
+        string org)
     {
         Name = repoName;
         Org = org;
-        CloneEndpoint = cloneEndpoint;
-        Provider = repoProvider;
     }
 
     [Key]
@@ -36,14 +27,6 @@ public class GitRepo
     
     public string Org { get; set; }
     public string Name { get; set; }
-
-    public string CloneEndpoint { get; set; }
-    public string? CloneToken { get; set; }
-
-    public string NugetServer { get; set; } = NugetService.DefaultNugetServer;
-    public string? NugetPatToken { get; set; }
-
-    public RepoProvider Provider { get; set; }
 
     public override string ToString()
     {

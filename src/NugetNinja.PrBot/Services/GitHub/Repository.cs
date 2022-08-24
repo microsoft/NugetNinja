@@ -394,7 +394,7 @@ public class Repository
     /// 
     /// </summary>
     [JsonPropertyName("clone_url")]
-    public string? clone_url { get; set; }
+    public string? CloneUrl { get; set; }
     /// <summary>
     /// 
     /// </summary>
