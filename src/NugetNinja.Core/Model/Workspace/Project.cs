@@ -262,8 +262,15 @@ public class Project
             .Replace(@"></PackageReference>", " />")
             .Replace(@"></ProjectReference>", " />")
             .Replace(@"></FrameworkReference>", " />")
+            .Replace(@"></Compile>", " />")
+            .Replace(@"></Content>", " />")
             .Replace(@"></None>", " />")
+            .Replace(@"></Folder>", " />")
+            .Replace(@"></AdditionalFiles>", " />")
+            .Replace(@"></UserProperties>", " />")
+            .Replace(@"></EmbeddedResource>", " />")
             .Replace(@"></Using>", " />");
+        
         await File.WriteAllTextAsync(PathOnDisk, csprojText);
     }
 }
