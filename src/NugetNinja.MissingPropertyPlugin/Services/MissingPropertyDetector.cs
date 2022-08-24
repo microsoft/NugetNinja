@@ -34,6 +34,18 @@ public class MissingPropertyDetector : IActionDetector
         await Task.CompletedTask;
         foreach (var project in context.AllProjects)
         {
+            var versionSuggestion = this.AnalyzeVersion(project);
+            if (versionSuggestion != null)
+            {
+                yield return versionSuggestion;
+            }
+
+            if (string.IsNullOrWhiteSpace(project.Nullable) && _enforceNullable)
+                yield return new MissingProperty(project, nameof(project.Nullable), "enable");
+            if (string.IsNullOrWhiteSpace(project.ImplicitUsings) && _enforceImplicitUsings)
+                yield return new MissingProperty(project, nameof(project.ImplicitUsings), "enable");
+
+            // Skip executable programs.
             if (project.Executable())
             {
                 _logger.LogTrace($"Skip scanning properties for project: '{project}' because it's an executable.");
@@ -46,23 +58,9 @@ public class MissingPropertyDetector : IActionDetector
                 continue;
             }
 
+            // Fill in properties for class lib.
             if (string.IsNullOrWhiteSpace(project.OutputType) && _fillInOutputType)
                 yield return new MissingProperty(project, nameof(project.OutputType), "Library");
-
-            var versionSuggestion = this.AnalyzeVersion(project);
-            if (versionSuggestion != null)
-            {
-                yield return versionSuggestion;
-            }
-
-            if (string.IsNullOrWhiteSpace(project.Nullable) && _enforceNullable)
-                yield return new MissingProperty(project, nameof(project.Nullable), "enable");
-            if (string.IsNullOrWhiteSpace(project.ImplicitUsings) && _enforceImplicitUsings)
-                yield return new MissingProperty(project, nameof(project.ImplicitUsings), "enable");
-            if (string.IsNullOrWhiteSpace(project.Version))
-            {
-                _logger.LogTrace($"Skip scanning properties for project: '{project}' because it seems won't publish to Nuget. It doesn't have a version property.");
-            }
 
             // To do: Load those properties from GitHub API.
 
@@ -103,8 +101,8 @@ public class MissingPropertyDetector : IActionDetector
 
         var cleanedRuntimes = runtimes.Select(r => r.ToLower().Trim()).Distinct().ToArray();
 
-        var inserted = project.GetTargetFrameworks().Except(cleanedRuntimes).ToList();
-        var deprecated = cleanedRuntimes.Except(project.GetTargetFrameworks()).ToList();
+        var deprecated = project.GetTargetFrameworks().Except(cleanedRuntimes).ToList();
+        var inserted = cleanedRuntimes.Except(project.GetTargetFrameworks()).ToList();
         if (inserted.Any() || deprecated.Any())
         {
             return new ResetRuntime(project, cleanedRuntimes, inserted.Count, deprecated.Count);

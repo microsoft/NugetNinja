@@ -66,6 +66,9 @@ public class Entry
             {
                 _logger.LogInformation($"Processing repository {repo.Org}/{repo.Name}...");
                 await ProcessRepository(repo);
+                _logger.LogInformation($"\r\n\r\n");
+                _logger.LogInformation($"================================================================");
+                _logger.LogInformation($"\r\n\r\n");
             }
             catch (Exception e)
             {
