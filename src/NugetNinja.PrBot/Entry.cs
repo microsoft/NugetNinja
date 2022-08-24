@@ -105,6 +105,17 @@ public class Entry
 
             // Push to forked repo.
             await _workspaceManager.Push(workPath, _workingBranch, $"https://{_githubUserName}:{_githubToken}@github.com/{_githubUserName}/{repo.Name}.git", force: true);
+
+            var existingPullRequestsByBot = await _gitHubService.GetPullRequest(repo.Org, repo.Name, head: $"{_githubUserName}:{_workingBranch}");
+            if (!existingPullRequestsByBot.Any(p => p.State == "open"))
+            {
+                // Create a new pull request.
+                await _gitHubService.CreatePullRequest(repo.Org, repo.Name, head: $"{_githubUserName}:{_workingBranch}", @base: repoDetails.DefaultBranch);
+            }
+            else
+            {
+                _logger.LogInformation($"Skipped creating new pull request for {repo} because there already exists.");
+            }
         }
     }
 }

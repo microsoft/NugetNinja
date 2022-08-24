@@ -39,34 +39,37 @@ public class MissingPropertyDetector : IActionDetector
                 project.TargetFramework.StartsWith("netcore") ||
                 string.Compare(project.TargetFramework, "net6.0", StringComparison.Ordinal) < 0)
                 yield return new MissingProperty(project, nameof(project.TargetFramework), "net6.0", project.TargetFramework);
-            if (string.IsNullOrWhiteSpace(project.Nullable))
-                yield return new MissingProperty(project, nameof(project.Nullable), "enable");
-            if (string.IsNullOrWhiteSpace(project.ImplicitUsings))
-                yield return new MissingProperty(project, nameof(project.ImplicitUsings), "enable");
-            if (string.IsNullOrWhiteSpace(project.Version))
-            {
-                _logger.LogTrace($"Skip scanning properties for project: '{project}' because it seems won't publish to Nuget. It doesn't have a version property.");
-                continue;
-            }
+            
+            // To do: Fetch those property values based on GitHub results.
 
-            if (string.IsNullOrWhiteSpace(project.PackageLicenseExpression) && string.IsNullOrWhiteSpace(project.PackageLicenseFile))
-                yield return new MissingProperty(project, nameof(project.PackageLicenseExpression), "MIT");
-            if (string.IsNullOrWhiteSpace(project.Description))
-                yield return new MissingProperty(project, nameof(project.Description), "A library that shared to nuget.");
-            if (string.IsNullOrWhiteSpace(project.Company))
-                yield return new MissingProperty(project, nameof(project.Company), "Contoso");
-            if (string.IsNullOrWhiteSpace(project.Product))
-                yield return new MissingProperty(project, nameof(project.Product), project.ToString());
-            if (string.IsNullOrWhiteSpace(project.Authors))
-                yield return new MissingProperty(project, nameof(project.Authors), $"{project}Team");
-            if (string.IsNullOrWhiteSpace(project.PackageTags))
-                yield return new MissingProperty(project, nameof(project.PackageTags), $"nuget tools extensions");
-            if (string.IsNullOrWhiteSpace(project.PackageProjectUrl))
-                yield return new MissingProperty(project, nameof(project.PackageProjectUrl), $"https://github.com/Microsoft/Nugetninja");
-            if (string.IsNullOrWhiteSpace(project.RepositoryUrl))
-                yield return new MissingProperty(project, nameof(project.RepositoryUrl), $"https://github.com/Microsoft/Nugetninja");
-            if (string.IsNullOrWhiteSpace(project.RepositoryType))
-                yield return new MissingProperty(project, nameof(project.RepositoryType), $"git");
+            //if (string.IsNullOrWhiteSpace(project.Nullable))
+            //    yield return new MissingProperty(project, nameof(project.Nullable), "enable");
+            //if (string.IsNullOrWhiteSpace(project.ImplicitUsings))
+            //    yield return new MissingProperty(project, nameof(project.ImplicitUsings), "enable");
+            //if (string.IsNullOrWhiteSpace(project.Version))
+            //{
+            //    _logger.LogTrace($"Skip scanning properties for project: '{project}' because it seems won't publish to Nuget. It doesn't have a version property.");
+            //    continue;
+            //}
+
+            //if (string.IsNullOrWhiteSpace(project.PackageLicenseExpression) && string.IsNullOrWhiteSpace(project.PackageLicenseFile))
+            //    yield return new MissingProperty(project, nameof(project.PackageLicenseExpression), "MIT");
+            //if (string.IsNullOrWhiteSpace(project.Description))
+            //    yield return new MissingProperty(project, nameof(project.Description), "A library that shared to nuget.");
+            //if (string.IsNullOrWhiteSpace(project.Company))
+            //    yield return new MissingProperty(project, nameof(project.Company), "Contoso");
+            //if (string.IsNullOrWhiteSpace(project.Product))
+            //    yield return new MissingProperty(project, nameof(project.Product), project.ToString());
+            //if (string.IsNullOrWhiteSpace(project.Authors))
+            //    yield return new MissingProperty(project, nameof(project.Authors), $"{project}Team");
+            //if (string.IsNullOrWhiteSpace(project.PackageTags))
+            //    yield return new MissingProperty(project, nameof(project.PackageTags), $"nuget tools extensions");
+            //if (string.IsNullOrWhiteSpace(project.PackageProjectUrl))
+            //    yield return new MissingProperty(project, nameof(project.PackageProjectUrl), $"https://github.com/Microsoft/Nugetninja");
+            //if (string.IsNullOrWhiteSpace(project.RepositoryUrl))
+            //    yield return new MissingProperty(project, nameof(project.RepositoryUrl), $"https://github.com/Microsoft/Nugetninja");
+            //if (string.IsNullOrWhiteSpace(project.RepositoryType))
+            //    yield return new MissingProperty(project, nameof(project.RepositoryType), $"git");
         }
     }
 }

@@ -10,7 +10,16 @@ using System.Threading.Tasks;
 
 namespace Microsoft.NugetNinja.PrBot;
 
-public class Owner
+public class PullRequest
+{
+    [JsonPropertyName("user")]
+    public User? User { get; set; }
+
+    [JsonPropertyName("state")]
+    public string? State { get; set; }
+}
+
+public class User
 {
     /// <summary>
     /// 
@@ -169,7 +178,7 @@ public class Repository
     /// 
     /// </summary>
     [JsonPropertyName("owner")]
-    public Owner? Owner { get; set; }
+    public User? Owner { get; set; }
 
     /// <summary>
     /// 
