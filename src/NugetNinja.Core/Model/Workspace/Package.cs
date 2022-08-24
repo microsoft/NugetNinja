@@ -8,7 +8,7 @@ public class Package
     public Package(string name, string versionText)
     {
         Name = name;
-        VersionText = versionText;
+        SourceVersionText = versionText;
 
         if (versionText.Contains('(') ||
             versionText.Contains(')') ||
@@ -23,13 +23,20 @@ public class Package
                 .Split(',')[0];
         }
 
-        Version = new NugetVersion(versionText); 
+        Version = new NugetVersion(versionText);
+    }
+
+    public Package(string name, NugetVersion version)
+    {
+        Name = name;
+        Version = version;
+        SourceVersionText = version.ToString();
     }
 
     public string Name { get; set; }
 
     public NugetVersion Version { get; set; }
-    public string VersionText { get; set; }
+    public string SourceVersionText { get; set; }
 
     public override string ToString()
     {

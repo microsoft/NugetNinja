@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NugetNinja.AllOfficialsPlug
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NugetNinja.MissingPropertyPlugin", "src\NugetNinja.MissingPropertyPlugin\NugetNinja.MissingPropertyPlugin.csproj", "{335BE82E-E650-4E62-8107-B6BBD34E3107}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NugetNinja.PrBot", "src\NugetNinja.PrBot\NugetNinja.PrBot.csproj", "{FF24D161-7796-4CA2-A652-061DBEE89626}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{335BE82E-E650-4E62-8107-B6BBD34E3107}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{335BE82E-E650-4E62-8107-B6BBD34E3107}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{335BE82E-E650-4E62-8107-B6BBD34E3107}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF24D161-7796-4CA2-A652-061DBEE89626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF24D161-7796-4CA2-A652-061DBEE89626}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF24D161-7796-4CA2-A652-061DBEE89626}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF24D161-7796-4CA2-A652-061DBEE89626}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +90,7 @@ Global
 		{0EEF3C9A-9684-4642-9A66-8CD819EC6235} = {EE324A7A-86D4-4B7D-ADC5-3E6504738413}
 		{D2D68A5F-3283-4001-840F-3E14A9B372E8} = {0EEF3C9A-9684-4642-9A66-8CD819EC6235}
 		{335BE82E-E650-4E62-8107-B6BBD34E3107} = {0EEF3C9A-9684-4642-9A66-8CD819EC6235}
+		{FF24D161-7796-4CA2-A652-061DBEE89626} = {EE324A7A-86D4-4B7D-ADC5-3E6504738413}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2352F460-4B23-4215-951C-A3E923145148}

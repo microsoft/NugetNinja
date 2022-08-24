@@ -38,7 +38,17 @@ public class DeprecatedPackageDetector : IActionDetector
                 }
                 if (catalogInformation.Deprecation != null)
                 {
-                    yield return new DeprecatedPackageReplacement(project, package, catalogInformation.Deprecation.AlternatePackage?.Id);
+                    Package? alternative = null;
+                    if (!string.IsNullOrWhiteSpace(catalogInformation.Deprecation.AlternatePackage?.Id))
+                    {
+                        var alternativeVersion = await _nugetService.GetLatestVersion(catalogInformation.Deprecation.AlternatePackage.Id);
+                        alternative = new Package(catalogInformation.Deprecation.AlternatePackage.Id, alternativeVersion);
+                    }
+                    
+                    yield return new DeprecatedPackageReplacement(
+                        source: project,
+                        target: package,
+                        alternative: alternative);
                 }
                 else if (catalogInformation.Vulnerabilities.Any() == true)
                 {
