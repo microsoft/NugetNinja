@@ -72,7 +72,10 @@ public class Entry
             // Clone locally.
             _logger.LogInformation($"Cloning repository: {repo.Name}...");
             var workPath = Path.Combine(WorkspaceFolder, $"workspace-{repo.Name}");
-            await _workspaceManager.ResetRepo(workPath, repoDetails.DefaultBranch ?? throw new NullReferenceException($"The default branch of {repoDetails.Name} is null!"), repoDetails.CloneUrl);
+            await _workspaceManager.ResetRepo(
+                path: workPath,
+                branch: repoDetails.DefaultBranch ?? throw new NullReferenceException($"The default branch of {repoDetails.Name} is null!"),
+                endPoint: repoDetails.CloneUrl ?? throw new NullReferenceException($"The clone endpoint branch of {repoDetails.Name} is null!"));
 
             // Run all plugins.
             await _runAllOfficialPluginsService.OnServiceStartedAsync(workPath, true);
