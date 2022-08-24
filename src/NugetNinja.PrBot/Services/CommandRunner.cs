@@ -1,13 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.NugetNinja.PrBot;
@@ -26,7 +21,6 @@ public class CommandRunner
     /// </summary>
     /// <param name="path">Path</param>
     /// <param name="arguments">Arguments</param>
-    /// <param name="logger">logger</param>
     /// <param name="integrateResultInProcess">integrateResultInProcess</param>
     /// <returns>Task</returns>
     public async Task<string> RunGit(string path, string arguments, bool integrateResultInProcess = true)
@@ -101,8 +95,6 @@ public class CommandRunner
                     result: error,
                     path: path);
             }
-
-            // Todo: If the user didn't set his git email and git name, it may cause some exception. Handle that with a friendly approach.
         }
 
         consoleOutput += output;

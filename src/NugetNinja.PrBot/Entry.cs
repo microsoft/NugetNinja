@@ -1,11 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,7 +15,7 @@ public class Entry
     private readonly string _githubUserName;
     private readonly string _githubUserDisplayName;
     private readonly string _githubUserEmail;
-    private readonly string WorkspaceFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NugetNinjaWorkspace");
+    private readonly string _workspaceFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NugetNinjaWorkspace");
     private readonly GitHubService _gitHubService;
     private readonly RunAllOfficialPluginsService _runAllOfficialPluginsService;
     private readonly WorkspaceManager _workspaceManager;
@@ -71,7 +66,7 @@ public class Entry
 
             // Clone locally.
             _logger.LogInformation($"Cloning repository: {repo.Name}...");
-            var workPath = Path.Combine(WorkspaceFolder, $"workspace-{repo.Name}");
+            var workPath = Path.Combine(_workspaceFolder, $"workspace-{repo.Name}");
             await _workspaceManager.ResetRepo(
                 path: workPath,
                 branch: repoDetails.DefaultBranch ?? throw new NullReferenceException($"The default branch of {repoDetails.Name} is null!"),
@@ -96,7 +91,7 @@ public class Entry
             }
 
             // Fork repo.
-            while (!(await _gitHubService.GetRepos(_githubUserName)).Any(r => r.Name == repo.Name))
+            while ((await _gitHubService.GetRepos(_githubUserName)).All(r => r.Name != repo.Name))
             {
                 await _gitHubService.ForkRepo(repo.Org, repo.Name);
                 // Wait a while. GitHub may need some time to fork the repo.
@@ -107,7 +102,7 @@ public class Entry
             await _workspaceManager.Push(workPath, _workingBranch, $"https://{_githubUserName}:{_githubToken}@github.com/{_githubUserName}/{repo.Name}.git", force: true);
 
             var existingPullRequestsByBot = await _gitHubService.GetPullRequest(repo.Org, repo.Name, head: $"{_githubUserName}:{_workingBranch}");
-            if (!existingPullRequestsByBot.Any(p => p.State == "open"))
+            if (existingPullRequestsByBot.All(p => p.State != "open"))
             {
                 // Create a new pull request.
                 await _gitHubService.CreatePullRequest(repo.Org, repo.Name, head: $"{_githubUserName}:{_workingBranch}", @base: repoDetails.DefaultBranch);

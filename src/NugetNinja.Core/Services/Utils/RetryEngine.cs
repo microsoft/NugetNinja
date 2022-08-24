@@ -1,11 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.NugetNinja.Core;
@@ -15,7 +10,7 @@ namespace Microsoft.NugetNinja.Core;
 /// </summary>
 public class RetryEngine
 {
-    private static Random rnd = new Random();
+    private static Random rnd = new();
     private readonly ILogger<RetryEngine> logger;
 
     /// <summary>
@@ -44,7 +39,7 @@ public class RetryEngine
         {
             try
             {
-                this.logger.LogInformation($"Starting a job with retry. Attempt: {i}. (Starts from 1)");
+                logger.LogInformation($"Starting a job with retry. Attempt: {i}. (Starts from 1)");
                 var response = await taskFactory(i);
                 return response;
             }
@@ -55,22 +50,22 @@ public class RetryEngine
                     var shouldRetry = when.Invoke(e);
                     if (!shouldRetry)
                     {
-                        this.logger.LogCritical($"A task that was asked to retry failed. But from the given condition is false, we gave up retry.");
+                        logger.LogCritical("A task that was asked to retry failed. But from the given condition is false, we gave up retry.");
                         throw;
                     }
                     else
                     {
-                        this.logger.LogWarning($"A task that was asked to retry failed. But fromt the given condition is true, we will keep retry.");
+                        logger.LogWarning("A task that was asked to retry failed. But from the given condition is true, we will keep retry.");
                     }
                 }
 
                 if (i >= attempts)
                 {
-                    this.logger.LogCritical($"A task that was asked to retry failed. Maximum attempts {attempts} already reached. We have to crash it.");
+                    logger.LogCritical($"A task that was asked to retry failed. Maximum attempts {attempts} already reached. We have to crash it.");
                     throw;
                 }
 
-                this.logger.LogWarning($"A task that was asked to retry failed. Current attempt is {i}. maximum attempts is {attempts}. Will retry soon...");
+                logger.LogWarning($"A task that was asked to retry failed. Current attempt is {i}. maximum attempts is {attempts}. Will retry soon...");
 
                 await Task.Delay(ExponentialBackoffTimeSlot(i) * 1000);
             }

@@ -22,9 +22,9 @@ public class GitCommandException : Exception
         string path)
         : base(message)
     {
-        this.Command = command;
-        this.GitOutput = result;
-        this.Path = path;
+        Command = command;
+        GitOutput = result;
+        Path = path;
     }
 
     /// <summary>
