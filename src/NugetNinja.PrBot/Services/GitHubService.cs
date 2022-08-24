@@ -32,6 +32,14 @@ public class GitHubService
         return await SendHttpAndGetJson<Repository>(endpoint, HttpMethod.Get);
     }
 
+    public async Task<bool> RepoExists(string orgName, string repoName)
+    {
+        _logger.LogInformation($"Getting repository details based on org: {orgName}, repo: {repoName}...");
+        var endpoint = $@"https://api.github.com/repos/{orgName}/{repoName}";
+        var response = await _httpClient.GetAsync(endpoint);
+        return response.StatusCode == HttpStatusCode.OK;
+    }
+
     public async Task<List<Repository>> GetRepos(string userName)
     {
         _logger.LogInformation($"Listing all repositories based on user name: {userName}...");
