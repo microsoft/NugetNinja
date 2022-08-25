@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.NugetNinja.AllOfficialsPlugin;
@@ -19,7 +18,6 @@ public class Entry
     private readonly GitHubService _gitHubService;
     private readonly RunAllOfficialPluginsService _runAllOfficialPluginsService;
     private readonly WorkspaceManager _workspaceManager;
-    private readonly RepoDbContext _repoDbContext;
     private readonly ILogger<Entry> _logger;
 
     public Entry(
@@ -27,7 +25,6 @@ public class Entry
         RunAllOfficialPluginsService runAllOfficialPluginsService,
         WorkspaceManager workspaceManager,
         IConfiguration configuration,
-        RepoDbContext repoDbContext,
         ILogger<Entry> logger)
     {
         _githubToken = configuration["GitHubToken"];
@@ -38,7 +35,6 @@ public class Entry
         _gitHubService = gitHubService;
         _runAllOfficialPluginsService = runAllOfficialPluginsService;
         _workspaceManager = workspaceManager;
-        _repoDbContext = repoDbContext;
         _logger = logger;
     }
 
@@ -46,49 +42,46 @@ public class Entry
     {
         _logger.LogInformation("Starting Nuget Ninja PR bot...");
 
-        _logger.LogInformation("Migrating database...");
-        await _repoDbContext.Database.MigrateAsync();
+        var myStars = await _gitHubService.GetMyStars(_githubUserName);
 
-        if (!await _repoDbContext.Repos.AnyAsync())
-        {
-            _logger.LogInformation("Seeding test database...");
-            _repoDbContext.Repos.RemoveRange(_repoDbContext.Repos);
-            await _repoDbContext.SaveChangesAsync();
-            await _repoDbContext.Repos.AddAsync(new GitRepo("NugetNinja", "Microsoft"));
-            await _repoDbContext.SaveChangesAsync();
-        }
-
-        var allRepos = await _repoDbContext.Repos.ToListAsync();
-        _logger.LogInformation($"Got {allRepos.Count} repositories as registered to create pull requests automatically.");
-        foreach (var repo in allRepos)
+        _logger.LogInformation($"Got {myStars.Count} repositories as registered to create pull requests automatically.");
+        _logger.LogInformation("\r\n\r\n");
+        _logger.LogInformation("================================================================");
+        _logger.LogInformation("\r\n\r\n");
+        foreach (var repo in myStars)
         {
             try
             {
-                _logger.LogInformation($"Processing repository {repo.Org}/{repo.Name}...");
+                _logger.LogInformation($"Processing repository {repo.Owner?.Login}/{repo.Name}...");
                 await ProcessRepository(repo);
-                _logger.LogInformation($"\r\n\r\n");
-                _logger.LogInformation($"================================================================");
-                _logger.LogInformation($"\r\n\r\n");
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Crashed when processing repo: {repo.Org}/{repo.Name}!");
+                _logger.LogError(e, $"Crashed when processing repo: {repo.Owner?.Login}/{repo.Name}!");
+            }
+            finally
+            {
+                _logger.LogInformation("\r\n\r\n");
+                _logger.LogInformation("================================================================");
+                _logger.LogInformation("\r\n\r\n");
             }
         }
     }
 
-    private async Task ProcessRepository(GitRepo repo)
+    private async Task ProcessRepository(Repository repo)
     {
-        // Get details from GitHub
-        var repoDetails = await _gitHubService.GetRepo(repo.Org, repo.Name);
+        if (string.IsNullOrWhiteSpace(repo.Owner?.Login) || string.IsNullOrWhiteSpace(repo.Name))
+        {
+            throw new InvalidDataException($"The repo with path: {repo.FullName} is having invalid data!");
+        }
 
         // Clone locally.
         _logger.LogInformation($"Cloning repository: {repo.Name}...");
         var workPath = Path.Combine(_workspaceFolder, $"workspace-{repo.Name}");
         await _workspaceManager.ResetRepo(
             path: workPath,
-            branch: repoDetails.DefaultBranch ?? throw new NullReferenceException($"The default branch of {repoDetails.Name} is null!"),
-            endPoint: repoDetails.CloneUrl ?? throw new NullReferenceException($"The clone endpoint branch of {repoDetails.Name} is null!"));
+            branch: repo.DefaultBranch ?? throw new NullReferenceException($"The default branch of {repo.Name} is null!"),
+            endPoint: repo.CloneUrl ?? throw new NullReferenceException($"The clone endpoint branch of {repo.Name} is null!"));
 
         // Run all plugins.
         await _runAllOfficialPluginsService.OnServiceStartedAsync(workPath, true);
@@ -111,7 +104,7 @@ public class Entry
         // Fork repo.
         if (!await _gitHubService.RepoExists(_githubUserName, repo.Name))
         {
-            await _gitHubService.ForkRepo(repo.Org, repo.Name);
+            await _gitHubService.ForkRepo(repo.Owner.Login, repo.Name);
             await Task.Delay(5000);
             while (!await _gitHubService.RepoExists(_githubUserName, repo.Name))
             {
@@ -120,15 +113,14 @@ public class Entry
             }
         }
 
-
         // Push to forked repo.
         await _workspaceManager.Push(workPath, _workingBranch, $"https://{_githubUserName}:{_githubToken}@github.com/{_githubUserName}/{repo.Name}.git", force: true);
 
-        var existingPullRequestsByBot = await _gitHubService.GetPullRequest(repo.Org, repo.Name, head: $"{_githubUserName}:{_workingBranch}");
+        var existingPullRequestsByBot = await _gitHubService.GetPullRequest(repo.Owner.Login, repo.Name, head: $"{_githubUserName}:{_workingBranch}");
         if (existingPullRequestsByBot.All(p => p.State != "open"))
         {
             // Create a new pull request.
-            await _gitHubService.CreatePullRequest(repo.Org, repo.Name, head: $"{_githubUserName}:{_workingBranch}", @base: repoDetails.DefaultBranch);
+            await _gitHubService.CreatePullRequest(repo.Owner.Login, repo.Name, head: $"{_githubUserName}:{_workingBranch}", @base: repo.DefaultBranch);
         }
         else
         {

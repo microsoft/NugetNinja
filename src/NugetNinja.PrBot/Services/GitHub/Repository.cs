@@ -160,8 +160,8 @@ public class Repository
     /// <summary>
     /// 
     /// </summary>
-    [JsonPropertyName("full_name")]
-    public string? full_name { get; set; }
+    [JsonPropertyName("FullName")]
+    public string? FullName { get; set; }
 
     /// <summary>
     /// 

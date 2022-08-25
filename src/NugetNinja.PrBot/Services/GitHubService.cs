@@ -54,6 +54,13 @@ public class GitHubService
         return await SendHttpAndGetJson<List<Repository>>(endpoint, HttpMethod.Get);
     }
 
+    public async Task<List<Repository>> GetMyStars(string userName)
+    {
+        _logger.LogInformation($"Listing all stared repositories based on user's name: {userName}...");
+        var endpoint = $@"https://api.github.com/users/{userName}/starred";
+        return await SendHttpAndGetJson<List<Repository>>(endpoint, HttpMethod.Get);
+    }
+
     public async Task ForkRepo(string org, string repo)
     {
         _logger.LogInformation($"Forking repository on GitHub with org: {org}, repo: {repo}...");
