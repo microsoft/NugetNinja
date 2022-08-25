@@ -54,11 +54,23 @@ public class GitHubService
         return await SendHttpAndGetJson<List<Repository>>(endpoint, HttpMethod.Get);
     }
 
-    public async Task<List<Repository>> GetMyStars(string userName)
+    public async IAsyncEnumerable<Repository> GetMyStars(string userName)
     {
         _logger.LogInformation($"Listing all stared repositories based on user's name: {userName}...");
-        var endpoint = $@"https://api.github.com/users/{userName}/starred";
-        return await SendHttpAndGetJson<List<Repository>>(endpoint, HttpMethod.Get);
+        for (int i = 1;; i++)
+        {
+            var endpoint = $@"https://api.github.com/users/{userName}/starred?page={i}";
+            var currentPageItems = await SendHttpAndGetJson<List<Repository>>(endpoint, HttpMethod.Get);
+            if (!currentPageItems.Any())
+            {
+                yield break;
+            }
+
+            foreach (var repo in currentPageItems)
+            {
+                yield return repo;
+            }
+        }
     }
 
     public async Task ForkRepo(string org, string repo)
