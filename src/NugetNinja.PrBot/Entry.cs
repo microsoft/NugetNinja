@@ -44,6 +44,7 @@ public class Entry
 
         var myStars = await _gitHubService
             .GetMyStars(_githubUserName)
+            .Where(r => r.Archived == false)
             .Where(r => r.Owner?.Login != _githubUserName)
             .ToListAsync();
 

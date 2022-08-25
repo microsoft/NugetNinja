@@ -526,8 +526,8 @@ public class Repository
     /// <summary>
     /// 
     /// </summary>
-    [JsonPropertyName("archived")]
-    public bool? archived { get; set; }
+    [JsonPropertyName("Archived")]
+    public bool? Archived { get; set; }
 
     /// <summary>
     /// 
