@@ -76,7 +76,7 @@ public class Entry
         }
 
         // Clone locally.
-        var workPath = Path.Combine(_workspaceFolder, $"{repo.FullName}");
+        var workPath = Path.Combine(_workspaceFolder, $"{repo.id}-{repo.Name}");
         _logger.LogInformation($"Cloning repository: {repo.Name} to {workPath}...");
         await _workspaceManager.ResetRepo(
             path: workPath,
