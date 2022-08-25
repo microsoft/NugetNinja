@@ -526,14 +526,14 @@ public class Repository
     /// <summary>
     /// 
     /// </summary>
-    [JsonPropertyName("Archived")]
+    [JsonPropertyName("archived")]
     public bool? Archived { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
     [JsonPropertyName("disabled")]
-    public bool? disabled { get; set; }
+    public bool? Disabled { get; set; }
 
     /// <summary>
     /// 
