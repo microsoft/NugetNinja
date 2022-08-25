@@ -42,9 +42,12 @@ public class Entry
     {
         _logger.LogInformation("Starting Nuget Ninja PR bot...");
 
-        var myStars = await _gitHubService.GetMyStars(_githubUserName).ToListAsync();
+        var myStars = await _gitHubService
+            .GetMyStars(_githubUserName)
+            .Where(r => r.Owner?.Login != _githubUserName)
+            .ToListAsync();
 
-        _logger.LogInformation($"Got {myStars.Count} repositories as registered to create pull requests automatically.");
+        _logger.LogInformation($"Got {myStars.Count} stared repositories as registered to create pull requests automatically.");
         _logger.LogInformation("\r\n\r\n");
         _logger.LogInformation("================================================================");
         _logger.LogInformation("\r\n\r\n");
