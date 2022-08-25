@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Net;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -32,14 +29,29 @@ public class GitHubService
     {
         _logger.LogInformation($"Getting repository details based on org: {orgName}, repo: {repoName}...");
         var endpoint = $@"https://api.github.com/repos/{orgName}/{repoName}";
-        return await this.SendHttpAndGetJson<Repository>(endpoint, HttpMethod.Get);
+        return await SendHttpAndGetJson<Repository>(endpoint, HttpMethod.Get);
+    }
+
+    public async Task<bool> RepoExists(string orgName, string repoName)
+    {
+        _logger.LogInformation($"Getting if repository exists based on org: {orgName}, repo: {repoName}...");
+        try
+        {
+            var endpoint = $@"https://api.github.com/repos/{orgName}/{repoName}";
+            await SendHttp(endpoint, HttpMethod.Get);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public async Task<List<Repository>> GetRepos(string userName)
     {
         _logger.LogInformation($"Listing all repositories based on user name: {userName}...");
         var endpoint = $@"https://api.github.com/users/{userName}/repos";
-        return await this.SendHttpAndGetJson<List<Repository>>(endpoint, HttpMethod.Get);
+        return await SendHttpAndGetJson<List<Repository>>(endpoint, HttpMethod.Get);
     }
 
     public async Task ForkRepo(string org, string repo)
@@ -107,7 +119,7 @@ This pull request may break or change the behavior of this application. Review w
 
     private async Task<T> SendHttpAndGetJson<T>(string endPoint, HttpMethod method)
     {
-        var json = await this.SendHttp(endPoint, method);
+        var json = await SendHttp(endPoint, method);
         var repos = JsonSerializer.Deserialize<T>(json) ?? throw new WebException($"The remote server returned non-json content: '{json}'");
         return repos;
     }

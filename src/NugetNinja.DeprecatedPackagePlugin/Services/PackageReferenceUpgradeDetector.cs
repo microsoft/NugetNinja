@@ -50,7 +50,7 @@ public class DeprecatedPackageDetector : IActionDetector
                         target: package,
                         alternative: alternative);
                 }
-                else if (catalogInformation.Vulnerabilities.Any() == true)
+                else if (catalogInformation.Vulnerabilities.Any())
                 {
                     yield return new VulnerablePackageReplacement(project, package);
                 }

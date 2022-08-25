@@ -23,8 +23,12 @@ static IHostBuilder CreateHostBuilder(string[] args)
             logging
                 .AddFilter("Microsoft.Extensions", LogLevel.Warning)
                 .AddFilter("System", LogLevel.Warning);
-            logging.AddConsole();
-            logging.SetMinimumLevel(LogLevel.Information);
+            logging.AddSimpleConsole(options =>
+            {
+                options.IncludeScopes = false;
+                options.SingleLine = true;
+                options.TimestampFormat = "mm:ss ";
+            });
         })
         .ConfigureServices(services =>
         {

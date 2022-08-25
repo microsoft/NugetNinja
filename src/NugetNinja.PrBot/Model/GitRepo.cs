@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.NugetNinja.Core;
 
 namespace Microsoft.NugetNinja.PrBot;
 

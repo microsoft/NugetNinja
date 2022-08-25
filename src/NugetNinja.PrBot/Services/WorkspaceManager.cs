@@ -1,12 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.NugetNinja.Core;
 
 namespace Microsoft.NugetNinja.PrBot;
@@ -19,10 +13,6 @@ public class WorkspaceManager
     private readonly RetryEngine _retryEngine;
     private readonly CommandRunner _commandRunner;
 
-    /// <summary>
-    /// Creates new WorkspaceInitializer
-    /// </summary>
-    /// <param name="commandRunner">Command runner</param>
     public WorkspaceManager(
         RetryEngine retryEngine,
         CommandRunner commandRunner)
@@ -35,11 +25,10 @@ public class WorkspaceManager
     /// Get current branch from a git repo.
     /// </summary>
     /// <param name="path">Path</param>
-    /// <param name="logger">logger</param>
     /// <returns>Current branch.</returns>
     public async Task<string> GetBranch(string path)
     {
-        var gitBranchOutput = await _commandRunner.RunGit(path, $"rev-parse --abbrev-ref HEAD");
+        var gitBranchOutput = await _commandRunner.RunGit(path, "rev-parse --abbrev-ref HEAD");
         return gitBranchOutput
             .Split('\n')
             .Single(s => !string.IsNullOrWhiteSpace(s))
@@ -76,11 +65,10 @@ public class WorkspaceManager
     /// Get remote origin's URL from a local git repo.
     /// </summary>
     /// <param name="path">Path.</param>
-    /// <param name="logger">logger</param>
     /// <returns>Remote URL.</returns>
     public async Task<string> GetRemoteUrl(string path)
     {
-        var gitRemoteOutput = await _commandRunner.RunGit(path, $"remote -v");
+        var gitRemoteOutput = await _commandRunner.RunGit(path, "remote -v");
         return gitRemoteOutput
             .Split('\n')
             .First(t => t.StartsWith("origin"))
@@ -95,8 +83,7 @@ public class WorkspaceManager
     /// </summary>
     /// <param name="path">Path on disk.</param>
     /// <param name="branch">Init branch.</param>
-    /// <param name="logger">Logger</param>
-    /// <param name="allowFastClone">If allow to use fast clone technology to get better performance.</param>
+    /// <param name="endPoint">Endpoint. Used for Git clone.</param>
     /// <returns>Task</returns>
     public async Task Clone(string path, string branch, string endPoint)
     {
@@ -113,9 +100,7 @@ public class WorkspaceManager
     /// </summary>
     /// <param name="path">Path</param>
     /// <param name="branch">Branch name</param>
-    /// <param name="logger">logger</param>
-    /// <param name="allowFastClone">If allow to use fast clone technology to get better performance.</param>
-    /// <param name="allowLocalBranch">If allow the branch doesn't exists on remote. If not, we will try to restore the branch from remote.</param>
+    /// <param name="endPoint">Git clone endpoint.</param>
     /// <returns>Task</returns>
     public async Task ResetRepo(string path, string branch, string endPoint)
     {
@@ -129,8 +114,8 @@ public class WorkspaceManager
 
             await _commandRunner.RunGit(path, "reset --hard HEAD");
             await _commandRunner.RunGit(path, "clean . -fdx");
-            await this.SwitchToBranch(path, branch, fromCurrent: false);
-            await this.Fetch(path);
+            await SwitchToBranch(path, branch, fromCurrent: false);
+            await Fetch(path);
             await _commandRunner.RunGit(path, $"reset --hard origin/{branch}");
         }
         catch (GitCommandException e) when (
@@ -147,12 +132,12 @@ public class WorkspaceManager
     /// Do a commit. (With adding local changes)
     /// </summary>
     /// <param name="sourcePath">Commit path.</param>
-    /// <param name="logger">Logger</param>
     /// <param name="message">Commie message.</param>
+    /// <param name="branch">Branch</param>
     /// <returns>Saved.</returns>
     public async Task<bool> CommitToBranch(string sourcePath, string message, string branch)
     {
-        await _commandRunner.RunGit(sourcePath, $"add .");
+        await _commandRunner.RunGit(sourcePath, "add .");
         await SwitchToBranch(sourcePath, branch, fromCurrent: true);
         var commitResult = await _commandRunner.RunGit(sourcePath, $@"commit -m ""{message}""");
         return !commitResult.Contains("nothing to commit, working tree clean");
@@ -169,7 +154,8 @@ public class WorkspaceManager
     /// </summary>
     /// <param name="sourcePath">Folder path..</param>
     /// <param name="branch">Remote branch.</param>
-    /// <param name="logger">Logger.</param>
+    /// <param name="endpoint">Endpoint</param>
+    /// <param name="force">Force</param>
     /// <returns>Pushed.</returns>
     public async Task<bool> Push(string sourcePath, string branch, string endpoint, bool force = false)
     {
@@ -202,11 +188,10 @@ public class WorkspaceManager
     /// If current path is pending a git commit.
     /// </summary>
     /// <param name="sourcePath">Path</param>
-    /// <param name="logger">logger</param>
     /// <returns>Bool</returns>
     public async Task<bool> PendingCommit(string sourcePath)
     {
-        var statusResult = await _commandRunner.RunGit(sourcePath, $@"status");
+        var statusResult = await _commandRunner.RunGit(sourcePath, @"status");
         var clean = statusResult.Contains("working tree clean");
         return !clean;
     }
@@ -226,7 +211,7 @@ public class WorkspaceManager
                 }
                 else
                 {
-                    throw new TimeoutException("Git fetch job has excceed the timeout and we have to retry it.");
+                    throw new TimeoutException("Git fetch job has exceeded the timeout and we have to retry it.");
                 }
             });
     }

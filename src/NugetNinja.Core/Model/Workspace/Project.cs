@@ -11,21 +11,22 @@ public class Project
     {
         PathOnDisk = pathOnDisk;
         Sdk = doc.ChildNodes["Project"].Attributes[nameof(Sdk)]?.Value;
-        OutputType = doc.Descendants(nameof(OutputType)).SingleOrDefault()?.FirstChild.InnerText;
-        TargetFramework = doc.Descendants(nameof(TargetFramework)).SingleOrDefault()?.FirstChild.InnerText;
-        Nullable = doc.Descendants(nameof(Nullable)).SingleOrDefault()?.FirstChild.InnerText;
-        ImplicitUsings = doc.Descendants(nameof(ImplicitUsings)).SingleOrDefault()?.FirstChild.InnerText;
-        PackageLicenseFile = doc.Descendants(nameof(PackageLicenseFile)).SingleOrDefault()?.FirstChild.InnerText;
-        PackageLicenseExpression = doc.Descendants(nameof(PackageLicenseExpression)).SingleOrDefault()?.FirstChild.InnerText;
-        Description = doc.Descendants(nameof(Description)).SingleOrDefault()?.FirstChild.InnerText;
-        Version = doc.Descendants(nameof(Version)).SingleOrDefault()?.FirstChild.InnerText;
-        Company = doc.Descendants(nameof(Company)).SingleOrDefault()?.FirstChild.InnerText;
-        Product = doc.Descendants(nameof(Product)).SingleOrDefault()?.FirstChild.InnerText;
-        Authors = doc.Descendants(nameof(Authors)).SingleOrDefault()?.FirstChild.InnerText;
-        PackageTags = doc.Descendants(nameof(PackageTags)).SingleOrDefault()?.FirstChild.InnerText;
-        PackageProjectUrl = doc.Descendants(nameof(PackageProjectUrl)).SingleOrDefault()?.FirstChild.InnerText;
-        RepositoryUrl = doc.Descendants(nameof(RepositoryUrl)).SingleOrDefault()?.FirstChild.InnerText;
-        RepositoryType = doc.Descendants(nameof(RepositoryType)).SingleOrDefault()?.FirstChild.InnerText;
+        OutputType = doc.Descendants(nameof(OutputType)).SingleOrDefault()?.FirstChild?.InnerText;
+        TargetFramework = doc.Descendants(nameof(TargetFramework)).SingleOrDefault()?.FirstChild?.InnerText;
+        TargetFrameworks = doc.Descendants(nameof(TargetFrameworks)).SingleOrDefault()?.FirstChild?.InnerText;
+        Nullable = doc.Descendants(nameof(Nullable)).SingleOrDefault()?.FirstChild?.InnerText;
+        ImplicitUsings = doc.Descendants(nameof(ImplicitUsings)).SingleOrDefault()?.FirstChild?.InnerText;
+        PackageLicenseFile = doc.Descendants(nameof(PackageLicenseFile)).SingleOrDefault()?.FirstChild?.InnerText;
+        PackageLicenseExpression = doc.Descendants(nameof(PackageLicenseExpression)).SingleOrDefault()?.FirstChild?.InnerText;
+        Description = doc.Descendants(nameof(Description)).SingleOrDefault()?.FirstChild?.InnerText;
+        Version = doc.Descendants(nameof(Version)).SingleOrDefault()?.FirstChild?.InnerText;
+        Company = doc.Descendants(nameof(Company)).SingleOrDefault()?.FirstChild?.InnerText;
+        Product = doc.Descendants(nameof(Product)).SingleOrDefault()?.FirstChild?.InnerText;
+        Authors = doc.Descendants(nameof(Authors)).SingleOrDefault()?.FirstChild?.InnerText;
+        PackageTags = doc.Descendants(nameof(PackageTags)).SingleOrDefault()?.FirstChild?.InnerText;
+        PackageProjectUrl = doc.Descendants(nameof(PackageProjectUrl)).SingleOrDefault()?.FirstChild?.InnerText;
+        RepositoryUrl = doc.Descendants(nameof(RepositoryUrl)).SingleOrDefault()?.FirstChild?.InnerText;
+        RepositoryType = doc.Descendants(nameof(RepositoryType)).SingleOrDefault()?.FirstChild?.InnerText;
     }
 
     public string PathOnDisk { get; set; }
@@ -34,6 +35,7 @@ public class Project
     public string? Sdk { get; set; }
     public string? OutputType { get; set; }
     public string? TargetFramework { get; set; }
+    public string? TargetFrameworks { get; set; }
     #endregion
 
     #region Features
@@ -58,6 +60,21 @@ public class Project
     public List<Project> ProjectReferences { get; init; } = new();
 
     public List<Package> PackageReferences { get; init; } = new();
+
+    public string[] GetTargetFrameworks()
+    {
+        if (!string.IsNullOrWhiteSpace(TargetFrameworks))
+        {
+            return TargetFrameworks.Split(';');
+        }
+
+        if (!string.IsNullOrWhiteSpace(this.TargetFramework))
+        {
+            return new[] { this.TargetFramework };
+        }
+
+        return Array.Empty<string>();
+    }
 
     public bool Executable()
     {
@@ -93,9 +110,11 @@ public class Project
             throw new InvalidOperationException($"Could remove PackageReference {refName} in project {this} because it was not found!");
         }
 
-        node.Attributes["Version"].Value = newVersion.ToString();
-
-        await SaveDocToDisk(doc);
+        if (node.Attributes["Version"] != null)
+        {
+            node.Attributes["Version"].Value = newVersion.ToString();
+            await SaveDocToDisk(doc);
+        }
     }
 
     public async Task ReplacePackageReferenceAsync(string refName, Package newPackage)
@@ -159,7 +178,7 @@ public class Project
         await RemoveNode(node, doc);
     }
 
-    public async Task AddProperty(string propertyName, string propertyValue)
+    public async Task RemoveProperty(string propertyName)
     {
         var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
         var doc = new HtmlDocument();
@@ -175,16 +194,47 @@ public class Project
             existingNode.Remove();
         }
 
-        var newline = HtmlNode.CreateNode("\r\n    ");
-        var property = doc.CreateElement(propertyName);
-        property.InnerHtml = propertyValue;
+        await SaveDocToDisk(doc);
+    }
 
-        var propertyGroup = doc.DocumentNode
-            .Descendants("PropertyGroup")
-            .First();
+    public async Task AddOrUpdateProperty(string propertyName, string propertyValue)
+    {
+        var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
+        var doc = new HtmlDocument();
+        doc.OptionOutputOriginalCase = true;
+        doc.LoadHtml(csprojContent);
 
-        propertyGroup.AppendChild(property);
-        propertyGroup.AppendChild(newline);
+        var existingNodes = doc.DocumentNode
+            .Descendants(propertyName)
+            .ToArray();
+        if (existingNodes.Any())
+        {
+            foreach (var existingNode in existingNodes)
+            {
+                if (existingNode.FirstChild != null)
+                {
+                    existingNode.FirstChild.InnerHtml = propertyValue;
+                }
+                else
+                {
+                    var valueNode = HtmlNode.CreateNode(propertyValue);
+                    existingNode.AppendChild(valueNode);
+                }
+            }
+        }
+        else
+        {
+            var newline = HtmlNode.CreateNode("\r\n    ");
+            var property = doc.CreateElement(propertyName);
+            property.InnerHtml = propertyValue;
+
+            var propertyGroup = doc.DocumentNode
+                .Descendants("PropertyGroup")
+                .First();
+
+            propertyGroup.AppendChild(property);
+            propertyGroup.AppendChild(newline);
+        }
 
         await SaveDocToDisk(doc);
     }
@@ -214,8 +264,21 @@ public class Project
             .Replace(@"></PackageReference>", " />")
             .Replace(@"></ProjectReference>", " />")
             .Replace(@"></FrameworkReference>", " />")
+            .Replace(@"></Compile>", " />")
+            .Replace(@"></Content>", " />")
             .Replace(@"></None>", " />")
+            .Replace(@"></Exec>", " />")
+            .Replace(@"></Output>", " />")
+            .Replace(@"></Message>", " />")
+            .Replace(@"></Watch>", " />")
+            .Replace(@"></Resource>", " />")
+            .Replace(@"></Folder>", " />")
+            .Replace(@"></AdditionalFiles>", " />")
+            .Replace(@"></UserProperties>", " />")
+            .Replace(@"></EmbeddedResource>", " />")
+            .Replace(@"></ServiceWorker>", " />")
             .Replace(@"></Using>", " />");
+
         await File.WriteAllTextAsync(PathOnDisk, csprojText);
     }
 }

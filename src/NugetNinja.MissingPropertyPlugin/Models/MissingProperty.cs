@@ -34,7 +34,7 @@ namespace Microsoft.NugetNinja.MissingPropertyPlugin
 
         public Task TakeActionAsync()
         {
-            return _csproj.AddProperty(_propertyName, _suggestedValue);
+            return _csproj.AddOrUpdateProperty(_propertyName, _suggestedValue);
         }
     }
 }
