@@ -52,12 +52,12 @@ public class Entry
         {
             try
             {
-                _logger.LogInformation($"Processing repository {repo.Owner?.Login}/{repo.Name}...");
+                _logger.LogInformation($"Processing repository {repo.FullName}...");
                 await ProcessRepository(repo);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Crashed when processing repo: {repo.Owner?.Login}/{repo.Name}!");
+                _logger.LogError(e, $"Crashed when processing repo: {repo.FullName}!");
             }
             finally
             {
@@ -76,8 +76,8 @@ public class Entry
         }
 
         // Clone locally.
-        _logger.LogInformation($"Cloning repository: {repo.Name}...");
-        var workPath = Path.Combine(_workspaceFolder, $"workspace-{repo.Name}");
+        var workPath = Path.Combine(_workspaceFolder, $"{repo.FullName}");
+        _logger.LogInformation($"Cloning repository: {repo.Name} to {workPath}...");
         await _workspaceManager.ResetRepo(
             path: workPath,
             branch: repo.DefaultBranch ?? throw new NullReferenceException($"The default branch of {repo.Name} is null!"),
