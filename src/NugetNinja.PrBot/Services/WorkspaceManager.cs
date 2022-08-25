@@ -211,7 +211,7 @@ public class WorkspaceManager
                 }
                 else
                 {
-                    throw new TimeoutException("Git fetch job has exceed the timeout and we have to retry it.");
+                    throw new TimeoutException("Git fetch job has exceeded the timeout and we have to retry it.");
                 }
             });
     }
