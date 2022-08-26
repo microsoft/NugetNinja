@@ -600,5 +600,10 @@ public class Repository
     /// </summary>
     [JsonPropertyName("default_branch")]
     public string? DefaultBranch { get; set; }
+
+    public override string ToString()
+    {
+        return FullName;
+    }
 }
 

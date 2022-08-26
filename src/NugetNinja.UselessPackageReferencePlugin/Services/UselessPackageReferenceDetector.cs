@@ -59,7 +59,7 @@ public class UselessPackageReferenceDetector : IActionDetector
         foreach (var directReference in context.PackageReferences)
         {
             var accessiblePackagesForThisProject = accessiblePackages.ToList();
-            foreach (var otherDirectReference in context.PackageReferences.Where(p => p != directReference))
+            foreach (var otherDirectReference in context.PackageReferences.Where(p => p.Name != directReference.Name))
             {
                 try
                 {
