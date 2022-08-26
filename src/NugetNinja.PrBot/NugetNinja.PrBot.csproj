@@ -4,13 +4,14 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishReadyToRun>true</PublishReadyToRun>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>true</SelfContained>
+    <SelfContained Condition="'$(Configuration)' != 'Debug'">true</SelfContained>
+    <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">true</PublishTrimmed>
+    <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">true</PublishReadyToRun>
+    <PublishSingleFile Condition="'$(Configuration)' != 'Debug'">true</PublishSingleFile>
     <RootNamespace>Microsoft.NugetNinja.PrBot</RootNamespace>
-  </PropertyGroup>
+</PropertyGroup>
 
   <ItemGroup>
     <Content Include="appsettings.json">
