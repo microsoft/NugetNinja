@@ -161,7 +161,7 @@ public class Repository
     /// 
     /// </summary>
     [JsonPropertyName("full_name")]
-    public string? full_name { get; set; }
+    public string? FullName { get; set; }
 
     /// <summary>
     /// 
@@ -527,13 +527,13 @@ public class Repository
     /// 
     /// </summary>
     [JsonPropertyName("archived")]
-    public bool? archived { get; set; }
+    public bool? Archived { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
     [JsonPropertyName("disabled")]
-    public bool? disabled { get; set; }
+    public bool? Disabled { get; set; }
 
     /// <summary>
     /// 

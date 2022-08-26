@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -42,8 +41,6 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddTransient<NugetService>();
             services.AddTransient<CommandRunner>();
             services.AddTransient<WorkspaceManager>();
-            services.AddDbContextPool<RepoDbContext>(optionsBuilder =>
-                optionsBuilder.UseSqlite(connectionString: "DataSource=app.db;Cache=Shared"));
             new StartUp().ConfigureServices(services);
             services.AddTransient<RunAllOfficialPluginsService>();
             services.AddTransient<Entry>();
