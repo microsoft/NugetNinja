@@ -61,6 +61,8 @@ public class Project
 
     public List<Package> PackageReferences { get; init; } = new();
 
+    public List<string> FrameworkReferences { get; init; } = new();
+
     public string[] GetTargetFrameworks()
     {
         if (!string.IsNullOrWhiteSpace(TargetFrameworks))
@@ -68,9 +70,9 @@ public class Project
             return TargetFrameworks.Split(';');
         }
 
-        if (!string.IsNullOrWhiteSpace(this.TargetFramework))
+        if (!string.IsNullOrWhiteSpace(TargetFramework))
         {
-            return new[] { this.TargetFramework };
+            return new[] { TargetFramework };
         }
 
         return Array.Empty<string>();
@@ -88,18 +90,17 @@ public class Project
             PackageReferences.Any(p => p.Name.Contains("xunit", StringComparison.OrdinalIgnoreCase));
     }
 
-    public override string ToString()
-    {
-        return Path.GetFileNameWithoutExtension(PathOnDisk);
-    }
+    public override string ToString() => Path.GetFileNameWithoutExtension(PathOnDisk);
 
     public async Task SetPackageReferenceVersionAsync(string refName, NugetVersion newVersion)
     {
         var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
-        var doc = new HtmlDocument();
-        doc.OptionOutputOriginalCase = true;
-        doc.OptionAutoCloseOnEnd = true;
-        doc.OptionWriteEmptyNodes = true;
+        var doc = new HtmlDocument
+        {
+            OptionOutputOriginalCase = true,
+            OptionAutoCloseOnEnd = true,
+            OptionWriteEmptyNodes = true
+        };
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("PackageReference")
@@ -120,10 +121,12 @@ public class Project
     public async Task ReplacePackageReferenceAsync(string refName, Package newPackage)
     {
         var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
-        var doc = new HtmlDocument();
-        doc.OptionOutputOriginalCase = true;
-        doc.OptionAutoCloseOnEnd = true;
-        doc.OptionWriteEmptyNodes = true;
+        var doc = new HtmlDocument
+        {
+            OptionOutputOriginalCase = true,
+            OptionAutoCloseOnEnd = true,
+            OptionWriteEmptyNodes = true
+        };
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("PackageReference")
@@ -142,10 +145,12 @@ public class Project
     public async Task RemovePackageReferenceAsync(string refName)
     {
         var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
-        var doc = new HtmlDocument();
-        doc.OptionOutputOriginalCase = true;
-        doc.OptionAutoCloseOnEnd = true;
-        doc.OptionWriteEmptyNodes = true;
+        var doc = new HtmlDocument
+        {
+            OptionOutputOriginalCase = true,
+            OptionAutoCloseOnEnd = true,
+            OptionWriteEmptyNodes = true
+        };
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("PackageReference")
@@ -163,8 +168,10 @@ public class Project
     {
         var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
         var contextPath = Path.GetDirectoryName(PathOnDisk) ?? throw new IOException($"Couldn't find the project path based on: '{PathOnDisk}'.");
-        var doc = new HtmlDocument();
-        doc.OptionOutputOriginalCase = true;
+        var doc = new HtmlDocument
+        {
+            OptionOutputOriginalCase = true
+        };
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("ProjectReference")
@@ -181,8 +188,10 @@ public class Project
     public async Task RemoveProperty(string propertyName)
     {
         var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
-        var doc = new HtmlDocument();
-        doc.OptionOutputOriginalCase = true;
+        var doc = new HtmlDocument
+        {
+            OptionOutputOriginalCase = true
+        };
         doc.LoadHtml(csprojContent);
 
         var existingNodes = doc.DocumentNode
@@ -200,8 +209,10 @@ public class Project
     public async Task AddOrUpdateProperty(string propertyName, string propertyValue)
     {
         var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
-        var doc = new HtmlDocument();
-        doc.OptionOutputOriginalCase = true;
+        var doc = new HtmlDocument
+        {
+            OptionOutputOriginalCase = true
+        };
         doc.LoadHtml(csprojContent);
 
         var existingNodes = doc.DocumentNode
@@ -235,6 +246,37 @@ public class Project
             propertyGroup.AppendChild(property);
             propertyGroup.AppendChild(newline);
         }
+
+        await SaveDocToDisk(doc);
+    }
+
+    public async Task AddFrameworkReference(string frameworkReference)
+    {
+        var csprojContent = await File.ReadAllTextAsync(PathOnDisk);
+        var doc = new HtmlDocument
+        {
+            OptionOutputOriginalCase = true
+        };
+        doc.LoadHtml(csprojContent);
+        var newline = HtmlNode.CreateNode("\r\n    ");
+
+        var itemGroup = doc.DocumentNode
+            .Descendants("ItemGroup")
+            .FirstOrDefault();
+
+        if (itemGroup == null)
+        {
+            itemGroup = doc.CreateElement("ItemGroup");
+            doc.DocumentNode.FirstChild?.AppendChild(itemGroup);
+            doc.DocumentNode.FirstChild?.AppendChild(newline);
+        }
+
+        var reference = doc.CreateElement("FrameworkReference");
+        reference.Attributes.Add("Include", frameworkReference);
+        
+        itemGroup.AppendChild(newline);
+        itemGroup.AppendChild(reference);
+        itemGroup.AppendChild(newline);
 
         await SaveDocToDisk(doc);
     }

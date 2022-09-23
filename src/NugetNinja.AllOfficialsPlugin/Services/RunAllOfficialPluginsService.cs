@@ -28,7 +28,7 @@ public class RunAllOfficialPluginsService : IEntryService
     {
         _logger = logger;
         _extractor = extractor;
-        _pluginDetectors = new List<IActionDetector>
+        _pluginDetectors = new()
         {
             missingPropertyDetector,
             uselessPackageReferenceDetector,

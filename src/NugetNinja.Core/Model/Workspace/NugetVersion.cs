@@ -87,8 +87,6 @@ public sealed class NugetVersion : ICloneable, IComparable<NugetVersion?>, IEqua
             return true;
         if (ReferenceEquals(this, null))
             return false;
-        if (ReferenceEquals(obj, null))
-            return false;
         if (obj is NugetVersion nuVersion)
             return Equals(nuVersion);
         return false;

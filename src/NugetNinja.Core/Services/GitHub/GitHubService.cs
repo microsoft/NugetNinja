@@ -7,7 +7,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.NugetNinja.PrBot;
+namespace Microsoft.NugetNinja.Core;
 
 public class GitHubService
 {
@@ -57,7 +57,7 @@ public class GitHubService
     public async IAsyncEnumerable<Repository> GetMyStars(string userName)
     {
         _logger.LogInformation($"Listing all stared repositories based on user's name: {userName}...");
-        for (int i = 1;; i++)
+        for (var i = 1;; i++)
         {
             var endpoint = $@"https://api.github.com/users/{userName}/starred?page={i}";
             var currentPageItems = await SendHttpAndGetJson<List<Repository>>(endpoint, HttpMethod.Get);
@@ -119,7 +119,7 @@ This pull request may break or change the behavior of this application. Review w
 
         request.Headers.Add("Authorization", $"token {_configuration["GitHubToken"]}");
         request.Headers.Add("accept", "application/json");
-        request.Headers.Add("User-Agent", ".NET HTTP Client");
+        request.Headers.Add("User-Agent", $"Microsoft.NugetNinja {Helper.AppVersion}");
 
         var response = await _httpClient.SendAsync(request);
         try

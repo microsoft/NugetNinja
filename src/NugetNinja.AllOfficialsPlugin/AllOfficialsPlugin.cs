@@ -7,8 +7,5 @@ namespace Microsoft.NugetNinja.AllOfficialsPlugin;
 
 public class AllOfficialsPlugin : INinjaPlugin
 {
-    public CommandHandler[] Install()
-    {
-        return new CommandHandler[] { new AllOfficialsHandler() };
-    }
+    public CommandHandler[] Install() => new CommandHandler[] { new AllOfficialsHandler() };
 }

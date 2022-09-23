@@ -17,7 +17,7 @@ public class ResourcesItem
 public class NugetServerIndex
 {
     [JsonPropertyName("resources")]
-    public List<ResourcesItem> Resources { get; set; } = new();
+    public IReadOnlyCollection<ResourcesItem>? Resources { get; init; }
 
     [JsonPropertyName("version")]
     public string Version { get; set; } = string.Empty;
@@ -79,7 +79,7 @@ public class CatalogInformation
     public Deprecation? Deprecation { get; set; }
 
     [JsonPropertyName("vulnerabilities")]
-    public List<Vulnerability> Vulnerabilities { get; set; } = new();
+    public IReadOnlyCollection<Vulnerability>? Vulnerabilities { get; init; }
 }
 
 public class Vulnerability

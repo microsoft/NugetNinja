@@ -37,6 +37,7 @@ public class Model
         csprojDoc.LoadHtml(csprojContent);
         var packageReferences = GetPackageReferences(csprojDoc);
         var projectReferences = GetProjectReferences(csprojDoc, csprojFolder);
+        var frameworkReferences = GetFrameworkReferences(csprojDoc);
 
         var subProjectReferenceObjects = new List<Project>();
         foreach (var projectReference in projectReferences)
@@ -47,7 +48,8 @@ public class Model
         var project = new Project(csprojPath, csprojDoc.DocumentNode)
         {
             PackageReferences = packageReferences.ToList(),
-            ProjectReferences = subProjectReferenceObjects
+            ProjectReferences = subProjectReferenceObjects,
+            FrameworkReferences = frameworkReferences.ToList()
         };
         return project;
     }
@@ -63,9 +65,9 @@ public class Model
 
         foreach (var package in packageReferences)
         {
-            if (!AllPackages.Any(p => 
-                p.Name == package.Name && 
-                p.Version == package.Version ))
+            if (!AllPackages.Any(p =>
+                p.Name == package.Name &&
+                p.Version == package.Version))
             {
                 AllPackages.Add(package);
             }
@@ -80,6 +82,16 @@ public class Model
             .Descendants("ProjectReference")
             .Select(p => p.Attributes["Include"].Value)
             .Select(p => StringExtensions.GetAbsolutePath(csprojFolder, p))
+            .ToArray();
+
+        return projectReferences;
+    }
+
+    private string[] GetFrameworkReferences(HtmlDocument doc)
+    {
+        var projectReferences = doc.DocumentNode
+            .Descendants("FrameworkReference")
+            .Select(p => p.Attributes["Include"].Value)
             .ToArray();
 
         return projectReferences;

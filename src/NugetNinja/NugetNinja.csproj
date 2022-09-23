@@ -1,29 +1,37 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <Version>0.0.1</Version>
-    <PackAsTool>true</PackAsTool>
-    <ToolCommandName>dotlang</ToolCommandName>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AssemblyName>ninja</AssemblyName>
-    <RootNamespace>Microsoft.NugetNinja</RootNamespace>
-    <Company>Microsoft</Company>
-    <Product>NugetNinja</Product>
-    <Authors>anduin2017 codgician</Authors>
-    <Description>A tool for detecting dependencies of .NET projects.</Description>
-    <PackageTags>cli nuget dotnet csproj dependencies</PackageTags>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/Microsoft/NugetNinja.git</RepositoryUrl>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageId>Microsoft.NugetNinja</PackageId>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Microsoft/Nugetninja</PackageProjectUrl>
-  </PropertyGroup>
+	<PropertyGroup>
+		<!--Build and code-->
+		<OutputType>Exe</OutputType>
+		<Version>0.0.1</Version>
+		<TargetFramework>net6.0</TargetFramework>
+		<AssemblyName>ninja</AssemblyName>
+		<RootNamespace>Microsoft.NugetNinja</RootNamespace>
+		<!--Tool-->
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>ninja</ToolCommandName>
+		<!--Best practice-->
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<SelfContained>false</SelfContained>
+		<PublishTrimmed>false</PublishTrimmed>
+		<PublishReadyToRun>false</PublishReadyToRun>
+		<PublishSingleFile>false</PublishSingleFile>
+		<!--Nuget--> 
+		<Company>Microsoft</Company>
+		<Product>NugetNinja</Product>
+		<Authors>anduin2017 codgician</Authors>
+		<Description>A tool for detecting dependencies of .NET projects.</Description>
+		<PackageTags>cli nuget dotnet csproj dependencies</PackageTags>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/Microsoft/NugetNinja.git</RepositoryUrl>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageId>Microsoft.NugetNinja</PackageId>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/Microsoft/Nugetninja</PackageProjectUrl>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NugetNinja.AllOfficialsPlugin\NugetNinja.AllOfficialsPlugin.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\NugetNinja.AllOfficialsPlugin\NugetNinja.AllOfficialsPlugin.csproj" />
+	</ItemGroup>
 </Project>
