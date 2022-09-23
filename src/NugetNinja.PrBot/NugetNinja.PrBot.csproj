@@ -1,35 +1,54 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>true</SelfContained>
-    <RootNamespace>Microsoft.NugetNinja.PrBot</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<!--Build and code-->
+		<OutputType>Exe</OutputType>
+		<Version>0.0.1</Version>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<AssemblyName>ninja-bot</AssemblyName>
+		<RootNamespace>Microsoft.NugetNinja.PrBot</RootNamespace>
+		<!--Tool-->
+		<PackAsTool>false</PackAsTool>
+		<!--Best practice-->
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<SelfContained>true</SelfContained>
+		<PublishTrimmed>false</PublishTrimmed>
+		<PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">true</PublishReadyToRun>
+		<PublishSingleFile Condition="'$(Configuration)' != 'Debug'">true</PublishSingleFile>
+		<!--Nuget-->
+		<Company>Microsoft</Company>
+		<Product>NugetNinja Bot</Product>
+		<Authors>anduin2017 codgician</Authors>
+		<Description>A bot for detecting dependencies of .NET projects and create pull requests automatically.</Description>
+		<PackageTags>cli nuget dotnet csproj dependencies</PackageTags>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/Microsoft/NugetNinja.git</RepositoryUrl>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageId>Microsoft.NugetNinja.PrBot</PackageId>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/Microsoft/Nugetninja</PackageProjectUrl>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="appsettings.Production.json" Condition="Exists('appsettings.Production.json')">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="appsettings.Development.json" Condition="Exists('appsettings.Development.json')">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="appsettings.Production.json" Condition="Exists('appsettings.Production.json')">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="appsettings.Development.json" Condition="Exists('appsettings.Development.json')">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
 
-  <ItemGroup>
-    <ProjectReference Include="..\NugetNinja.AllOfficialsPlugin\NugetNinja.AllOfficialsPlugin.csproj" />
-  </ItemGroup>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\NugetNinja.AllOfficialsPlugin\NugetNinja.AllOfficialsPlugin.csproj" />
+	</ItemGroup>
 </Project>

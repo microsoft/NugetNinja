@@ -26,7 +26,7 @@ public class ResetRuntime : IAction
 
     public string BuildMessage()
     {
-        return $"The project: '{Project}' with runtimes: '{string.Join(',', Project.GetTargetFrameworks())}' should insert {_inserted} runtime(s) and deprecate {_deprecated} runtime(s) to '{string.Join(',', this.NewRuntimes)}'.";
+        return $"The project: '{Project}' with runtimes: '{string.Join(',', Project.GetTargetFrameworks())}' should insert {_inserted} runtime(s) and deprecate {_deprecated} runtime(s) to '{string.Join(',', NewRuntimes)}'.";
     }
 
     public async Task TakeActionAsync()

@@ -6,7 +6,7 @@
         },
         "Dryrun all": {
             "commandName": "Project",
-            "commandLineArgs": "all -p \"..\\..\\..\\..\\..\" -d"
+            "commandLineArgs": "all -p \"..\\..\\..\\..\\..\" -v -d"
         },
         "Dryrun Clean Pkg": {
             "commandName": "Project",

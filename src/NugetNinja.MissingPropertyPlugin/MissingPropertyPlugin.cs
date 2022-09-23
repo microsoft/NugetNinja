@@ -7,8 +7,5 @@ namespace Microsoft.NugetNinja.MissingPropertyPlugin;
 
 public class MissingPropertyPlugin : INinjaPlugin
 {
-    public CommandHandler[] Install()
-    {
-        return new CommandHandler[] { new MissingPropertyHandler() };
-    }
+    public CommandHandler[] Install() => new CommandHandler[] { new MissingPropertyHandler() };
 }

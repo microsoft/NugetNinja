@@ -7,8 +7,5 @@ namespace Microsoft.NugetNinja.UselessProjectReferencePlugin;
 
 public class UselessProjectReferencePlugin : INinjaPlugin
 {
-    public CommandHandler[] Install()
-    {
-        return new CommandHandler[] { new ProjectReferenceHandler() };
-    }
+    public CommandHandler[] Install() => new CommandHandler[] { new ProjectReferenceHandler() };
 }

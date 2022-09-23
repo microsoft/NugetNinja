@@ -38,8 +38,5 @@ public class Package
     public NugetVersion Version { get; set; }
     public string SourceVersionText { get; set; }
 
-    public override string ToString()
-    {
-        return Name;
-    }
+    public override string ToString() => Name;
 }

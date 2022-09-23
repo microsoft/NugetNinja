@@ -13,15 +13,9 @@ public abstract class CommandHandler
 
     public virtual string[] Alias => Array.Empty<string>();
 
-    public virtual CommandHandler[] GetSubCommandHandlers()
-    {
-        return Array.Empty<CommandHandler>();
-    }
+    public virtual CommandHandler[] GetSubCommandHandlers() => Array.Empty<CommandHandler>();
 
-    public virtual Option[] GetOptions()
-    {
-        return Array.Empty<Option>();
-    }
+    public virtual Option[] GetOptions() => Array.Empty<Option>();
 
     public virtual Command BuildAsCommand()
     {

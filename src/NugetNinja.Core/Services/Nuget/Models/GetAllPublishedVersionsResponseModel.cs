@@ -8,5 +8,5 @@ namespace Microsoft.NugetNinja.Core;
 public class GetAllPublishedVersionsResponseModel
 {
     [JsonPropertyName("versions")]
-    public List<string>? Versions { get; set; }
+    public IReadOnlyCollection<string>? Versions { get; init; }
 }
