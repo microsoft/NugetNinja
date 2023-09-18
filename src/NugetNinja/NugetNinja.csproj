@@ -4,7 +4,7 @@
 		<!--Build and code-->
 		<OutputType>Exe</OutputType>
 		<Version>0.0.1</Version>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<AssemblyName>ninja</AssemblyName>
 		<RootNamespace>Microsoft.NugetNinja</RootNamespace>
 		<!--Tool-->
