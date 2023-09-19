@@ -29,8 +29,12 @@ public sealed class NugetVersion : ICloneable, IComparable<NugetVersion?>, IEqua
     public static bool operator !=(NugetVersion? lvs, NugetVersion? rvs) => !(lvs == rvs);
 
     public static bool operator <(NugetVersion? lvs, NugetVersion? rvs) => lvs?.CompareTo(rvs) < 0;
+    public static bool operator <=(NugetVersion? lvs, NugetVersion? rvs) => lvs?.CompareTo(rvs) <= 0;
 
     public static bool operator >(NugetVersion? lvs, NugetVersion? rvs) => lvs?.CompareTo(rvs) > 0;
+
+    public static bool operator >=(NugetVersion? lvs, NugetVersion? rvs) => lvs?.CompareTo(rvs) >= 0;
+
 
     public object Clone() => new NugetVersion(SourceString);
 

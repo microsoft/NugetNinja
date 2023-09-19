@@ -31,6 +31,15 @@
         "Run missing": {
             "commandName": "Project",
             "commandLineArgs": "fill-properties -p \"..\\..\\..\\..\\..\""
+        },
+        "Dryrun Clean Pkg DP": {
+            "commandName": "Project",
+            "commandLineArgs": "clean-pkg -p \"E:\\\\datahub-portal\" -v -d"
+        },
+        "Dryrun Clean Prj DP": {
+            "commandName": "Project",
+            "commandLineArgs": "clean-prj -p \"E:\\\\datahub-portal\" -v -d"
         }
+
     }
 }
