@@ -319,6 +319,13 @@ public class Project
             .Replace(@"></UserProperties>", " />")
             .Replace(@"></EmbeddedResource>", " />")
             .Replace(@"></ServiceWorker>", " />")
+            .Replace(@"></MauiIcon>"," />")
+            .Replace(@"></MauiSplashScreen>", " />")
+            .Replace(@"></MauiImage>", " />")
+            .Replace(@"></MauiFont>", " />")
+            .Replace(@"></MauiAsset>", " />")
+            .Replace(@"></Import>", " />")
+            .Replace(@"></Copy>", " />")
             .Replace(@"></Using>", " />");
 
         await File.WriteAllTextAsync(PathOnDisk, csprojText);

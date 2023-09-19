@@ -72,10 +72,58 @@ public class UselessPackageReferenceDetector : IActionDetector
                 }
             }
 
-            if (accessiblePackagesForThisProject.Any(pa => pa.Name == directReference.Name))
+            if (accessiblePackagesForThisProject.Any(pa => pa.Name == directReference.Name && pa.Version >= directReference.Version))
             {
                 yield return new(context, directReference);
             }
+        }
+    }
+
+    private bool GreaterVersion(NugetVersion version1, NugetVersion version2)
+    {
+        return version1 > version2;
+    }
+
+    public static int CompareNuGetVersions(string version1, string version2)
+    {
+        if (version1 == null || version2 == null)
+        {
+            throw new ArgumentNullException("Both versions must be non-null");
+        }
+
+        string[] parts1 = version1.Split('.');
+        string[] parts2 = version2.Split('.');
+
+        int maxLength = Math.Max(parts1.Length, parts2.Length);
+
+        for (int i = 0; i < maxLength; i++)
+        {
+            int part1 = (i < parts1.Length) ? ParseVersionPart(parts1[i]) : 0;
+            int part2 = (i < parts2.Length) ? ParseVersionPart(parts2[i]) : 0;
+
+            if (part1 < part2)
+            {
+                return -1;
+            }
+            else if (part1 > part2)
+            {
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+
+    private static int ParseVersionPart(string part)
+    {
+        if (int.TryParse(part, out int result))
+        {
+            return result;
+        }
+        else
+        {
+            // Handle pre-release labels (e.g., "alpha", "beta")
+            return int.MaxValue;
         }
     }
 }
