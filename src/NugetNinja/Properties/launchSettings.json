@@ -34,19 +34,19 @@
         },
         "Clean Pkg DP": {
             "commandName": "Project",
-            "commandLineArgs": "clean-pkg -p D:\\Datahunter\\DataHunter-Main -v"
+            "commandLineArgs": "clean-pkg -p \"..\\..\\..\\..\\..\" -v"
         },
         "Dryrun Clean Prj DP": {
             "commandName": "Project",
-            "commandLineArgs": "clean-prj -p D:\\Datahunter\\DataHunter-Main -v -d"
+            "commandLineArgs": "clean-prj -p \"..\\..\\..\\..\\..\" -v -d"
         },
         "Upgrade Prj DP": {
             "commandName": "Project",
-            "commandLineArgs": "upgrade-pkg -p D:\\Datahunter\\DataHunter-Main -v"
+            "commandLineArgs": "upgrade-pkg -p \"..\\..\\..\\..\\..\" -v"
         },
         "List Prj DP": {
             "commandName": "Project",
-            "commandLineArgs": "list-packages -p E:\\datahub-portal\\ -v"
+            "commandLineArgs": "list-packages -p \"..\\..\\..\\..\\..\" -v"
         }
 
     }
