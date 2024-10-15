@@ -10,23 +10,29 @@ public class Project
     public Project(string pathOnDisk, HtmlNode doc)
     {
         PathOnDisk = pathOnDisk;
-        Sdk = doc.ChildNodes["Project"].Attributes[nameof(Sdk)]?.Value;
-        OutputType = doc.Descendants(nameof(OutputType)).SingleOrDefault()?.FirstChild?.InnerText;
-        TargetFramework = doc.Descendants(nameof(TargetFramework)).SingleOrDefault()?.FirstChild?.InnerText;
-        TargetFrameworks = doc.Descendants(nameof(TargetFrameworks)).SingleOrDefault()?.FirstChild?.InnerText;
-        Nullable = doc.Descendants(nameof(Nullable)).SingleOrDefault()?.FirstChild?.InnerText;
-        ImplicitUsings = doc.Descendants(nameof(ImplicitUsings)).SingleOrDefault()?.FirstChild?.InnerText;
-        PackageLicenseFile = doc.Descendants(nameof(PackageLicenseFile)).SingleOrDefault()?.FirstChild?.InnerText;
-        PackageLicenseExpression = doc.Descendants(nameof(PackageLicenseExpression)).SingleOrDefault()?.FirstChild?.InnerText;
-        Description = doc.Descendants(nameof(Description)).SingleOrDefault()?.FirstChild?.InnerText;
-        Version = doc.Descendants(nameof(Version)).SingleOrDefault()?.FirstChild?.InnerText;
-        Company = doc.Descendants(nameof(Company)).SingleOrDefault()?.FirstChild?.InnerText;
-        Product = doc.Descendants(nameof(Product)).SingleOrDefault()?.FirstChild?.InnerText;
-        Authors = doc.Descendants(nameof(Authors)).SingleOrDefault()?.FirstChild?.InnerText;
-        PackageTags = doc.Descendants(nameof(PackageTags)).SingleOrDefault()?.FirstChild?.InnerText;
-        PackageProjectUrl = doc.Descendants(nameof(PackageProjectUrl)).SingleOrDefault()?.FirstChild?.InnerText;
-        RepositoryUrl = doc.Descendants(nameof(RepositoryUrl)).SingleOrDefault()?.FirstChild?.InnerText;
-        RepositoryType = doc.Descendants(nameof(RepositoryType)).SingleOrDefault()?.FirstChild?.InnerText;
+        try
+        {
+            Sdk = doc.ChildNodes["Project"].Attributes[nameof(Sdk)]?.Value;
+            OutputType = doc.Descendants(nameof(OutputType)).SingleOrDefault()?.FirstChild?.InnerText;
+            TargetFramework = doc.Descendants(nameof(TargetFramework)).FirstOrDefault()?.FirstChild?.InnerText;
+            TargetFrameworks = doc.Descendants(nameof(TargetFrameworks)).SingleOrDefault()?.FirstChild?.InnerText;
+            Nullable = doc.Descendants(nameof(Nullable)).SingleOrDefault()?.FirstChild?.InnerText;
+            ImplicitUsings = doc.Descendants(nameof(ImplicitUsings)).SingleOrDefault()?.FirstChild?.InnerText;
+            PackageLicenseFile = doc.Descendants(nameof(PackageLicenseFile)).SingleOrDefault()?.FirstChild?.InnerText;
+            PackageLicenseExpression = doc.Descendants(nameof(PackageLicenseExpression)).SingleOrDefault()?.FirstChild?.InnerText;
+            Description = doc.Descendants(nameof(Description)).SingleOrDefault()?.FirstChild?.InnerText;
+            Version = doc.Descendants(nameof(Version)).FirstOrDefault()?.FirstChild?.InnerText;
+            Company = doc.Descendants(nameof(Company)).SingleOrDefault()?.FirstChild?.InnerText;
+            Product = doc.Descendants(nameof(Product)).SingleOrDefault()?.FirstChild?.InnerText;
+            Authors = doc.Descendants(nameof(Authors)).SingleOrDefault()?.FirstChild?.InnerText;
+            PackageTags = doc.Descendants(nameof(PackageTags)).SingleOrDefault()?.FirstChild?.InnerText;
+            PackageProjectUrl = doc.Descendants(nameof(PackageProjectUrl)).SingleOrDefault()?.FirstChild?.InnerText;
+            RepositoryUrl = doc.Descendants(nameof(RepositoryUrl)).SingleOrDefault()?.FirstChild?.InnerText;
+            RepositoryType = doc.Descendants(nameof(RepositoryType)).SingleOrDefault()?.FirstChild?.InnerText;
+        } catch (Exception ex)
+        {
+            throw new InvalidDataException($"Error processing {pathOnDisk}", ex);
+        }
     }
 
     public string PathOnDisk { get; set; }
@@ -104,7 +110,7 @@ public class Project
         doc.LoadHtml(csprojContent);
         var node = doc.DocumentNode
             .Descendants("PackageReference")
-            .FirstOrDefault(d => d.Attributes["Include"].Value == refName);
+            .FirstOrDefault(d => (d.Attributes["Include"]?.Value?? d.Attributes["Update"]?.Value) == refName);
 
         if (node == null)
         {

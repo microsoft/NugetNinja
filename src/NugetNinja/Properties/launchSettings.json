@@ -32,13 +32,21 @@
             "commandName": "Project",
             "commandLineArgs": "fill-properties -p \"..\\..\\..\\..\\..\""
         },
-        "Dryrun Clean Pkg DP": {
+        "Clean Pkg DP": {
             "commandName": "Project",
-            "commandLineArgs": "clean-pkg -p \"E:\\\\datahub-portal\" -v -d"
+            "commandLineArgs": "clean-pkg -p D:\\Datahunter\\DataHunter-Main -v"
         },
         "Dryrun Clean Prj DP": {
             "commandName": "Project",
-            "commandLineArgs": "clean-prj -p \"E:\\\\datahub-portal\" -v -d"
+            "commandLineArgs": "clean-prj -p D:\\Datahunter\\DataHunter-Main -v -d"
+        },
+        "Upgrade Prj DP": {
+            "commandName": "Project",
+            "commandLineArgs": "upgrade-pkg -p D:\\Datahunter\\DataHunter-Main -v"
+        },
+        "List Prj DP": {
+            "commandName": "Project",
+            "commandLineArgs": "list-packages -p E:\\datahub-portal\\ -v"
         }
 
     }

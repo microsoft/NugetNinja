@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Microsoft.NugetNinja.AllOfficialsPlugin</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\NugetNinja.PackageListerPlugin\NugetNinja.PackageListerPlugin.csproj" />
     <ProjectReference Include="..\NugetNinja.DeprecatedPackagePlugin\NugetNinja.DeprecatedPackagePlugin.csproj" />
     <ProjectReference Include="..\NugetNinja.MissingPropertyPlugin\NugetNinja.MissingPropertyPlugin.csproj" />
     <ProjectReference Include="..\NugetNinja.PossiblePackageUpgradePlugin\NugetNinja.PossiblePackageUpgradePlugin.csproj" />
