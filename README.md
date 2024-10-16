@@ -38,7 +38,7 @@ Commands:
   upgrade-pkg         The command to upgrade all package references to possible latest and avoid conflicts.
   clean-pkg           The command to clean up possible useless package references.
   clean-prj           The command to clean up possible useless project references.
-  list-packages       Generates a list of all packages used in the solution. Dry run will only list the packages on the console.
+  list-packages       The command to generate a csv file with all direct packages and nuget.org descriptions. Dry run will only list the packages on the console.
 ```
 
 ## How to build and run locally
