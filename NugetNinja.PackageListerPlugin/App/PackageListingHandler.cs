@@ -9,5 +9,5 @@ public class PackageListingHandler : DetectorBasedCommandHandler<PackageListerDe
 {
     public override string Name => "list-packages";
 
-    public override string Description => "Generates a list of all packages used in the solution.";
+    public override string Description => "The command to generate a csv file with all direct packages and nuget.org descriptions. Dry run will only list the packages on the console.";
 }
