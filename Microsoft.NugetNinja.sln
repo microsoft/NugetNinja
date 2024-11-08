@@ -31,6 +31,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NugetNinja.PrBot", "src\Nug
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NugetNinja.PackageListerPlugin", "NugetNinja.PackageListerPlugin\NugetNinja.PackageListerPlugin.csproj", "{73804BAD-88F7-4283-9AFF-394AA8CC7C6F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{6C1940FB-3AD9-4952-AB03-A06F7B99B6A7}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
