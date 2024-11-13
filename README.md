@@ -9,6 +9,8 @@
 
 Nuget Ninjia is a tool for detecting dependencies of .NET projects. It analyzes the dependency structure of .NET projects in a directory and builds a directed acyclic graph. And will give some modification suggestions for Nuget packages, so that the dependencies of the project are as concise and up-to-date as possible.
 
+The tool can also generate a list of all top level dependencies into a CSV file. This CSV includes the nuget description and avoids issues with `shproj` and `dotnet list packages`.
+
 ## Usage
 
 After getting the binary, run it directly in the terminal.
@@ -36,13 +38,14 @@ Commands:
   upgrade-pkg         The command to upgrade all package references to possible latest and avoid conflicts.
   clean-pkg           The command to clean up possible useless package references.
   clean-prj           The command to clean up possible useless project references.
+  list-packages       The command to generate a csv file with all direct packages and nuget.org descriptions. Dry run will only list the packages on the console.
 ```
 
 ## How to build and run locally
 
 Requirements about how to develop.
 
-* [.NET SDK 6.0](https://github.com/dotnet/core/tree/master/release-notes)
+* [.NET SDK 8.0](https://github.com/dotnet/core/tree/master/release-notes)
 
 1. Execute `dotnet restore` to restore all .NET dependencies.
 2. Execute the following command to build the app:

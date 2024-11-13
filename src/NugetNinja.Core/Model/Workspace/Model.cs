@@ -59,7 +59,7 @@ public class Model
         var packageReferences = doc.DocumentNode
             .Descendants("PackageReference")
             .Select(p => new Package(
-                name: p.Attributes["Include"].Value,
+                name: p.Attributes["Include"]?.Value?? p.Attributes["Update"].Value,
                 versionText: p.Attributes["Version"]?.Value ?? "0.0.1"))
             .ToArray();
 

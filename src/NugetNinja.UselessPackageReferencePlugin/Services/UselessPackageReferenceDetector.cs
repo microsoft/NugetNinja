@@ -72,10 +72,11 @@ public class UselessPackageReferenceDetector : IActionDetector
                 }
             }
 
-            if (accessiblePackagesForThisProject.Any(pa => pa.Name == directReference.Name))
+            if (accessiblePackagesForThisProject.Any(pa => pa.Name == directReference.Name && pa.Version >= directReference.Version))
             {
                 yield return new(context, directReference);
             }
         }
     }
+
 }

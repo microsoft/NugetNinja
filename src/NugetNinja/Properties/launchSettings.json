@@ -31,6 +31,23 @@
         "Run missing": {
             "commandName": "Project",
             "commandLineArgs": "fill-properties -p \"..\\..\\..\\..\\..\""
+        },
+        "Clean Pkg DP": {
+            "commandName": "Project",
+            "commandLineArgs": "clean-pkg -p \"..\\..\\..\\..\\..\" -v"
+        },
+        "Dryrun Clean Prj DP": {
+            "commandName": "Project",
+            "commandLineArgs": "clean-prj -p \"..\\..\\..\\..\\..\" -v -d"
+        },
+        "Upgrade Prj DP": {
+            "commandName": "Project",
+            "commandLineArgs": "upgrade-pkg -p \"..\\..\\..\\..\\..\" -v"
+        },
+        "List Prj DP": {
+            "commandName": "Project",
+            "commandLineArgs": "list-packages -p \"..\\..\\..\\..\\..\" -v"
         }
+
     }
 }

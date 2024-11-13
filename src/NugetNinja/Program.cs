@@ -9,6 +9,7 @@ using Microsoft.NugetNinja.DeprecatedPackagePlugin;
 using Microsoft.NugetNinja.PossiblePackageUpgradePlugin;
 using Microsoft.NugetNinja.UselessPackageReferencePlugin;
 using Microsoft.NugetNinja.UselessProjectReferencePlugin;
+using Microsoft.NugetNinja.PackageListerPlugin;
 
 var description = "Nuget Ninja, a tool for detecting dependencies of .NET projects.";
 
@@ -20,7 +21,8 @@ var program = new RootCommand(description)
         new DeprecatedPackagePlugin(),
         new PossiblePackageUpgradePlugin(),
         new UselessPackageReferencePlugin(),
-        new UselessProjectReferencePlugin()
+        new UselessProjectReferencePlugin(),
+        new PackageListerPlugin()
     );
 
 return await program.InvokeAsync(args);
